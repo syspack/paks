@@ -1,0 +1,98 @@
+# Stack
+
+Stack is a package manager that is optimized for community packages, meaning that
+anyone can generate a simple repository with a package specification and then:
+
+1. The repository automatically detects new versions of a package upstream and builds
+2. Building is recommended to perform testing
+3. A successful update, build, and test leads to a new release
+4. The repository then serves metadata about the package via RESTful API
+5. (Optionally) the repository can provide single containers
+
+Stack will also provide many of these package repositories on its own, and for any package
+in a GitHub repository it can be registered with some registry that the command line spack
+can ping to look for packages. 
+
+## Stack Organization
+
+On a high level, Stack should be optimized to:
+
+1. Install packages from the Github package caches. This ensures that installation is fast. And since we are optimizing for container installs, we will typically choose a core set of containers to provide binaries for. Since the installs are just downloading binaries, it should also be quick. This means we will need a similar logic / organization to a package install tree as is done with [spack](https://github.com/spack/spack), where packages are installed based on a hash of some kind under a common tree, and can be loaded as such.
+2. Build containers.
+3. Provide a community framework to empower individuals to build, test, and deploy. This should cut down on maintenance responsibility by some central team.
+
+## stack Client
+
+### Building Packages
+
+The stack client will be optimized to build packages from source, and this will be done
+on GitHub (and likely with a GitHub action). When we are in a repository, that might look like:
+
+```bash
+$ stack build .
+```
+
+If we are on the command line and want to build a remote repository, that might look like:
+
+```bash
+$ stack build github.com/vanessa/salad
+```
+
+And then we would require the GitHub repository to provide some basic files for the install.
+If we want to keep things in Go, likely it would be a module called package served at the repository:
+
+```bash
+package/
+  package.go
+```
+
+and then a module named accordingly. E.g.,:
+
+```bash
+# go.mod
+module github.com/username/packagename
+
+go 1.16
+```
+
+I think this would be possible if each package was interacted with as a [plugin](https://github.com/vladimirvivien/go-plugin-example)
+because then we could download the package to some known root, e.g.,:
+
+```bash
+/tmp/stack-install-xndfush
+   packagename/
+      go.mod
+      go.sum
+      package/
+         package.go
+```
+
+And then via the plugin framework define the module as the path there, build an so, and then
+load the package to then be built from source. Arguably this could also be done locally,
+but it's more optimal to do in advance. There is a good example of using plugins [here](https://github.com/vladimirvivien/go-plugin-example/blob/b5d9c4134805a908c1b1320951cc3dd6d64d851c/greeter.go#L32).
+
+
+### Installing Packages
+
+Installation would be straight forward - you would install via a GitHub repository URI:
+
+```bash
+$ stack install github.com/usernamename/packagename
+```
+And I'm thinking we could have an entire org that serves packages, and then they would be provided
+in a registry known to stack. Then instead of packagename, if that repository is registered under packagename,
+we would just do:
+
+```bash
+$ stack install packagename
+```
+
+And stack would:
+
+1. Lookup the package in the registry
+2. Run the same stack install with the full GitHub URI
+
+During install, we would basically need to match the architecture of the package
+to what is requested, and we would provide a reasonable set. This package manager is not 
+intended for HPC, it would be intended for installing inside containers.
+
