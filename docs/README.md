@@ -72,6 +72,20 @@ load the package to then be built from source. Arguably this could also be done 
 but it's more optimal to do in advance. There is a good example of using plugins [here](https://github.com/vladimirvivien/go-plugin-example/blob/b5d9c4134805a908c1b1320951cc3dd6d64d851c/greeter.go#L32).
 
 
+#### Containers
+
+The builds could be done in containers, and thus we would be controlling the architecture
+and organization within the container. We could deploy a container, but we would be pushing GitHub
+packages and adding them to a container.
+
+1. Can we have a minimal filesystem / container base to install the tool?
+2. Then can we grab packages (binaries) that the user wants to add (pre-built)
+3. The container base would be akin to any other contianer base (e.g., ubuntu 16.04) and we may want to start with something that already exists
+4. A user could easily build their own arch packages (maybe it's represented in the package metadata / arch name)
+
+More abstractly, we want to have a package manager built around GitHub packages.
+We can look at ones that already exist to get a better sense of how others do that.
+
 ### Installing Packages
 
 Installation would be straight forward - you would install via a GitHub repository URI:
