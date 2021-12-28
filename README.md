@@ -1,6 +1,6 @@
-# Stack
+# Paks
 
-> Stack is a package manager optimized for community contributions and containers 📦️
+> Paks is a package manager optimized for community contributions and containers 📦️
 
 ## Goals
 
