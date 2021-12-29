@@ -111,6 +111,21 @@ paks config init""",
         type=str,
     )
 
+    # Local shell with client loaded
+    shell = subparsers.add_parser(
+        "shell",
+        description="shell into a Python session with a client.",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    shell.add_argument(
+        "--interpreter",
+        "-i",
+        dest="interpreter",
+        help="python interpreter",
+        choices=["ipython", "python"],
+        default="ipython",
+    )
+
     for command in [install, build]:
         command.add_argument("packages", help="install these packages", nargs="+")
     return parser
@@ -169,6 +184,8 @@ def run_main():
         from .build import main
     elif args.command == "install":
         from .install import main
+    elif args.command == "shell":
+        from .shell import main
 
     # Pass on to the correct parser
     return_code = 0

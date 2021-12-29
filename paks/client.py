@@ -5,6 +5,8 @@ __license__ = "Apache-2.0"
 from paks.logger import logger
 import paks.cache
 import paks.utils as utils
+import spack.cmd
+import spack.target
 from .settings import Settings
 
 import os
@@ -36,8 +38,7 @@ class PakClient:
         """
         A shared function to retrieve iterable of specs from packages
         """
-        for package in packages:
-            spec = paks.spec.Spec(package)
+        for spec in paks.spec.parse_specs(packages):
             if concretize:
                 spec.concretize()
             yield spec

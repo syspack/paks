@@ -91,6 +91,22 @@ linux-ubuntu20.04-skylake
 This is a traditional install, but it's also a little more! We generate a software
 bill of materials to go alongside the install, and this will be uploaded to the package archive.
 
+#### Shell
+
+If you want a quick shell to interact with the Pak client and spack, you can do:
+
+```bash
+$ paks shell
+Python 3.8.8 (default, Apr 13 2021, 19:58:26) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.30.1 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: client
+Out[1]: [paks-client]
+```
+
+You can also import anything from spack in the shell.
+
 #### Build
 
 The main functionality of paks is (drumroll) to build `Pak`s that are then easy to install
@@ -132,6 +148,7 @@ $ paks build zlib --push ghcr.io/syspack/paks
  - provide those container bases too
  - provide a paks container that can easily pull from the cache so it's ready to go!
  - add push command for an existing build cache
+ - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
 
 ## Old Brainstorming
 
