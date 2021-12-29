@@ -1,0 +1,3 @@
+[submodule "paks/spack"]
+	path = paks/spack
+	url = git@github.com:spack/spack

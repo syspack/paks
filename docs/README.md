@@ -1,6 +1,6 @@
-# Stack
+# Paks
 
-Stack is a package manager that is optimized for community packages, meaning that
+Paks is a packaging framework that is optimized for community packages, meaning that
 anyone can generate a simple repository with a package specification and then:
 
 1. The repository automatically detects new versions of a package upstream and builds
@@ -9,11 +9,133 @@ anyone can generate a simple repository with a package specification and then:
 4. The repository then serves metadata about the package via RESTful API
 5. (Optionally) the repository can provide single containers
 
-Stack will also provide many of these package repositories on its own, and for any package
-in a GitHub repository it can be registered with some registry that the command line spack
-can ping to look for packages. 
+While we use Spack as the underlying manager for building, we have extended a Spack
+spec and other concepts to be flexible to installing from a source like GitHub.
 
-## Stack Organization
+## Usage
+
+### Install Paks
+
+First, clone the repository:
+
+```bash
+$ git clone https://github.com/syspack/paks
+$ cd paks
+```
+
+You'll need to init submodules - spack is "installed" as a submodule alongside it.
+
+```bash
+$ git submodule init
+$ git submodule update
+```
+
+Note that spack is added as follows - and you can modify this logic if you want a different
+branch, version, etc.
+
+```bash
+$ git submodule add git@github.com:spack/spack paks/spack
+```
+
+And then create a virtual environment
+
+```bash
+$ python -m venv env
+$ source env/bin/activate
+```
+
+And install paks
+
+```bash
+$ pip install -e .
+```
+
+### Settings
+
+Most defaults should work without changing. However, to change defaults you can either
+edit the settings.yml file in the installation directory, or create a user-specific configuration
+by doing:
+
+```bash
+$ paks config init
+Created user settings file /home/vanessa/.paks/settings.yml
+```
+
+You can then change a setting, such as the username and email for your gpg key (used to sign
+the build cache artifacts):
+
+```bash
+$ paks config set username:dinosaur
+Updated username to be dinosaur
+$ paks config set email:dinosaur@users.noreply.github.io
+Updated email to be dinosaur@users.noreply.github.io
+```
+
+These user settings will over-ride the default installation ones.
+
+### Commands
+
+#### Install
+
+Since paks is a wrapper to spack, you can install any list of packages that you would
+install with spack, just using paks install (which is installable via pip so it can be on your path
+more easily or in a Python environment).
+
+```bash
+$ paks install zlib
+Preparing to install zlib
+linux-ubuntu20.04-skylake
+[+] /home/vanessa/Desktop/Code/syspack/paks/paks/spack/opt/spack/linux-ubuntu20.04-skylake/gcc-9.3.0/zlib-1.2.11-3kmnsdv36qxm3slmcyrb326gkghsp6px
+```
+
+This is a traditional install, but it's also a little more! We generate a software
+bill of materials to go alongside the install, and this will be uploaded to the package archive.
+
+#### Build
+
+The main functionality of paks is (drumroll) to build `Pak`s that are then easy to install
+in a container, or again into the spack install that comes with Pak. A basic build is going
+to generate a build cache with one or more specs of interest. Here is how to build zlib:
+
+```bash
+$ paks build zlib
+```
+
+By default, a build cache will be created in a temporary directory and the Pak
+saved there. This is recommended, as each pak is intended to be modular. If you want
+to specify a custom cache (or one that is always used) you can add `--cache-dir`.
+You also might want to set a specific gpg key hash to sign with `--key` (otherwise
+we will default to the first one we find that is commented for Spack).
+When you do a build, it will show you the location of the build cache.
+
+```bash
+$ paks build zlib
+Preparing to install zlib
+linux-ubuntu20.04-skylake
+[+] /home/vanessa/Desktop/Code/syspack/paks/paks/spack/opt/spack/linux-ubuntu20.04-skylake/gcc-9.3.0/zlib-1.2.11-3kmnsdv36qxm3slmcyrb326gkghsp6px
+==> Pushing binary packages to file:///tmp/paks-tmp.1by0dclj/build_cache
+gpg: using "DECA3181DA00313E633F963157BE6A82D830EA34" as default secret key for signing
+```
+
+#### Build and Push
+
+If you add `--push` with a GitHub repository (or other OCI registry that supports oras) identifier, we will
+use oras to upload there:
+
+```bash
+$ paks build zlib --push ghcr.io/syspack/paks
+```
+
+## TODO
+
+ - create same GitHub actions to perform builds, and across a matrix of arches we will support
+ - provide those container bases too
+ - provide a paks container that can easily pull from the cache so it's ready to go!
+ - add push command for an existing build cache
+
+## Old Brainstorming
+
+### Paks Organization
 
 On a high level, Stack should be optimized to:
 
@@ -21,9 +143,9 @@ On a high level, Stack should be optimized to:
 2. Build containers.
 3. Provide a community framework to empower individuals to build, test, and deploy. This should cut down on maintenance responsibility by some central team.
 
-## stack Client
+### stack Client
 
-### Building Packages
+#### Building Packages
 
 The stack client will be optimized to build packages from source, and this will be done
 on GitHub (and likely with a GitHub action). When we are in a repository, that might look like:
@@ -72,7 +194,7 @@ load the package to then be built from source. Arguably this could also be done 
 but it's more optimal to do in advance. There is a good example of using plugins [here](https://github.com/vladimirvivien/go-plugin-example/blob/b5d9c4134805a908c1b1320951cc3dd6d64d851c/greeter.go#L32).
 
 
-#### Containers
+##### Containers
 
 The builds could be done in containers, and thus we would be controlling the architecture
 and organization within the container. We could deploy a container, but we would be pushing GitHub
@@ -86,7 +208,7 @@ packages and adding them to a container.
 More abstractly, we want to have a package manager built around GitHub packages.
 We can look at ones that already exist to get a better sense of how others do that.
 
-### Installing Packages
+#### Installing Packages
 
 Installation would be straight forward - you would install via a GitHub repository URI:
 
@@ -109,4 +231,3 @@ And stack would:
 During install, we would basically need to match the architecture of the package
 to what is requested, and we would provide a reasonable set. This package manager is not 
 intended for HPC, it would be intended for installing inside containers.
-

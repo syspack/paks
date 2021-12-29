@@ -1,0 +1,86 @@
+__author__ = "Vanessa Sochat, Alec Scott"
+__copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
+__license__ = "Apache-2.0"
+
+from paks.logger import logger
+import paks.cache
+import paks.utils as utils
+from .settings import Settings
+
+import os
+import re
+import shutil
+import sys
+
+import paks.spec
+
+
+class PakClient:
+    """
+    Paks has a main controller for interacting with paks.
+    """
+
+    def __init__(self, *args, **kwargs):
+        settings_file = kwargs.get("settings_file")
+        validate = kwargs.get("validate", True)
+        if not hasattr(self, "settings"):
+            self.settings = Settings(settings_file, validate=validate)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return "[paks-client]"
+
+    def iter_specs(self, packages, concretize=True):
+        """
+        A shared function to retrieve iterable of specs from packages
+        """
+        for package in packages:
+            spec = paks.spec.Spec(package)
+            if concretize:
+                spec.concretize()
+            yield spec
+
+    def build(self, packages, cache_dir=None, key=None):
+        """
+        Build a package into a cache
+        """
+        # Prepare a cache directory
+        cache = paks.cache.BuildCache(
+            username=self.settings.username, email=self.settings.email
+        )
+
+        # Install all packages, and also generate sboms
+        specs = self.install(packages)
+
+        # TODO how can we attach the sbom to the package (aside from being in archive?)
+        cache.create(specs, key=key)
+        return cache
+
+    def install(self, packages):
+        """
+        Install one or more packages.
+
+        This eventually needs to take into account using the GitHub packages bulid cache
+        """
+        specs = []
+        for spec in self.iter_specs(packages):
+            logger.info("Preparing to install %s" % spec.name)
+
+            # TODO here we actually want to insert preparing GitHub packages build cache
+            # We should match based on a basic set of architectures we know the containers support
+            # E.g., check the platform and spit an error if it's some niche HPC one.
+
+            spec.package.do_install(force=True)
+            specs.append(spec)
+        return specs
+
+    def uninstall(self, packages):
+        """
+        Uninstall a spack package
+        """
+        for package in packages:
+            spec = spack.spec.Spec(package)
+            spec.concretize()
+            spec.package.do_uninstall(force=True)

@@ -7,23 +7,46 @@ import errno
 import os
 import re
 import shutil
+import sys
 import tempfile
+import yaml
 
 import json
 from paks.logger import logger
+
+
+def read_json(filename):
+    with open(filename, "r") as fd:
+        content = json.loads(fd.read())
+    return content
+
+
+def write_json(content, filename):
+    with open(filename, "w") as fd:
+        fd.write(json.dumps(content, indent=4))
+
+
+def read_yaml(filename):
+    if not os.path.exists(filename):
+        sys.exit("%s does not exist." % filename)
+    with open(filename, "r") as fd:
+        content = yaml.load(fd.read(), Loader=yaml.SafeLoader)
+    return content
 
 
 def mkdirp(dirnames):
     """
     Create one or more directories
     """
+    if isinstance(dirnames, str):
+        dirnames = [dirnames]
     for dirname in dirnames:
         mkdir_p(dirname)
 
 
 def mkdir_p(path):
-    """
-    Create a nested folder directory.
+    """mkdir_p attempts to get the same functionality as mkdir -p
+    :param path: the path to create.
     """
     try:
         os.makedirs(path)
@@ -57,7 +80,7 @@ def get_tmpdir(tmpdir=None, prefix="", create=True):
     Get a temporary directory for an operation.
     """
     tmpdir = tmpdir or tempfile.gettempdir()
-    prefix = prefix or "stack-tmp"
+    prefix = prefix or "paks-tmp"
     prefix = "%s.%s" % (prefix, next(tempfile._get_candidate_names()))
     tmpdir = os.path.join(tmpdir, prefix)
 

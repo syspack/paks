@@ -1,1 +1,5 @@
-pak
+.eggs
+dist
+env
+__pycache__
+paks.egg-info/

@@ -1,3 +1,7 @@
+__author__ = "Vanessa Sochat, Alec Scott"
+__copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
+__license__ = "Apache-2.0"
+
 from setuptools import setup, find_packages
 import codecs
 import os
@@ -96,5 +100,5 @@ if __name__ == "__main__":
             "Operating System :: Unix",
             "Programming Language :: Python :: 3.8",
         ],
-        # entry_points={"console_scripts": ["paks=paks.client:run_main"]},
+        entry_points={"console_scripts": ["paks=paks.cli:run_main"]},
     )

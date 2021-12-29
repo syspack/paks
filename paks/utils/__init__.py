@@ -1,8 +1,12 @@
 from .terminal import (
     run_command,
+    check_install,
     get_installdir,
+    get_username,
     which,
+    confirm_action,
 )
+from .spack import add_spack_to_path, add_paks_spack_repo
 from .fileio import (
     copyfile,
     get_file_hash,
@@ -13,6 +17,7 @@ from .fileio import (
     print_json,
     read_file,
     read_json,
+    read_yaml,
     recursive_find,
     write_file,
     write_json,
