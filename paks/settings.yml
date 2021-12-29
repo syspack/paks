@@ -2,3 +2,4 @@
 
 email: null
 username: null
+content_type: application/vnd.spack.package

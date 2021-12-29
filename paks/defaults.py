@@ -20,6 +20,9 @@ user_settings_file = os.path.join(pakshome, "settings.yml")
 # Default directory for keys
 keys_dir = os.path.join(pakshome, "keys")
 
+# Fallback content type
+content_type = "application/vnd.spack.package"
+
 # Allowed variables for the environment
 allowed_envars = ["username"]
 

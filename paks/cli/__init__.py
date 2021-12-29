@@ -63,16 +63,39 @@ def get_parser():
         description="install a Pak to the current environment",
         formatter_class=argparse.RawTextHelpFormatter,
     )
+
+    push = subparsers.add_parser(
+        "push",
+        description="push an existing cache",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    # For a push we assue we don't want default cleanup
+    push.add_argument(
+        "--cleanup",
+        "-c",
+        dest="cleanup",
+        default=False,
+        action="store_true",
+        help="Clean up (remove) the cache after push.",
+    )
+
+    # Two required args
+    push.add_argument("cache_dir", help="path to cache directory")
+    push.add_argument("uri", help="GitHub packages or other oras URI (ghcr.io...)")
+
     build = subparsers.add_parser(
         "build",
         description="build into a cache",
         formatter_class=argparse.RawTextHelpFormatter,
     )
+
     build.add_argument(
         "--cache-dir",
         dest="cache_dir",
         help="path to cache directory",
     )
+
     build.add_argument(
         "--key",
         "-k",
@@ -84,6 +107,13 @@ def get_parser():
         "-p",
         dest="push",
         help="push to an oras endpoint",
+    )
+    build.add_argument(
+        "--no-cleanup",
+        dest="no_cleanup",
+        default=False,
+        action="store_true",
+        help="Given that --push is added, don't clean up the build cache.",
     )
 
     config = subparsers.add_parser(
@@ -184,6 +214,8 @@ def run_main():
         from .build import main
     elif args.command == "install":
         from .install import main
+    elif args.command == "push":
+        from .push import main
     elif args.command == "shell":
         from .shell import main
 

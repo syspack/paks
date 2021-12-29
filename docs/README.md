@@ -142,12 +142,30 @@ use oras to upload there:
 $ paks build zlib --push ghcr.io/syspack/paks
 ```
 
+By default, the above with `--push` will build, push, and cleanup. You can disable cleanup:
+
+```bash
+$ paks build zlib --no-cleanup --push ghcr.io/syspack/paks
+```
+
+If you have an existing build cache you want to push:
+
+```bash
+$ paks push /tmp/paks-tmp.nudv7k0u/ ghcr.io/syspack/paks
+```
+
+Or push and cleanup:
+
+```bash
+$ paks push --cleanup /tmp/paks-tmp.nudv7k0u/ ghcr.io/syspack/paks
+```
+
+
 ## TODO
 
  - create same GitHub actions to perform builds, and across a matrix of arches we will support
  - provide those container bases too
  - provide a paks container that can easily pull from the cache so it's ready to go!
- - add push command for an existing build cache
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
 
 ## Old Brainstorming

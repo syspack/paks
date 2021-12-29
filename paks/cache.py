@@ -6,7 +6,10 @@ from paks.logger import logger
 import paks.utils as utils
 from spack.main import SpackCommand
 import paks.defaults
+import paks.settings
 import paks.oras
+
+import shutil
 import os
 
 gpg = SpackCommand("gpg")
@@ -41,29 +44,32 @@ class BuildCache:
     A controller that makes it easy to create a build cache and install to it.
     """
 
-    def __init__(self, cache_dir=None, username=None, email=None):
+    def __init__(self, cache_dir=None, username=None, email=None, settings=None):
         if not cache_dir:
             cache_dir = utils.get_tmpdir()
         self.cache_dir = cache_dir
 
+        # Inherit settings from the client, or set to empty settings
+        if not settings:
+            settings = paks.settings.EmptySettings()
+        self.settings = settings
+
         # Use defautls for username and email if not provided
+        # TODO eventually we want to store keys elsewhere
         username = username or utils.get_username()
         email = email or "%s@users.noreply.spack.io" % username
 
-        # TODO eventually we want to store keys elsewhere (this doesn't seem to work)
-        # self.keys_home = paks.defaults.keys_dir
-        # if not os.path.exists(self.keys_home):
-        #    gpg_init(self.keys_home)
-
-        # Set the home to a non-spack location
-        # os.putenv('SPACK_GNUPGHOME', self.keys_home)
-        # os.environ['SPACK_GNUPGHOME'] = self.keys_home
-
-        # Ensure we have the gpg keys init, etc.
-        # gpg("init", "--from", self.keys_home)
-
+        # TODO how do we check if this is already created?
         gpg("init")
         gpg("create", username, email)
+
+    def remove(self):
+        """
+        Delete the entire build cache
+        """
+        if self.cache_dir and os.path.exists(self.cache_dir):
+            logger.warning("Removing %s" % self.cache_dir)
+            shutil.rmtree(self.cache_dir)
 
     def create(self, specs, key=None):
         """
@@ -74,27 +80,33 @@ class BuildCache:
         # If a key isn't defined, choose the first spack one we find
         if not key:
             key = get_gpg_key()
-        format_string = " ".join(["%s@%s" % (s.name, s.version) for s in specs])
-        if key:
-            print(
-                bc("create", "-r", "-a", "-k", key, "-d", self.cache_dir, format_string)
-            )
-        else:
-            print(bc("create", "-r", "-a", "-d", self.cache_dir, format_string))
+        format_string = " ".join([str(s) for s in specs])
 
-    def push(self, uri):
+        command = ["create", "-r", "-a"]
+        if key:
+            command += ["-k", key]
+        command += ["-d", self.cache_dir, format_string]
+        print(bc(*command))
+
+    def push(self, uri, tag=None):
         """
         Push the build cache to an OCI registry (compatible with ORAS)
         """
+        tag = tag or "latest"
+        content_type = self.settings.content_type or defaults.content_type
+
+        # Create an oras client
+        oras = paks.oras.Oras()
+
         # Find all .spack archives in the cache
         for archive in utils.recursive_find(self.cache_dir, ".spack"):
             package_name = os.path.basename(archive)
             print(package_name)
             # TODO Absolute paths not allowed
             # mv ${spack_package} ${spack_package_name}
-            # package_full_name=ghcr.io/${GITHUB_REPOSITORY}/${package_name}:latest
-            # package_tagged_name=ghcr.io/${GITHUB_REPOSITORY}/${package_name}:${INPUT_TAG}
-            # oras push ${package_full_name} --manifest-config /dev/null:${package_content_type} ${spack_package_name}
+            full_name = "%s/%s" % (uri, package_name)
+            oras.push(full_name, archive, content_type=content_type)
+
             # TODO how to add sbom? separately?
             # TODO we should support custom tags
 

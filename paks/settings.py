@@ -15,7 +15,7 @@ import os
 import yaml
 
 
-class SettingsBase:
+class EmptySettings:
     def __init__(self):
         """
         Create a new settings object not requiring a settings file.
@@ -221,7 +221,7 @@ class SettingsBase:
             yield key, value
 
 
-class Settings(SettingsBase):
+class Settings(EmptySettings):
     """
     The settings class is a wrapper for easily parsing a settings.yml file.
 

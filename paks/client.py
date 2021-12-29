@@ -39,8 +39,6 @@ class PakClient:
         A shared function to retrieve iterable of specs from packages
         """
         for spec in paks.spec.parse_specs(packages):
-            if concretize:
-                spec.concretize()
             yield spec
 
     def build(self, packages, cache_dir=None, key=None):
@@ -49,7 +47,10 @@ class PakClient:
         """
         # Prepare a cache directory
         cache = paks.cache.BuildCache(
-            username=self.settings.username, email=self.settings.email
+            cache_dir=cache_dir,
+            username=self.settings.username,
+            email=self.settings.email,
+            settings=self.settings,
         )
 
         # Install all packages, and also generate sboms
@@ -57,6 +58,20 @@ class PakClient:
 
         # TODO how can we attach the sbom to the package (aside from being in archive?)
         cache.create(specs, key=key)
+        return cache
+
+    def push(self, cache_dir, uri):
+        """
+        Given an existing cache directory, push known specs to a specific uri
+        """
+        # Prepare a cache directory
+        cache = paks.cache.BuildCache(
+            cache_dir=cache_dir,
+            username=self.settings.username,
+            email=self.settings.email,
+            settings=self.settings,
+        )
+        cache.push(uri)
         return cache
 
     def install(self, packages):

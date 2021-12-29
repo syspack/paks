@@ -12,6 +12,7 @@ import tempfile
 import yaml
 
 import json
+from contextlib import contextmanager
 from paks.logger import logger
 
 
@@ -42,6 +43,22 @@ def mkdirp(dirnames):
         dirnames = [dirnames]
     for dirname in dirnames:
         mkdir_p(dirname)
+
+
+@contextmanager
+def workdir(dirname):
+    """
+    Provide context for a working directory, e.g.,
+
+    with workdir(name):
+       # do stuff
+    """
+    here = os.getcwd()
+    os.chdir(dirname)
+    try:
+        yield
+    finally:
+        os.chdir(here)
 
 
 def mkdir_p(path):

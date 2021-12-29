@@ -31,8 +31,8 @@ def parse_specs(packages):
     if not isinstance(packages, six.string_types):
         packages = " ".join(spack.util.string.quote(packages))
 
-    specs = spack.spec.SpecParser().parse(packages)
-    for legacy in specs:
+    specs = []
+    for legacy in spack.spec.SpecParser().parse(packages):
 
         # Create a new Pak spec to copy (duplicate) into
         spec = Spec()
@@ -43,4 +43,5 @@ def parse_specs(packages):
         spec.architecture.target = spack.target.Target("x86_64")
 
         spec.concretize()
+        specs.append(spec)
     return specs

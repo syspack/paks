@@ -7,12 +7,8 @@ from paks.client import PakClient
 
 def main(args, parser, extra, subparser):
     cli = PakClient(args.settings_file)
-    cache = cli.build(args.packages, args.cache_dir, args.key)
 
     # Do we want to push to a build cache?
-    if args.push:
-        cache.push(args.push)
-
-        # By default, we clean up the build cache
-        if not args.no_cleanup:
-            cache.remove()
+    cache = cli.push(cache_dir=args.cache_dir, uri=args.uri)
+    if args.cleanup:
+        cache.remove()

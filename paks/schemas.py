@@ -10,6 +10,7 @@ schema_url = "https://json-schema.org/draft-07/schema/#"
 
 # Currently all of these are required
 settingsProperties = {
+    "content_type": {"type": "string"},
     "updated_at": {"type": ["string", "null"]},
     "username": {"type": ["string", "null"]},
     "email": {"type": ["string", "null"]},
