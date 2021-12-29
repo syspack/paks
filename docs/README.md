@@ -160,6 +160,13 @@ Or push and cleanup:
 $ paks push --cleanup /tmp/paks-tmp.nudv7k0u/ ghcr.io/syspack/paks
 ```
 
+#### Uninstall
+
+You can also uninstall a package.
+
+```bash
+$ paks uninstall zlib
+```
 
 ## TODO
 
@@ -167,6 +174,7 @@ $ paks push --cleanup /tmp/paks-tmp.nudv7k0u/ ghcr.io/syspack/paks
  - provide those container bases too
  - provide a paks container that can easily pull from the cache so it's ready to go!
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
+ - Question: should we have a definitive prefix / label for a package or can we query based on content type?
 
 ## Old Brainstorming
 

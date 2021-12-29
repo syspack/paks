@@ -57,10 +57,16 @@ def get_parser():
     # print version and exit
     subparsers.add_parser("version", description="show software version")
 
-    # Install and Build
+    # Install, Uninstall and Build
     install = subparsers.add_parser(
         "install",
         description="install a Pak to the current environment",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    uninstall = subparsers.add_parser(
+        "uninstall",
+        description="install a Pak from the current environment",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
@@ -156,7 +162,7 @@ paks config init""",
         default="ipython",
     )
 
-    for command in [install, build]:
+    for command in [install, build, uninstall]:
         command.add_argument("packages", help="install these packages", nargs="+")
     return parser
 
@@ -218,6 +224,8 @@ def run_main():
         from .push import main
     elif args.command == "shell":
         from .shell import main
+    elif args.command == "uninstall":
+        from .uninstall import main
 
     # Pass on to the correct parser
     return_code = 0

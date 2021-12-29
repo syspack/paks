@@ -16,6 +16,7 @@ LICENSE = "LICENSE"
 INSTALL_REQUIRES = (
     ("pyaml", {"min_version": None}),
     ("jsonschema", {"min_version": None}),
+    ("requests", {"min_version": None}),
 )
 
 TESTS_REQUIRES = (("pytest", {"min_version": "4.6.2"}),)

@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 import os
 import paks.sbom
 import paks.utils
-
+import paks.handlers.github
 
 def do_install(self, **kwargs):
     """
@@ -23,7 +23,13 @@ def do_install(self, **kwargs):
             """
             Given that we have a build cache for a package, it includes deps
             """
+            # Get trusted GitHub packages in advance 
+            gh = paks.handlers.github.GitHub()
+
+            # TODO this requires token with package;read scope
+            # https://docs.github.com/en/rest/reference/packages#list-packages-for-an-organization
             for request in self.build_requests:
+
                 # TODO we can get arch here, this can be used to download to cache
                 # we will want to match this to container bases available
                 # and possibly an abstract one that we can use in scratch

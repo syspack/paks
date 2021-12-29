@@ -96,7 +96,8 @@ class PakClient:
         """
         Uninstall a spack package
         """
-        for package in packages:
-            spec = spack.spec.Spec(package)
-            spec.concretize()
-            spec.package.do_uninstall(force=True)
+        for spec in self.iter_specs(packages):
+            try:
+                spec.package.do_uninstall(force=True)
+            except Exception as ex:
+                logger.exit(ex)
