@@ -12,4 +12,3 @@ trusted_packages_registry: ghcr.io/syspack/paks
 
 # Default tag for pushed artifacts
 default_tag: "latest"
-

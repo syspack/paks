@@ -2,5 +2,6 @@
 .env
 dist
 env
+paks/spack
 __pycache__
 paks.egg-info/
