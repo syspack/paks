@@ -1,5 +1,6 @@
 name: Build Paks Containers
-on: workflow_dispatch
+# on: workflow_dispatch
+on: pull_request: []
 
 jobs:
   build:
