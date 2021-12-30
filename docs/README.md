@@ -194,9 +194,8 @@ zlib@1.2.11
 
 ## TODO
 
- - install needs to first to submodule update, then install (treating spack as data)
  - create same GitHub actions to perform builds, and across a matrix of arches we will support
- - provide those container bases too
+ - expand container bases to include more, possibly provide set of solid base images.
  - provide a paks container that can easily pull from the cache so it's ready to go!
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
  - There is eventually going to be a design flaw in installing this if the user doesn't have write to the install location because of spack. Ug.
