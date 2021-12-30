@@ -36,9 +36,6 @@ jobs:
               exit 1;
           fi
 
-      - name: Pull Docker Layers
-        run: docker pull ghcr.io/syspack/${{ env.container }} || exit 0 
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
