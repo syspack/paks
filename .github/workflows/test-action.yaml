@@ -20,5 +20,5 @@ jobs:
         with:
           package: zlib
           token: ${{ secrets.GITHUB_TOKEN }}
-          username: ${{ github.user }}
+          user: ${{ github.actor }}
           deploy: ${{ github.event_name != 'pull_request' }}
