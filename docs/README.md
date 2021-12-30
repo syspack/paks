@@ -189,9 +189,6 @@ List installed packages as follows:
 
 ```bash
 $ paks list
--- linux-ubuntu20.04-skylake / gcc@9.3.0 ------------------------
-zlib@1.2.11
-
 -- linux-ubuntu20.04-x86_64 / gcc@9.3.0 -------------------------
 zlib@1.2.11
 ```
@@ -204,6 +201,7 @@ zlib@1.2.11
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
  - There is eventually going to be a design flaw in installing this if the user doesn't have write to the install location because of spack. Ug.
  - Can we have a nightly run to compare sboms for package releases to clair?
+ - create paks metadata spec for container labels? Also add spack labels to container
 
 ## Old Brainstorming
 
