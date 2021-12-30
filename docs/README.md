@@ -14,6 +14,18 @@ spec and other concepts to be flexible to installing from a source like GitHub.
 
 ## Usage
 
+### Quick Start
+
+```bash
+$ pip install paks
+
+# Init your user config
+$ paks config init
+```
+
+Make sure that you have spack added to your path, to be discovered by paks.
+
+
 ### Install Paks
 
 First, clone the repository:
@@ -21,20 +33,6 @@ First, clone the repository:
 ```bash
 $ git clone https://github.com/syspack/paks
 $ cd paks
-```
-
-You'll need to init submodules - spack is "installed" as a submodule alongside it.
-
-```bash
-$ git submodule init
-$ git submodule update
-```
-
-Note that spack is added as follows - and you can modify this logic if you want a different
-branch, version, etc.
-
-```bash
-$ git submodule add git@github.com:spack/spack paks/spack
 ```
 
 And then create a virtual environment
@@ -54,7 +52,8 @@ $ pip install -e .
 
 If you want to push packages to your organization, you will need to go to Settings -> Packages
 and ensure that the public box is checked. Otherwise, all packages will be private (and not seen by
-the tool).
+the tool). Note that by default we use packages from syspack/paks, which you likely won't have permission
+to push to, but you can pull/install from.
 
 ### Settings
 
@@ -209,6 +208,8 @@ zlib@1.2.11
  - should we allow paks to update spack (e.g., `paks update-spack`?
 
 ## Old Brainstorming
+
+The project was originally going to be called "stack" but the pypi name wasn't available!
 
 ### Paks Organization
 

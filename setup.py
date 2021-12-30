@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 
 from setuptools import setup, find_packages
 import codecs
-import subprocess
 import os
 
 
@@ -14,12 +13,6 @@ def get_lookup():
     with open(version_file) as filey:
         exec(filey.read(), lookup)
     return lookup
-
-# If we have .git and spack hasn't been cloned
-spack_path = os.path.join("paks", "spack")
-if os.path.exists('.git') and not os.path.exists(spack_path):
-    print("Spack not cloned yet!")
-    subprocess.check_call(['git', 'submodule', 'update', '--init', '--recursive'])
 
 def get_reqs(lookup=None, key="INSTALL_REQUIRES"):
     if lookup == None:

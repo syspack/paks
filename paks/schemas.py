@@ -23,7 +23,7 @@ settings = {
     "$schema": schema_url,
     "title": "Settings Schema",
     "type": "object",
-    "required": [],
+    "required": ["default_tag"],
     "properties": settingsProperties,
     "additionalProperties": False,
 }

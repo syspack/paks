@@ -1,5 +1,5 @@
 include README.md LICENSE
-prune paks/spack*
+prune ./paks/spack*
 recursive-include paks *
 prune env*
 global-exclude .env
