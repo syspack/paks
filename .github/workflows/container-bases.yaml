@@ -11,10 +11,7 @@ jobs:
       fail-fast: false
       matrix:
                     # tag           dockerfile in docker/
-        dockerfile: [[ubuntu-18.04, Dockerfile.ubuntu-18.04],
-                     [ubuntu-20.04, Dockerfile.ubuntu-20.04],
-                     [centos-7, Dockerfile.centos-7],
-                     [centos-8, Dockerfile.centos-7]]
+        dockerfile: [[ubuntu-18.04, Dockerfile.ubuntu-18.04]]
 
     name: Build ${{ matrix.dockerfile[0] }}
     steps:
