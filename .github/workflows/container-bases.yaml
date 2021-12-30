@@ -1,5 +1,6 @@
 name: Build Paks Containers
-on: workflow_dispatch
+#on: workflow_dispatch
+on: pull_request
 
 jobs:
   build:
@@ -20,7 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - uses: actions/setup-go@v2
-      - uses: imjasonh/setup-crane@01d26682810dcd47bfc8eb1efe791558123a9373
       - name: Display GitHub Action architecture
         run: lscpu
       - name: Set Container Tag
@@ -60,12 +60,3 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ghcr.io/syspack/${{ env.container }}
-
-      - name: Label
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          docker run -i --rm ghcr.io/syspack/${{ env.container }} spack compiler list --flat > compilers.txt
-          labels=$(echo $(tr '\r\n' '|' < compilers.txt))
-          labels="org.spack.compilers=${labels}"
-          printf "Saving compiler labels ${labels}\n"         
-          crane mutate ghcr.io/syspack/${{ env.container }} --label "${labels}"

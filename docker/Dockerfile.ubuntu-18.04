@@ -57,8 +57,6 @@ ENV SPACK_ADD_DEBUG_FLAGS=true
 # Install latest version of Paks
 RUN git clone https://github.com/syspack/paks /opt/paks && \
     cd /opt/paks && \
-    git submodule init && \
-    git submodule update && \
     python3 -m pip install . && \
     /opt/paks/paks/spack/bin/spack compiler find 
    
