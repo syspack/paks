@@ -9,6 +9,7 @@ RUN apt update -y \
       && apt install -y \
       autoconf \
       automake \
+      build-essential \
       bzip2 \
       clang \
       cpio \

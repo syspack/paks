@@ -10,6 +10,7 @@ RUN apt update -y \
       autoconf \
       automake \
       bzip2 \
+      build-essential \
       clang \
       cpio \
       curl \

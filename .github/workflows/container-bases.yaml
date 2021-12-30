@@ -46,6 +46,6 @@ jobs:
       - name: Build ${{ matrix.dockerfile[1] }}
         run: docker build -f docker/${{matrix.dockerfile[1]}} -t ghcr.io/syspack/${{ env.container }} .
 
-      - name: Push ${{ env.container }}
+      - name: Push ${{ matrix.dockerfile[1] }}
         if: (github.event_name != 'pull_request')
         run: docker push ghcr.io/syspack/${{ env.container }}

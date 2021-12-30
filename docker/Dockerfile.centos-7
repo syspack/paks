@@ -27,6 +27,9 @@ RUN yum update -y \
       jq \
       libffi-devel \
       openssl-devel \
+      libxml2 \ 
+      libxslt \
+      libxslt-devel \
       libxml2-devel \
       libtool \
       m4 \

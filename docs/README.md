@@ -206,7 +206,8 @@ zlib@1.2.11
  - create pretty docs
  - should we allow external install of spack (probably)
  - should we allow paks to update spack (e.g., `paks update-spack`?
-
+ - get on conda for faster install
+ 
 ## Old Brainstorming
 
 The project was originally going to be called "stack" but the pypi name wasn't available!
