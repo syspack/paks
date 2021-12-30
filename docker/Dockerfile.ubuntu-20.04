@@ -55,20 +55,23 @@ RUN python -m pip install --upgrade pip setuptools wheel \
 # Build all software with debug flags!
 ENV SPACK_ADD_DEBUG_FLAGS=true
 
+# Install spack to put on path
+RUN git clone https://github.com/spack/spack /opt/spack && \
+    /opt/spack/bin/spack compiler find
+
+ENV PATH=/opt/spack/bin:$PATH \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
+    LANGUAGE=en_US:en \
+    LANG=en_US.UTF-8
+
 # Install latest version of Paks
 RUN git clone https://github.com/syspack/paks /opt/paks && \
     cd /opt/paks && \
     git submodule init && \
     git submodule update && \
-    python3 -m pip install . && \
-    /opt/paks/paks/spack/bin/spack compiler find 
-   
-ENV SPACK_ROOT=/opt/paks/paks/spack    
-
-ENV PATH=/opt/paks/paks/spack/bin:$PATH \
-    NVIDIA_VISIBLE_DEVICES=all \
-    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
-    LANGUAGE=en_US:en \
-    LANG=en_US.UTF-8
+    python3 -m pip install .
+ 
+ENV SPACK_ROOT=/opt/spack    
 
 CMD ["/bin/bash"]
