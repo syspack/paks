@@ -70,6 +70,13 @@ def get_parser():
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
+    # List installed packages
+    ls = subparsers.add_parser(
+        "list",
+        description="list installed packages",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
     push = subparsers.add_parser(
         "push",
         description="push an existing cache",
@@ -112,8 +119,16 @@ def get_parser():
         "--push",
         "-p",
         dest="push",
-        help="push to an oras endpoint",
+        help="push to a named oras endpoint",
     )
+    build.add_argument(
+        "--pushd",
+        dest="push_trusted",
+        action="store_true",
+        default=False,
+        help="push to default trusted endpoint",
+    )
+
     build.add_argument(
         "--no-cleanup",
         dest="no_cleanup",
@@ -214,10 +229,12 @@ def run_main():
                 helper = subparser
                 break
 
-    if args.command == "config":
-        from .config import main
-    elif args.command == "build":
+    if args.command == "build":
         from .build import main
+    elif args.command == "config":
+        from .config import main
+    elif args.command == "list":
+        from .ls import main
     elif args.command == "install":
         from .install import main
     elif args.command == "push":

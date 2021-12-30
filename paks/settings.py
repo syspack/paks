@@ -1,6 +1,6 @@
-__author__ = "Vanessa Sochat"
-__copyright__ = "Copyright 2021, Vanessa Sochat"
-__license__ = "MPL 2.0"
+__author__ = "Vanessa Sochat, Alec Scott"
+__copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
+__license__ = "Apache-2.0"
 
 
 from paks.logger import logger

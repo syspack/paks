@@ -26,5 +26,11 @@ content_type = "application/vnd.spack.package"
 # Allowed variables for the environment
 allowed_envars = ["username"]
 
+# Trusted packages registry
+trusted_packages_org = "syspack"
+
+# Default registry prefix to install from
+trusted_packages_registry = "ghcr.io/paks"
+
 # The GitHub repository
 github_url = "https://github.com/syspack/paks"

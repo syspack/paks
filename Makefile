@@ -3,4 +3,4 @@ SHELL = bash
 .PHONY: all
 
 all:
-	black paks --exclude paks/spack --exclude paks/sbom.py --exclude env
+	black paks/*.py paks/utils/*.py paks/cli/*.py paks/handlers/*.py

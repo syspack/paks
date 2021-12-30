@@ -7,10 +7,12 @@ import spack.spec
 import paks.utils as utils
 import paks.defaults
 import spack.util.executable
+import spack.util.crypto
 
 from paks.logger import logger
 
 import os
+import requests
 
 
 class Oras:
@@ -31,6 +33,28 @@ class Oras:
                 self._oras = spack.util.executable.which("oras")
         return self._oras
 
+    def get_manifest(self, uri):
+        """
+        Use crane to get the image manifest
+        """
+        response = requests.get("https://crane.ggcr.dev/manifest/" + uri)
+        if response.status_code == 200:
+            return response.json()
+
+    def get_manifest_digest(self, uri):
+        """
+        Get the first layer digest (the spack package archive)
+        """
+        response = self.get_manifest(uri)
+        if not response:
+            return
+
+        layers = response.get("layers")
+        if layers:
+            digest = layers[0].get("digest")
+            if digest:
+                return digest.replace("sha256:", "")
+
     def push(self, uri, push_file, content_type=None):
         """
         Push an oras artifact to an OCI registry
@@ -42,14 +66,19 @@ class Oras:
                 "push",
                 uri,
                 "--manifest-config",
-                "/dev/null:%s" % content_type,
-                os.path.basename(push_file),
+                "/dev/null:application/vnd.unknown.config.v1+json",
+                # GitHub does not honor this content type - it will return an empty artifact
+                os.path.basename(push_file) + ":" + content_type,
             )
 
     def fetch(self, url, save_file):
         """
         Fetch an oras artifact from an OCI registry
         """
+        # We don't have programmatic access to list, so we just try to pull
         logger.info("Fetching oras {0}".format(url))
-        self.oras("pull", url + ":latest", "--output", os.path.dirname(save_file))
-        return save_file
+        self.oras("pull", url, "-a", "--output", os.path.dirname(save_file))
+
+        # Return the file if exists
+        if os.path.exists(save_file):
+            return save_file

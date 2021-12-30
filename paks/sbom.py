@@ -25,14 +25,11 @@ template = {
     # Specifies the format of the BOM. This helps to identify the file as CycloneDX
     # since BOMs do not have a filename convention nor does JSON schema support namespaces.
     "bomFormat": "CycloneDX",
-
     # The version of the CycloneDX specification a BOM is written to (starting at version 1.2)
     "specVersion": "1.3",
     "serialNumber": "",
-
     # The version WE are generating for the package - this would increment
     "version": 1,
-
     # Will be populated with metadata
     "metadata": {},
 }
@@ -56,33 +53,26 @@ def get_component(spec):
         # Note that "application" might also be a suitable choice
         # https://cyclonedx.org/docs/1.3/json/#metadata_component_type
         "type": component_type,
-
         # Specifies the scope of the component. If scope is not specified,
         #'required' scope should be assumed by the consumer of the BOM
         # Let's explicitly state that :)
         "scope": "required",
-
         # The name of the component. This will often be a shortened, single name of the component.
         # Examples: commons-lang3 and jquery
         "name": spec.package.name,
-
         # Associated mime-type. Spack doesn't have one officially, but this is what
         # I was using for oras push to an OCI registry
         "mime-type": "application/vnd.spack.package",
-
         # The grouping name or identifier. This will often be a shortened,
         # single name of the company or project that produced the component,
         # or the source package or domain name. Whitespace and special characters
         # should be avoided. Examples include: apache, org.apache.commons, and apache.org.
         "group": "spack.io",
-
         # The component version. The version should ideally comply with semantic versioning but is not enforced.
         "version": str(spec.version),
-
         # An optional identifier which can be used to reference the component elsewhere in the BOM. Every bom-ref should be unique.
         # We can use the build hash since it's unique to this spec
         "bom-ref": str(spec),
-
         # Excluded
         # publisher: The person(s) or organization(s) that published the component
         # author: The person(s) or organization(s) that authored the component

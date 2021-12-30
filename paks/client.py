@@ -5,11 +5,14 @@ __license__ = "Apache-2.0"
 from paks.logger import logger
 import paks.cache
 import paks.utils as utils
-import spack.cmd
-import spack.target
 from .settings import Settings
 
+import spack.cmd
+import spack.target
+import spack.main
+
 import os
+import json
 import re
 import shutil
 import sys
@@ -40,6 +43,14 @@ class PakClient:
         """
         for spec in paks.spec.parse_specs(packages):
             yield spec
+
+    def list_installed(self):
+        """
+        List installed packages
+        """
+        find = spack.main.SpackCommand("find")
+        print(find())
+        return json.loads(find("--json"))
 
     def build(self, packages, cache_dir=None, key=None):
         """
@@ -88,7 +99,11 @@ class PakClient:
             # We should match based on a basic set of architectures we know the containers support
             # E.g., check the platform and spit an error if it's some niche HPC one.
 
-            spec.package.do_install(force=True)
+            spec.package.do_install(
+                force=True,
+                trusted_registry=self.settings.trusted_packages_registry,
+                tag=self.settings.default_tag,
+            )
             specs.append(spec)
         return specs
 

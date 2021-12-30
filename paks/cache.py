@@ -88,23 +88,22 @@ class BuildCache:
         command += ["-d", self.cache_dir, format_string]
         print(bc(*command))
 
-    def push(self, uri, tag=None):
+    def push(self, uri=None, tag=None):
         """
         Push the build cache to an OCI registry (compatible with ORAS)
         """
-        tag = tag or "latest"
+        tag = tag or self.settings.default_tag
         content_type = self.settings.content_type or defaults.content_type
+        uri = uri or self.settings.trusted_packages_registry
 
         # Create an oras client
         oras = paks.oras.Oras()
 
         # Find all .spack archives in the cache
         for archive in utils.recursive_find(self.cache_dir, ".spack"):
+
             package_name = os.path.basename(archive)
-            print(package_name)
-            # TODO Absolute paths not allowed
-            # mv ${spack_package} ${spack_package_name}
-            full_name = "%s/%s" % (uri, package_name)
+            full_name = "%s/%s:%s" % (uri, package_name, tag)
             oras.push(full_name, archive, content_type=content_type)
 
             # TODO how to add sbom? separately?

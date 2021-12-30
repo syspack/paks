@@ -50,6 +50,12 @@ And install paks
 $ pip install -e .
 ```
 
+### GitHub Setup
+
+If you want to push packages to your organization, you will need to go to Settings -> Packages
+and ensure that the public box is checked. Otherwise, all packages will be private (and not seen by
+the tool).
+
 ### Settings
 
 Most defaults should work without changing. However, to change defaults you can either
@@ -90,6 +96,9 @@ linux-ubuntu20.04-skylake
 
 This is a traditional install, but it's also a little more! We generate a software
 bill of materials to go alongside the install, and this will be uploaded to the package archive.
+If you install, build, and push to a trusted Paks registry (the one in your settings) then this
+registry will be used as a cache for future installs. We can use the manifest of the artifact to validate 
+the checksum before installing it.
 
 #### Shell
 
@@ -148,6 +157,12 @@ By default, the above with `--push` will build, push, and cleanup. You can disab
 $ paks build zlib --no-cleanup --push ghcr.io/syspack/paks
 ```
 
+Or to use the default trusted registry from your settings, just do:
+
+```bash
+$ paks build zlib --pushd
+```
+
 If you have an existing build cache you want to push:
 
 ```bash
@@ -168,13 +183,27 @@ You can also uninstall a package.
 $ paks uninstall zlib
 ```
 
+#### List
+
+List installed packages as follows:
+
+```bash
+$ paks list
+-- linux-ubuntu20.04-skylake / gcc@9.3.0 ------------------------
+zlib@1.2.11
+
+-- linux-ubuntu20.04-x86_64 / gcc@9.3.0 -------------------------
+zlib@1.2.11
+```
+
 ## TODO
 
  - create same GitHub actions to perform builds, and across a matrix of arches we will support
  - provide those container bases too
  - provide a paks container that can easily pull from the cache so it's ready to go!
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
- - Question: should we have a definitive prefix / label for a package or can we query based on content type?
+ - There is eventually going to be a design flaw in installing this if the user doesn't have write to the install location because of spack. Ug.
+ - Can we have a nightly run to compare sboms for package releases to clair?
 
 ## Old Brainstorming
 
