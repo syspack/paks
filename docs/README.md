@@ -204,6 +204,9 @@ zlib@1.2.11
  - Can we have a nightly run to compare sboms for package releases to clair?
  - create paks metadata spec for container labels? Also add spack labels to container
  - where can we put the trusted registry metadata, aside from the registry configs/labels? E.g., an interface?
+ - create pretty docs
+ - should we allow external install of spack (probably)
+ - should we allow paks to update spack (e.g., `paks update-spack`?
 
 ## Old Brainstorming
 
