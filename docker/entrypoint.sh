@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# These envars are required!
-
 if [ -z "${token}" ]; then
     printf "You are required to provide a GitHub token.\n"
     exit 1
