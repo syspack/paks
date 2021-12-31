@@ -91,12 +91,12 @@ jobs:
         container: ${{ matrix.result.container_name }}
       run: |
           container_name=$(python -c "import re; print(re.sub('docker', 'paks', '$container_name'))")
-          echo "container_name=$container_name" >> $GITHUB_ENV    
+          echo "container_name=$container_name" >> $GITHUB_ENV
 
-    - name: Build ${{ matrix.result.container_name }}
+    - name: Build ${{ env.container_name }}
       id: builder
       env:
-        container: ${{ matrix.result.container_name }}
+        container: ${{ env.container_name }}
         prefix: ${{ matrix.result.command_prefix }}
         filename: ${{ matrix.result.filename }}
       run: |
@@ -113,7 +113,7 @@ jobs:
     - name: Deploy Container
       if: (github.event_name != 'pull_request')
       env:
-        container: ${{ matrix.result.container_name }}
+        container: ${{ env.container_name }}
       run: |
         docker images
         printf "docker push ${container}\n"
