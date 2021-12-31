@@ -25,11 +25,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Package
-        if: github.event_name == 'pull_request'
         env:
-          INPUT_DEPLOY: ${{ github.event_name == 'pull_request' }}
-          INPUT_PACKAGE: zlib
-          INPUT_USER: ${{ github.actor }}
-          INPUT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INPUT_URI: ghcr.io/syspack/paks
+          deploy: ${{ github.event_name != 'pull_request' }}
+          package: zlib
+          user: ${{ github.actor }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          uri: ghcr.io/syspack/paks
         run: /entrypoint.sh 

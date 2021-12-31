@@ -15,6 +15,9 @@ if [ -z "${user}" ]; then
     exit 1
 fi
 
+# Login with user and github token
+echo ${GITHUB_TOKEN} | oras login -u ${user} --password-stdin ghcr.io
+
 if [ -z "${package}" ]; then
     printf "An input package or spec string is required to build.\n"
     exit 1
