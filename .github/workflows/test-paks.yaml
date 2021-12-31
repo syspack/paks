@@ -1,0 +1,33 @@
+name: Paks Test Building
+on:
+  pull_request: []
+  push:
+    branches:
+      - main 
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+                    # tag           dockerfile in docker/     platforms
+        container: [["18.04"],
+                    ["20.04"],
+                    ["22.04"]]
+
+    name: Paks Build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build Package
+        if: github.event_name == 'pull_request'
+        env:
+          INPUT_DEPLOY: ${{ github.event_name == 'pull_request' }}
+          INPUT_PACKAGE: zlib
+          INPUT_USER: ${{ github.actor }}
+          INPUT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: docker://ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest
