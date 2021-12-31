@@ -90,7 +90,7 @@ jobs:
       env:
         container: ${{ matrix.result.container_name }}
       run: |
-          container_name=$(python -c "import re; print(re.sub('docker', 'paks', '$container_name'))")
+          container_name=$(python -c "import re; print(re.sub('docker', 'paks', '$container'))")
           echo "container_name=$container_name" >> $GITHUB_ENV
 
     - name: Build ${{ env.container_name }}
