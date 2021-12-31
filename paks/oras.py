@@ -77,7 +77,12 @@ class Oras:
         """
         # We don't have programmatic access to list, so we just try to pull
         logger.info("Fetching oras {0}".format(url))
-        self.oras("pull", url, "-a", "--output", os.path.dirname(save_file))
+
+        try:
+            self.oras("pull", url, "-a", "--output", os.path.dirname(save_file))
+        except:
+            logger.info("{0} is not available for pull.".format(url))
+            return
 
         # Return the file if exists
         if os.path.exists(save_file):
