@@ -31,4 +31,5 @@ jobs:
           INPUT_PACKAGE: zlib
           INPUT_USER: ${{ github.actor }}
           INPUT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_URI: ghcr.io/syspack/paks
         run: /entrypoint.sh 
