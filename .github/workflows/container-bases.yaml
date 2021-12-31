@@ -42,7 +42,7 @@ jobs:
       with: 
         root: ./docker
         parser: dockerbuild
-        flags: "--registry ghcr.io/rse-ops"
+        flags: "--registry ghcr.io/syspack"
 
     - name: View and Check Build Matrix Result
       env:
