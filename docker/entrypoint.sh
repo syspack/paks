@@ -31,7 +31,7 @@ fi
 
 # Run paks for the specs provided, with deploy or not
 if [ "${deploy}" == "true" ]; then
-    paks build "${package}"
-else
     paks build "${package}" --push "${uri}"
+else
+    paks build "${package}"
 fi
