@@ -11,6 +11,7 @@ COPY ./entrypoint.sh /entrypoint.sh
 # Install latest version of Paks
 RUN git clone https://github.com/syspack/paks /opt/paks && \
     cd /opt/paks && \
+    python3 -m pip install clingo && \
     python3 -m pip install .
    
 ENV SPACK_ROOT=/opt/spack    
