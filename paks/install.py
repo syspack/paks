@@ -3,6 +3,8 @@ __copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 import os
+import shutil
+
 import paks.oras
 import paks.sbom
 import paks.utils
@@ -65,6 +67,9 @@ def do_install(self, **kwargs):
 
                 # Retrieve the artifact (will be None if doesn't exist)
                 artifact = oras.fetch(uri, os.path.join(tmpdir, name))
+                if not artifact:
+                    shutil.rmtree(tmpdir)
+                    continue
 
                 # Checksum check (removes sha256 prefix)
                 sha256 = oras.get_manifest_digest(uri)
