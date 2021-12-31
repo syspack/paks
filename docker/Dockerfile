@@ -6,6 +6,8 @@ FROM ghcr.io/rse-ops/ubuntu:$ubuntu_version
 # Build all software with debug flags!
 ENV SPACK_ADD_DEBUG_FLAGS=true
 
+COPY docker/entrypoint.sh /entrypoint.sh
+
 # Install latest version of Paks
 RUN git clone https://github.com/syspack/paks /opt/paks && \
     cd /opt/paks && \
@@ -13,4 +15,4 @@ RUN git clone https://github.com/syspack/paks /opt/paks && \
    
 ENV SPACK_ROOT=/opt/spack    
 
-CMD ["/bin/bash"]
+ENTRYPOINT ["/entrypoint.sh"]

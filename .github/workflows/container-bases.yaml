@@ -93,7 +93,7 @@ jobs:
           container_name=$(python -c "import re; print(re.sub('docker', 'paks', '$container'))")
           echo "container_name=$container_name" >> $GITHUB_ENV
 
-    - name: Build ${{ env.container_name }}
+    - name: Build Container
       id: builder
       env:
         container: ${{ env.container_name }}
