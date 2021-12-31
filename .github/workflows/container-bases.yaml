@@ -1,47 +1,120 @@
 name: Build Paks Containers
-on: workflow_dispatch
+
+# This job generates build matrices using base images built two hours earlier
+
+on:
+  #schedule:
+  #  - cron: 0 3 * * *
+
+  # On pull request we test updates to images
+  pull_request: []
+ 
+  # On push to main we build and deploy images
+  push: 
+    branches:
+      - main
 
 jobs:
-  build:
+  generate:
+    name: Generate Build Matrix
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
+    outputs:
+      dockerbuild_matrix: ${{ steps.dockerbuild.outputs.dockerbuild_matrix }}
+      empty_matrix: ${{ steps.dockerbuild.outputs.dockerbuild_matrix_empty }}
+
+    steps:
+    # Using git in the container to diff means we explicitly need to checkout a branch
+    # if we use the default of this action we get a detached HEAD state.
+    - uses: actions/checkout@v2
+      if: github.event_name == 'pull_request'
+      with:
+         fetch-depth: 0
+         ref: ${{ github.event.pull_request.head.ref }}
+
+    - uses: actions/checkout@v2
+      if: github.event_name != 'pull_request'
+      with:
+         fetch-depth: 0
+
+    - name: Generate Build Matrix
+      uses: vsoch/uptodate@main
+      id: dockerbuild
+      with: 
+        root: ./docker
+        parser: dockerbuild
+        flags: "--registry ghcr.io/rse-ops"
+
+    - name: View and Check Build Matrix Result
+      env:
+        result: ${{ steps.dockerbuild.outputs.dockerbuild_matrix }}
+      run: |
+        echo ${result}
+        if [[ "${result}" == "[]" ]]; then
+          printf "The matrix is empty, will not trigger next workflow.\n"
+        else
+          printf "The matrix is not empty, and we should continue on to the next workflow.\n"
+        fi
+
+  build:
+    needs:
+      - generate
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-                    # tag           dockerfile in docker/
-        dockerfile: [[ubuntu-18.04, Dockerfile.ubuntu-18.04]]
+        result: ${{ fromJson(needs.generate.outputs.dockerbuild_matrix) }}
+    if: ${{ needs.generate.outputs.empty_matrix == 'false' }}
 
-    name: Build ${{ matrix.dockerfile[0] }}
+    name: "Build ${{ matrix.result.container_name }}"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-      - name: Display GitHub Action architecture
-        run: lscpu
-      - name: Set Container Tag
-        run: |
-          container="paks-${{ matrix.dockerfile[0] }}:latest"
-          echo "container=${container}" >> $GITHUB_ENV
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Check ${{ matrix.dockerfile[1] }} Exists
-        run: |
-          printf "Preparing to build ${{ env.container }} from ${{ matrix.dockerfile[1] }}"
-          if [ ! -f "docker/${{ matrix.dockerfile[1]}}" ]; then
-              printf "Dockerfile ${{ matrix.dockerfile[0]}} does not exist"
-              exit 1;
-          fi
+    - name: GHCR Login
+      if: (github.event_name != 'pull_request')
+      uses: docker/login-action@v1 
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+      
+    - name: Make Space For Build
+      run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
 
-      - name: Build ${{ matrix.dockerfile[1] }}
-        run: docker build -f docker/${{matrix.dockerfile[1]}} -t ghcr.io/syspack/${{ env.container }} .
+    - name: Tweak container name
+      env:
+        container: ${{ matrix.result.container_name }}
+      run: |
+          container_name=$(python -c "import re; print(re.sub('docker', 'paks', '$container_name'))")
+          echo "container_name=$container_name" >> $GITHUB_ENV    
 
-      - name: Push ${{ matrix.dockerfile[1] }}
-        if: (github.event_name != 'pull_request')
-        run: docker push ghcr.io/syspack/${{ env.container }}
+    - name: Build ${{ matrix.result.container_name }}
+      id: builder
+      env:
+        container: ${{ matrix.result.container_name }}
+        prefix: ${{ matrix.result.command_prefix }}
+        filename: ${{ matrix.result.filename }}
+      run: |
+        basedir=$(dirname $filename)
+        printf "Base directory is ${basedir}\n"
+        printf "Container name is ${container}\n"
+        # Get relative path to PWD and generate dashed name from it
+        cd $basedir
+        echo "${prefix} -t ${container} ."
+        ${prefix} -t ${container} .
+        echo ::set-output name=uri::${container}
+        echo ::set-output name=dockerfile_dir::${basedir}
+
+    - name: Deploy Container
+      if: (github.event_name != 'pull_request')
+      env:
+        container: ${{ matrix.result.container_name }}
+      run: |
+        docker images
+        printf "docker push ${container}\n"
+        docker push ${container}
