@@ -17,6 +17,7 @@ jobs:
                     ["20.04"],
                     ["22.04"]]
 
+    runs-on: ubuntu-latest
     container: ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest
     name: Paks Build
     steps:
