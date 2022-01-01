@@ -29,3 +29,8 @@ def main(args, parser, extra, subparser):
         # By default, we clean up the build cache
         if not args.no_cleanup:
             cache.remove()
+
+    if repo:
+
+        # Cleanup remotes cloned to tmp
+        repo.cleanup()

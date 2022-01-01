@@ -8,6 +8,7 @@ import paks.utils as utils
 from paks.logger import logger
 
 import spack.repo
+import spack.config
 import llnl.util.lang
 import spack.util.naming as nm
 
@@ -18,8 +19,9 @@ import re
 
 
 class PakRepo:
-    def is_remote(self, path):
-        if re.search("(http|https)://github.com", path):
+    @property
+    def is_remote(self):
+        if re.search("(http|https)://github.com", self.raw):
             return True
         return False
 
@@ -30,9 +32,10 @@ class PakRepo:
         A Pak Repo can be a GitHub URL or a local path. It has a repos.yaml
         and packages/ directory.
         """
+        self.raw = path
         if os.path.exists(path):
             self.path = os.path.abspath(path)
-        elif self.is_remote(path):
+        elif self.is_remote:
             self.path = paks.handlers.github.GitHub().clone(path)
         self.validate()
 
@@ -55,8 +58,24 @@ class PakRepo:
         We don't add the repository to be known by spack here, as we would want
         to do this when we install.
         """
+        self.add()
         repo = Repo(self.repo_dir)
         return repo.all_package_names()
+
+    def cleanup(self):
+        """
+        Cleanup a cloned repository - be careful don't run this for a local path!
+        """
+        if os.path.exists(self.repo_dir) and self.is_remote:
+            shutil.rmtree(self.repo_dir)
+
+    def add(self):
+        """
+        Add the repository to be known to spack
+        """
+        repos = spack.config.get("repos")
+        repos.insert(0, self.repo_dir)
+        spack.config.set("repos", repos)
 
 
 class RepoPath(spack.repo.RepoPath):

@@ -15,4 +15,7 @@ def main(args, parser, extra, subparser):
     # Finally, add the repository and install packages
     if repo:
         cli.add_repository(repo.repo_dir)
+
+        # Cleanup remotes cloned to tmp
+        repo.cleanup()
     cli.install(args.packages)
