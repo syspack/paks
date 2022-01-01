@@ -80,7 +80,9 @@ class BuildCache:
         # If a key isn't defined, choose the first spack one we find
         if not key:
             key = get_gpg_key()
-        format_string = " ".join([str(s) for s in specs])
+        format_string = " ".join(
+            ["%s@%s/%s" % (s.name, s.version, s.build_hash()) for s in specs]
+        )
 
         command = ["create", "-r", "-a"]
         if key:
@@ -93,7 +95,7 @@ class BuildCache:
         Push the build cache to an OCI registry (compatible with ORAS)
         """
         tag = tag or self.settings.default_tag
-        content_type = self.settings.content_type or defaults.content_type
+        content_type = self.settings.content_type or paks.defaults.content_type
         uri = uri or self.settings.trusted_packages_registry
 
         # Create an oras client

@@ -1,0 +1,29 @@
+name: linting
+
+on:
+  pull_request: []
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup black linter
+        run: conda create --quiet --name black pyflakes
+
+      - name: Lint python code
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate black
+          pip install black
+          black --check paks
+          
+      - name: Check imports with pyflakes
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate black
+          pyflakes paks/utils/fileio.py 
+          pyflakes paks/utils/terminal.py
+          pyflakes paks/*.py
+          pyflakes paks/handlers/*.py

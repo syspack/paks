@@ -2,7 +2,7 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
-import paks.defaults
+import paks.utils as utils
 from paks.logger import logger
 import requests
 import os
@@ -26,6 +26,18 @@ class GitHub:
         self.headers = {"Accept": accept_headers}
         if self.token:
             self.headers["Authorization"] = "token %s" % self.token
+
+    def clone(self, url, dest=None):
+        """
+        Given a URL, clone to dest. If dest not provided, create tmpdir
+        """
+        if not dest:
+            dest = utils.get_tmpdir()
+
+        res = utils.run_command(["git", "clone", url, dest])
+        if res["return_code"] != 0:
+            logger.exit(res["message"])
+        return dest
 
     def get_org_packages(self, org):
         """

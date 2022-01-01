@@ -82,6 +82,10 @@ These user settings will over-ride the default installation ones.
 
 #### Install
 
+Paks allows for easy install of different formats of packages.
+
+#### Spack 
+
 Since paks is a wrapper to spack, you can install any list of packages that you would
 install with spack, just using paks install (which is installable via pip so it can be on your path
 more easily or in a Python environment).
@@ -98,6 +102,45 @@ bill of materials to go alongside the install, and this will be uploaded to the 
 If you install, build, and push to a trusted Paks registry (the one in your settings) then this
 registry will be used as a cache for future installs. We can use the manifest of the artifact to validate 
 the checksum before installing it.
+
+#### Local
+
+If you have a package repository locally, e.g., a directory with this structure:
+
+```bash
+./
+  repos.yaml
+  packages/
+     mypackage/
+        package.py
+     zlib/
+        package.py
+```
+
+Then you can install all packages via:
+
+```bash
+$ paks install .
+```
+
+Paks will detect that you want to install from the present working directory,
+and then install appropriately. The above `.` will install all packages in the present working directory,
+which is likely used in a CI recipe to build and deploy a single package repository, but you can also select a specific package
+by name:
+
+```bash
+$ paks install . zlib
+```
+
+For this to work (and be distinguished from a `spack install zlib` that isn't in reference to the file you do need
+the path to the package repository (`.` to indicate the present working directory) before the package name.
+The above command will add the package directory, and then install zlib from it. Finally, to install from
+a repository with the same package structure on GitHub:
+
+```bash
+$ paks install https://github.com/pakages/zlib
+```
+
 
 #### Shell
 
@@ -140,6 +183,25 @@ linux-ubuntu20.04-skylake
 ==> Pushing binary packages to file:///tmp/paks-tmp.1by0dclj/build_cache
 gpg: using "DECA3181DA00313E633F963157BE6A82D830EA34" as default secret key for signing
 ```
+
+Build also supports local and remote repositories, as outlined in install. For example:
+
+```bash
+$ paks build .
+```
+
+Or build a package by name:
+
+```bash
+$ paks build . zlib
+```
+
+Or build from a remote:
+
+```bash
+$ paks build https://github.com/pakages/zlib
+```
+
 
 #### Build and Push
 

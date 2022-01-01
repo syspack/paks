@@ -4,18 +4,14 @@ __license__ = "Apache-2.0"
 
 from paks.logger import logger
 import paks.cache
-import paks.utils as utils
 from .settings import Settings
 
 import spack.cmd
 import spack.target
 import spack.main
+import spack.config
 
-import os
 import json
-import re
-import shutil
-import sys
 
 import paks.spec
 
@@ -84,6 +80,18 @@ class PakClient:
         )
         cache.push(uri)
         return cache
+
+    def add_repository(self, path):
+        """
+        Add a repository.
+
+        Given a path that exists, add the repository to the
+        underlying spack. If you need to add a GitHub uri, create a
+        paks.repo.PakRepo first.
+        """
+        repos = spack.config.get("repos")
+        repos.insert(0, path)
+        spack.config.set("repos", repos)
 
     def install(self, packages):
         """

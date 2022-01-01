@@ -9,6 +9,8 @@ import paks.oras
 import paks.sbom
 import paks.utils
 import paks.defaults
+import paks.logger as logger
+
 import spack.binary_distribution as bd
 import spack.hooks
 import spack.store

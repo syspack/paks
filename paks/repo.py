@@ -3,13 +3,83 @@ __copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 import paks.install
+import paks.handlers.github
+import paks.utils as utils
+from paks.logger import logger
+
 import spack.repo
+import spack.config
 import llnl.util.lang
 import spack.util.naming as nm
 
 import six
+import shutil
 import sys
 import os
+import re
+
+
+class PakRepo:
+    @property
+    def is_remote(self):
+        if re.search("(http|https)://github.com", self.raw):
+            return True
+        return False
+
+    def __init__(self, path, add=True):
+        """
+        Create a new spack repo and add for spack to see.
+
+        A Pak Repo can be a GitHub URL or a local path. It has a repos.yaml
+        and packages/ directory.
+        """
+        self.raw = path
+        if os.path.exists(path):
+            self.path = os.path.abspath(path)
+        elif self.is_remote:
+            self.path = paks.handlers.github.GitHub().clone(path)
+        self.validate()
+
+    def validate(self):
+        """
+        Validate that we have a repo, meaning we expect a repo.yml|yaml and packages
+        """
+        repo_yaml = list(utils.recursive_find(self.path, "repo[.](yml|yaml)"))
+        if not repo_yaml:
+            logger.exit("Cannot find repo.yaml or repo.yml anywhere in %s" % self.path)
+        repo_yaml = repo_yaml[0]
+
+        # Add directory with repo.yaml to spack just to list
+        self.repo_dir = os.path.dirname(repo_yaml)
+
+    def list_packages(self):
+        """
+        Given a filesystem repository, list packages there.
+
+        We don't add the repository to be known by spack here, as we would want
+        to do this when we install.
+        """
+        self.add()
+        repo = Repo(self.repo_dir)
+        return repo.all_package_names()
+
+    def cleanup(self):
+        """
+        Cleanup a cloned repository - be careful don't run this for a local path!
+        """
+        if os.path.exists(self.repo_dir) and self.is_remote:
+            shutil.rmtree(self.repo_dir)
+            repos = spack.config.get("repos")
+            updated = [r for r in repos if r != self.repo_dir]
+            spack.config.set("repos", updated)
+
+    def add(self):
+        """
+        Add the repository to be known to spack
+        """
+        repos = spack.config.get("repos")
+        repos.insert(0, self.repo_dir)
+        spack.config.set("repos", repos)
 
 
 class RepoPath(spack.repo.RepoPath):
@@ -32,29 +102,10 @@ class RepoPath(spack.repo.RepoPath):
                     repo = Repo(repo)
                 self.put_last(repo)
             except spack.repo.RepoError as e:
-                tty.warn(
-                    "Failed to initialize repository: '%s'." % repo,
-                    e.message,
-                    "To remove the bad repository, run this command:",
-                    "    spack repo rm %s" % repo,
-                )
+                logger.exit("Failed to initialize repository: '%s': %s" % (repo, e))
 
 
 class Repo(spack.repo.Repo):
-    @spack.repo.autospec
-    def get_remote(self, spec):
-        """
-        TODO we will want to be able to retrieve a package via a GitHub URI
-        """
-        # TODO need to add design for a remote repo to install from
-
-        # Given github repository, clone
-        # package name should be repository namespace
-        # look for package.py
-        # Throw into "on the fly" repo under same namespace
-        # return spec
-        pass
-
     @spack.repo.autospec
     def get(self, spec):
         """Returns the package associated with the supplied spec
@@ -78,7 +129,7 @@ class Repo(spack.repo.Repo):
             # pass these through as their error messages will be fine.
             raise
         except Exception as e:
-            tty.debug(e)
+            logger.debug(e)
 
             # Make sure other errors in constructors hit the error
             # handler by wrapping them
@@ -93,7 +144,7 @@ def _singleton_path(repo_dirs=None):
     """
     repo_dirs = repo_dirs or spack.config.get("repos")
     if not repo_dirs:
-        raise NoRepoConfiguredError(
+        raise spack.repo.NoRepoConfiguredError(
             "Spack configuration contains no package repositories."
         )
 

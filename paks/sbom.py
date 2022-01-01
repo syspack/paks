@@ -11,12 +11,7 @@ import spack.config
 import spack.spec
 
 from datetime import datetime
-import llnl.util.tty as tty
 import uuid
-
-import re
-import os
-import sys
 
 # We will use CycloneDX which is a simplified format approved by standards committees
 # https://cyclonedx.org/docs/1.3/json

@@ -40,7 +40,7 @@ jobs:
       uses: vsoch/uptodate@main
       id: dockerbuild
       with: 
-        root: ./docker
+        root: ./
         parser: dockerbuild
         flags: "--registry ghcr.io/syspack"
 
@@ -90,7 +90,8 @@ jobs:
       env:
         container: ${{ matrix.result.container_name }}
       run: |
-          container_name=$(python -c "import re; print(re.sub('docker', 'paks', '$container'))")
+          container_version=$(python -c "print('$container'.split('-')[-1])")
+          container_name=ghcr.io/syspack/paks-ubuntu-$container_version
           echo "container_name=$container_name" >> $GITHUB_ENV
 
     - name: Build Container
