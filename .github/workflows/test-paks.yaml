@@ -25,7 +25,8 @@ jobs:
       - name: Build Container
         run: |
            cd docker
-           docker build -t ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest .
+           docker build --build-arg ubuntu_version=${{ matrix.container[0]}} \
+                        -t ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest .
 
       # Repos that use pre-built containers don't need to use this manual format
       - name: Build Package
