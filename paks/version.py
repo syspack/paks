@@ -2,7 +2,7 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 AUTHOR = "Vanessa Sochat, Alec Scott"
 NAME = "paks"
 PACKAGE_URL = "https://github.com/syspack/paks"
