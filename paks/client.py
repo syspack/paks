@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 
 from paks.logger import logger
 import paks.cache
-import paks.utils as utils
 from .settings import Settings
 
 import spack.cmd
@@ -12,11 +11,7 @@ import spack.target
 import spack.main
 import spack.config
 
-import os
 import json
-import re
-import shutil
-import sys
 
 import paks.spec
 

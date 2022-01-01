@@ -184,6 +184,25 @@ linux-ubuntu20.04-skylake
 gpg: using "DECA3181DA00313E633F963157BE6A82D830EA34" as default secret key for signing
 ```
 
+Build also supports local and remote repositories, as outlined in install. For example:
+
+```bash
+$ paks build .
+```
+
+Or build a package by name:
+
+```bash
+$ paks build . zlib
+```
+
+Or build from a remote:
+
+```bash
+$ paks build https://github.com/pakages/zlib
+```
+
+
 #### Build and Push
 
 If you add `--push` with a GitHub repository (or other OCI registry that supports oras) identifier, we will

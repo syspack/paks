@@ -1,0 +1,34 @@
+name: linting
+
+on:
+  # This should run on a push to any branch except main, gh-pages
+  pull_request: []
+  push:
+    branches-ignore:
+      - main
+      - gh-pages
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup black linter
+        run: conda create --quiet --name black pyflakes
+
+      - name: Lint python code
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate black
+          pip install black
+          black --check paks
+          
+      - name: Check imports with pyflakes
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate black
+          pyflakes paks/utils/fileio.py 
+          paks/utils/terminal.py
+          pyflakes paks/*.py
+          pyflakes paks/handlers/*.py

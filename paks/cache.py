@@ -93,7 +93,7 @@ class BuildCache:
         Push the build cache to an OCI registry (compatible with ORAS)
         """
         tag = tag or self.settings.default_tag
-        content_type = self.settings.content_type or defaults.content_type
+        content_type = self.settings.content_type or paks.defaults.content_type
         uri = uri or self.settings.trusted_packages_registry
 
         # Create an oras client

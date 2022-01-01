@@ -5,7 +5,6 @@ __license__ = "Apache-2.0"
 from paks.logger import logger
 from subprocess import Popen, PIPE, STDOUT
 import os
-import sys
 import shlex
 import getpass
 
@@ -66,7 +65,6 @@ def run_command(cmd, stream=False):
     """
     if not isinstance(cmd, list):
         cmd = shlex.split(cmd)
-    stdout = PIPE if not stream else None
 
     output = Popen(cmd, stderr=STDOUT, stdout=PIPE)
     t = output.communicate()[0], output.returncode

@@ -79,7 +79,7 @@ class RepoPath(spack.repo.RepoPath):
                     repo = Repo(repo)
                 self.put_last(repo)
             except spack.repo.RepoError as e:
-                tty.warn(
+                logger.warning(
                     "Failed to initialize repository: '%s'." % repo,
                     e.message,
                     "To remove the bad repository, run this command:",
@@ -111,7 +111,7 @@ class Repo(spack.repo.Repo):
             # pass these through as their error messages will be fine.
             raise
         except Exception as e:
-            tty.debug(e)
+            logger.debug(e)
 
             # Make sure other errors in constructors hit the error
             # handler by wrapping them
@@ -126,7 +126,7 @@ def _singleton_path(repo_dirs=None):
     """
     repo_dirs = repo_dirs or spack.config.get("repos")
     if not repo_dirs:
-        raise NoRepoConfiguredError(
+        raise spack.repo.NoRepoConfiguredError(
             "Spack configuration contains no package repositories."
         )
 
