@@ -34,6 +34,6 @@ def parse_package_request(args):
         repo = PakRepo(repo)
 
     # If we don't have packages and we have a repo, derive from PWD
-    if not args.packages:
+    if repo and not args.packages:
         args.packages = repo.list_packages()
     return args.packages, repo

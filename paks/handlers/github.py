@@ -2,7 +2,6 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
-import paks.defaults
 import paks.utils as utils
 from paks.logger import logger
 import requests
