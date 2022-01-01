@@ -24,7 +24,6 @@ jobs:
 
       - name: Build Container
         run: |
-           cd docker
            docker build --build-arg ubuntu_version=${{ matrix.container[0]}} \
                         -t ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest .
 

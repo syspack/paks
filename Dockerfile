@@ -14,12 +14,10 @@ RUN curl -LO https://github.com/oras-project/oras/releases/download/v0.12.0/oras
     rm -rf oras_0.12.0_*.tar.gz oras-install/
 
 COPY ./entrypoint.sh /entrypoint.sh
+WORKDIR /opt/paks
+COPY . /opt/paks
+RUN python3 -m pip install .
 
-# Install latest version of Paks
-RUN git clone https://github.com/syspack/paks /opt/paks && \
-    cd /opt/paks && \
-    python3 -m pip install .
-   
 ENV SPACK_ROOT=/opt/spack    
 
 ENTRYPOINT ["/entrypoint.sh"]
