@@ -3,6 +3,10 @@ __copyright__ = "Copyright 2021, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 import paks.install
+import paks.handlers.github
+import paks.utils as utils
+from paks.logger import logger
+
 import spack.repo
 import llnl.util.lang
 import spack.util.naming as nm
@@ -10,6 +14,49 @@ import spack.util.naming as nm
 import six
 import sys
 import os
+import re
+
+
+class PakRepo:
+    def is_remote(self, path):
+        if re.search("(http|https)://github.com", path):
+            return True
+        return False
+
+    def __init__(self, path, add=True):
+        """
+        Create a new spack repo and add for spack to see.
+
+        A Pak Repo can be a GitHub URL or a local path. It has a repos.yaml
+        and packages/ directory.
+        """
+        if os.path.exists(path):
+            self.path = os.path.abspath(path)
+        elif self.is_remote(path):
+            self.path = paks.handlers.github.GitHub().clone(path)
+        self.validate()
+
+    def validate(self):
+        """
+        Validate that we have a repo, meaning we expect a repo.yml|yaml and packages
+        """
+        repo_yaml = list(utils.recursive_find(self.path, "repo[.](yml|yaml)"))
+        if not repo_yaml:
+            logger.exit("Cannot find repo.yaml or repo.yml anywhere in %s" % self.path)
+        repo_yaml = repo_yaml[0]
+
+        # Add directory with repo.yaml to spack just to list
+        self.repo_dir = os.path.dirname(repo_yaml)
+
+    def list_packages(self):
+        """
+        Given a filesystem repository, list packages there.
+
+        We don't add the repository to be known by spack here, as we would want
+        to do this when we install.
+        """
+        repo = Repo(self.repo_dir)
+        return repo.all_package_names()
 
 
 class RepoPath(spack.repo.RepoPath):
@@ -41,20 +88,6 @@ class RepoPath(spack.repo.RepoPath):
 
 
 class Repo(spack.repo.Repo):
-    @spack.repo.autospec
-    def get_remote(self, spec):
-        """
-        TODO we will want to be able to retrieve a package via a GitHub URI
-        """
-        # TODO need to add design for a remote repo to install from
-
-        # Given github repository, clone
-        # package name should be repository namespace
-        # look for package.py
-        # Throw into "on the fly" repo under same namespace
-        # return spec
-        pass
-
     @spack.repo.autospec
     def get(self, spec):
         """Returns the package associated with the supplied spec

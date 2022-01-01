@@ -25,8 +25,19 @@ jobs:
 
       - name: Build Package
         env:
-          deploy: ${{ github.event_name != 'pull_request' }}
+        
+          # packages are going to be deployed to pakages org, just testing install here
+          deploy: false
           package: zlib
+          user: ${{ github.actor }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          uri: ghcr.io/syspack/paks
+        run: /entrypoint.sh
+
+      - name: Build Remote Package
+        env:
+          deploy: false
+          package: https://github.com/pakages/zlib
           user: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
           uri: ghcr.io/syspack/paks
