@@ -17,28 +17,34 @@ jobs:
                     ["20.04"]]
 
     runs-on: ubuntu-latest
-    container: ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest
     name: Paks Build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Build Container
+        run: |
+           cd docker
+           docker build -t ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest .
+
+      # Repos that use pre-built containers don't need to use this manual format
       - name: Build Package
-        env:
-        
-          # packages are going to be deployed to pakages org, just testing install here
-          deploy: false
-          package: zlib
+        env:        
           user: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          uri: ghcr.io/syspack/paks
-        run: /entrypoint.sh
+        run: |
+          docker run --env deploy=false \
+                     --env package=zlib \
+                     --env user=${user} \
+                     --env token=${token} ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest
+
 
       - name: Build Remote Package
-        env:
-          deploy: false
-          package: https://github.com/pakages/zlib
+        env:        
           user: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          uri: ghcr.io/syspack/paks
-        run: /entrypoint.sh 
+        run: |
+          docker run --env deploy=false \
+                     --env package=https://github.com/pakages/zlib \
+                     --env user=${user} \
+                     --env token=${token} ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest
