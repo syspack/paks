@@ -28,7 +28,7 @@ jobs:
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
           source activate black
-          pyflakes paks/utils/fileio.py 
-          paks/utils/terminal.py
-          pyflakes paks/*.py
-          pyflakes paks/handlers/*.py
+          pyflakes --check paks/utils/fileio.py 
+          pyflakes --check paks/utils/terminal.py
+          pyflakes --check paks/*.py
+          pyflakes --check paks/handlers/*.py
