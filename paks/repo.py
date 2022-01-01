@@ -102,7 +102,7 @@ class RepoPath(spack.repo.RepoPath):
                     repo = Repo(repo)
                 self.put_last(repo)
             except spack.repo.RepoError as e:
-                logger.exit("Failed to initialize repository: '%s'." % repo)
+                logger.exit("Failed to initialize repository: '%s': %s" % (repo, e))
 
 
 class Repo(spack.repo.Repo):
