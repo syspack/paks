@@ -13,6 +13,7 @@ import llnl.util.lang
 import spack.util.naming as nm
 
 import six
+import shutil
 import sys
 import os
 import re
@@ -68,6 +69,9 @@ class PakRepo:
         """
         if os.path.exists(self.repo_dir) and self.is_remote:
             shutil.rmtree(self.repo_dir)
+            repos = spack.config.get("repos")
+            updated = [r for r in repos if r != self.repo_dir]
+            spack.config.set("repos", updated)
 
     def add(self):
         """
@@ -98,12 +102,7 @@ class RepoPath(spack.repo.RepoPath):
                     repo = Repo(repo)
                 self.put_last(repo)
             except spack.repo.RepoError as e:
-                logger.warning(
-                    "Failed to initialize repository: '%s'." % repo,
-                    e.message,
-                    "To remove the bad repository, run this command:",
-                    "    spack repo rm %s" % repo,
-                )
+                logger.exit("Failed to initialize repository: '%s'." % repo)
 
 
 class Repo(spack.repo.Repo):
