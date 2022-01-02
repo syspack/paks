@@ -31,7 +31,7 @@ def add_spack_to_path():
     Find spack and add to path, allowing for import of spack modules
     """
     # First check for spack in environment
-    spack_prefix = which("spack")["message"]
+    spack_prefix = which("spack")
     if spack_prefix:
 
         # spack -> bin -> root
