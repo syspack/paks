@@ -6,6 +6,7 @@ from paks.logger import logger
 from subprocess import Popen, PIPE, STDOUT
 import os
 import shlex
+import shutil
 import getpass
 
 
@@ -13,12 +14,7 @@ def which(software, strip_newline=True):
     """get_install will return the path to where Singularity (or another
     executable) is installed.
     """
-    # which is deprecated in ubuntu 18.04. And we need to extend this for other OS
-    cmd = ["command", "-v", software]
-    result = run_command(cmd)
-    if strip_newline is True:
-        result["message"] = result["message"].strip("\n")
-    return result
+    return shutil.which(software)
 
 
 def check_install(software, quiet=True, command="--version"):
