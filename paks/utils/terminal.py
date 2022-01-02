@@ -13,7 +13,8 @@ def which(software, strip_newline=True):
     """get_install will return the path to where Singularity (or another
     executable) is installed.
     """
-    cmd = ["which", software]
+    # which is deprecated in ubuntu 18.04. And we need to extend this for other OS
+    cmd = ["command", "-v", software]
     result = run_command(cmd)
     if strip_newline is True:
         result["message"] = result["message"].strip("\n")
