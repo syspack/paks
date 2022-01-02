@@ -264,10 +264,24 @@ and install zlib.
 $ docker run -it ghcr.io/syspack/paks-ubuntu-18.04
 ```
 
+oras is in the container to easily pull packages:
+
+```bash
+# which oras
+/usr/local/bin/oras
+```
+
+And then you can easily install.
+
+```bash
+# paks install zlib
+Preparing to install zlib
+[+] /opt/spack/opt/spack/linux-ubuntu18.04-x86_64/gcc-7.5.0/zlib-1.2.11-3rlgy7ycxtoho44una6o3itgfjltkmpd
+```
+
 ## TODO
 
  - expand container bases to include more, possibly provide set of solid base images.
- - provide a paks container that can easily pull from the cache so it's ready to go!
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
  - There is eventually going to be a design flaw in installing this if the user doesn't have write to the install location because of spack. Ug.
  - Can we have a nightly run to compare sboms for package releases to clair?
