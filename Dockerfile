@@ -13,11 +13,11 @@ RUN curl -LO https://github.com/oras-project/oras/releases/download/v0.12.0/oras
     mv oras-install/oras /usr/local/bin/ && \
     rm -rf oras_0.12.0_*.tar.gz oras-install/
 
+# The entrypoint.sh is called during the ci
 COPY ./entrypoint.sh /entrypoint.sh
 WORKDIR /opt/paks
 COPY . /opt/paks
 RUN python3 -m pip install .
 
 ENV SPACK_ROOT=/opt/spack    
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]

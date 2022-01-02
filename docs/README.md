@@ -254,9 +254,18 @@ $ paks list
 zlib@1.2.11
 ```
 
+### Containers
+
+Paks provide a set of [containers](https://github.com/orgs/syspack/packages?repo_name=paks) that serve
+as bases for being able to quickly spin up an environment and install. As an example, let's run the ubuntu 18.04 container
+and install zlib.
+
+```bash
+$ docker run -it ghcr.io/syspack/paks-ubuntu-18.04
+```
+
 ## TODO
 
- - create same GitHub actions to perform builds, and across a matrix of arches we will support
  - expand container bases to include more, possibly provide set of solid base images.
  - provide a paks container that can easily pull from the cache so it's ready to go!
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
