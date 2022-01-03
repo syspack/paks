@@ -22,6 +22,9 @@ jobs:
           root=$PWD
           ls
           cd /tmp
+          git clone --depth 1 https://github.com/spack/spack
+          export PATH=/tmp/spack/bin:$PATH
+          cd /tmp
           git clone https://github.com/syspack/paks
           cd paks
           pip install -e .
