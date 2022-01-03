@@ -4,6 +4,8 @@
 
 ![docs/assets/img/paks.png](docs/assets/img/paks.png)
 
+⭐️ [Documentation](https://syspack.github.io/paks) ⭐️
+
 You can see trusted packages under the [pakages](https://github.com/pakages) organization. Trusted means
 that they are built, tested, and deployed from modular repositories, and can be
 installed into consistent container bases that Paks provides.
