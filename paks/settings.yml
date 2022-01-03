@@ -4,11 +4,8 @@ email: null
 username: null
 content_type: application/vnd.spack.package
 
-# Trusted packages registry
-trusted_packages_org: syspack
-
 # Default registry prefix to install from
-trusted_packages_registry: ghcr.io/syspack/paks
+trusted_packages_registry: ghcr.io/pakages
 
 # Default tag for pushed artifacts
 default_tag: "latest"

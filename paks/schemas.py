@@ -14,7 +14,6 @@ settingsProperties = {
     "updated_at": {"type": ["string", "null"]},
     "username": {"type": ["string", "null"]},
     "email": {"type": ["string", "null"]},
-    "trusted_packages_org": {"type": "string"},
     "trusted_packages_registry": {"type": "string"},
     "default_tag": {"type": "string"},
 }
