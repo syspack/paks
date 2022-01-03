@@ -12,8 +12,8 @@ settings, read :ref:`getting_started-settings`.
 Quick Start
 ===========
 
-After installation, if you want control over Paks settings (discussed next)
-you should create your own copy of the config file.
+After installation, you'll first need spack to be on your path. If 
+you want control over Paks settings (discussed next) you should create your own copy of the config file.
 
 .. code-block:: console
 
@@ -21,7 +21,18 @@ you should create your own copy of the config file.
     $ paks config init
 
 This will create a ``$HOME/.paks/settings.yml`` that you can customize to override
-the defaults. Make sure that you have spack added to your path, to be discovered by paks.
+the defaults. To quickly edit:
+
+.. code-block:: console
+
+    $ paks config edit
+
+The settings will let you add trusted package registries to try pulling from (which
+also can be set on the fly on the command line) along with a default registry to push to,
+a tag to use, and default cache directory, and others. Browse :ref:`getting_started-settings` 
+and ensure the settings are to your liking before continuing. And importantly - if you are just
+using paks to install the default provided trusted registry at pakages, you likely don't need to customize 
+anything. Finally, make sure that you have spack added to your path, to be discovered by paks.
 If you are using a pre-built container, this will already be the case.
 
 Commands
@@ -55,7 +66,15 @@ more easily or in a Python environment).
 
 This is a traditional install, but it's also a little more! We generate a software
 bill of materials (SBOM) to go alongside the install, and if the package is available as a binary
-on GitHub packages in your trusted registry it will be retrieved. Note that we use the manifest 
+on GitHub packages in your trusted registry it will be retrieved there first. If you don't need either
+this binary install or the SBOM, you could just install with spack. To change the registry to pull from on the fly
+(given that you don't want to change permanently in your settings) add ``--registry``:
+
+.. code-block:: console
+
+    $ paks install zlib --registry ghcr.io/myorg
+
+Note that we use the manifest 
 of the artifact to validate the checksum before installing it.
 
 Local
@@ -170,6 +189,12 @@ Or build from a remote:
 
     $ paks build https://github.com/pakages/zlib
 
+Akin to install, you can also specify a registry to add to look for build cache entries
+to speed up the install:
+
+.. code-block:: console
+
+    $ paks build zlib --registry ghcr.io/myorg
 
 
 Build and Push
@@ -191,8 +216,13 @@ will build, push, and cleanup. You can disable cleanup:
     $ paks build zlib --no-cleanup --push ghcr.io/pakages
 
 If you customize the ``--cache-dir`` folder cleanup will be disabled, as it is assumed that you don't want to delete a non-temporary directory.
-The above shows a push using a custom GitHub unique resource identifier. To use the default trusted registry from your settings, just do:
+To force a cleanup of a custom cache directory, add ``--force``
 
+.. code-block:: console
+
+    $ paks build zlib --no-cleanup --force --push ghcr.io/pakages
+
+The above examples show a push using a custom GitHub unique resource identifier. To use the default trusted registry from your settings, just do:
 
 .. code-block:: console
 
@@ -213,6 +243,25 @@ Or push and cleanup:
 .. code-block:: console
 
     $ paks push --cleanup /tmp/paks-tmp.nudv7k0u/ ghcr.io/syspack/paks
+
+You can optionally define a default ``cache_dir`` in your settings, in which case you can leave it out:
+
+.. code-block:: console
+
+    $ paks push ghcr.io/syspack/paks
+
+The registry will be detected since it starts with ``ghcr.io`` and the default cache directory used. Alternatively,
+leave the registry out to use the default, and provide the cache directory:
+
+.. code-block:: console
+
+    $ paks push /tmp/paks-tmp.nudv7k0u/
+
+And finally, if you really want to streamline and use the default registry and cache directory, just push!
+
+.. code-block:: console
+
+    $ paks push
 
 
 Uninstall

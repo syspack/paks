@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings &mdash; Paks 0.0.11 documentation</title>
+  <title>Settings &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -141,8 +141,16 @@ the build cache artifacts):</p>
 <td>pakages</td>
 </tr>
 <tr class="row-odd"><td>trusted_packages_registry</td>
-<td>The default trusted packages GitHub organization to install from</td>
+<td>The default trusted packages GitHub organization to push to. If no push registries are provided, we fallback to push here.</td>
 <td>ghcr.io/pakages</td>
+</tr>
+<tr class="row-even"><td>trusted_pull_registries</td>
+<td>One or more registries to pull from.</td>
+<td>[ghcr.io/pakages]</td>
+</tr>
+<tr class="row-odd"><td>cache_dir</td>
+<td>A default cache directory to use - will only be cleaned up for build using <code class="docutils literal notranslate"><span class="pre">--force</span></code></td>
+<td>unset</td>
 </tr>
 <tr class="row-even"><td>default_tag</td>
 <td>The default tag to use to push artifacts.</td>

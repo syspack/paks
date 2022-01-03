@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.cache &mdash; Paks 0.0.11 documentation</title>
+  <title>paks.cache &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -176,6 +176,10 @@
         <span class="n">content_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">content_type</span> <span class="ow">or</span> <span class="n">paks</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">content_type</span>
         <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trusted_packages_registry</span>
 
+        <span class="c1"># Only add the tag if not already present in uri</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+
         <span class="c1"># Create an oras client</span>
         <span class="n">oras</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">oras</span><span class="o">.</span><span class="n">Oras</span><span class="p">()</span>
 
@@ -183,7 +187,7 @@
         <span class="k">for</span> <span class="n">archive</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">recursive_find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;.spack&quot;</span><span class="p">):</span>
 
             <span class="n">package_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">archive</span><span class="p">)</span>
-            <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">package_name</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+            <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">package_name</span><span class="p">)</span>
             <span class="n">oras</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">full_name</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">)</span></div>
 
             <span class="c1"># TODO how to add sbom? separately?</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.client &mdash; Paks 0.0.11 documentation</title>
+  <title>paks.client &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -126,37 +126,37 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">find</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;--json&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="PakClient.build"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PakClient.build"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a package into a cache</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Prepare a cache directory</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">BuildCache</span><span class="p">(</span>
-            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
             <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
             <span class="n">email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
             <span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Install all packages, and also generate sboms</span>
-        <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">packages</span><span class="p">)</span>
+        <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
 
         <span class="c1"># TODO how can we attach the sbom to the package (aside from being in archive?)</span>
         <span class="n">cache</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cache</span></div>
 
-<div class="viewcode-block" id="PakClient.push"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+<div class="viewcode-block" id="PakClient.push"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given an existing cache directory, push known specs to a specific uri</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Prepare a cache directory</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">BuildCache</span><span class="p">(</span>
-            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
             <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
             <span class="n">email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
             <span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">cache</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">cache</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cache</span></div>
 
 <div class="viewcode-block" id="PakClient.add_repository"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.add_repository">[docs]</a>    <span class="k">def</span> <span class="nf">add_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
@@ -171,12 +171,19 @@
         <span class="n">repos</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="n">spack</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="n">repos</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PakClient.install"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">):</span>
+<div class="viewcode-block" id="PakClient.install"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Install one or more packages.</span>
 
 <span class="sd">        This eventually needs to take into account using the GitHub packages bulid cache</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default to registries defined in settings</span>
+        <span class="n">registries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trusted_pull_registries</span>
+
+        <span class="c1"># Do we have an additional trusted registry provided on the command line?</span>
+        <span class="k">if</span> <span class="n">registry</span><span class="p">:</span>
+            <span class="n">registries</span> <span class="o">=</span> <span class="p">[</span><span class="n">registry</span><span class="p">]</span> <span class="o">+</span> <span class="n">registries</span>
+
         <span class="n">specs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_specs</span><span class="p">(</span><span class="n">packages</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing to install </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">spec</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -187,8 +194,8 @@
 
             <span class="n">spec</span><span class="o">.</span><span class="n">package</span><span class="o">.</span><span class="n">do_install</span><span class="p">(</span>
                 <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">trusted_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trusted_packages_registry</span><span class="p">,</span>
-                <span class="n">tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_tag</span><span class="p">,</span>
+                <span class="n">registries</span><span class="o">=</span><span class="n">registries</span><span class="p">,</span>
+                <span class="n">tag</span><span class="o">=</span><span class="n">tag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_tag</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">specs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">specs</span></div>

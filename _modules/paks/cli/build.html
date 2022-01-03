@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.cli.build &mdash; Paks 0.0.11 documentation</title>
+  <title>paks.cli.build &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -95,7 +95,13 @@
     <span class="c1"># Finally, add the repository and install packages</span>
     <span class="k">if</span> <span class="n">repo</span><span class="p">:</span>
         <span class="n">cli</span><span class="o">.</span><span class="n">add_repository</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">repo_dir</span><span class="p">)</span>
-    <span class="n">cache</span> <span class="o">=</span> <span class="n">cli</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">cli</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">registry</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span>
+        <span class="n">tag</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># We cannot have both</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">push</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">push_trusted</span><span class="p">:</span>
@@ -103,10 +109,16 @@
 
     <span class="c1"># Do we want to push to a build cache?</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">push</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">push_trusted</span><span class="p">:</span>
-        <span class="n">cache</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">push</span><span class="p">)</span>
+        <span class="n">cache</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">push</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="c1"># By default, we clean up the build cache</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span><span class="p">:</span>
+        <span class="c1"># By default, we clean up the build cache, unless a custom cache is used</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">:</span>
+            <span class="n">cache</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+        <span class="c1"># Otherwse, require --no-cleanup and --force</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">cache_dir</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
             <span class="n">cache</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div>
 </pre></div>
 

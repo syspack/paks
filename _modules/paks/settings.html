@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.settings &mdash; Paks 0.0.11 documentation</title>
+  <title>paks.settings &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -138,12 +138,12 @@
 
         <span class="c1"># Make sure editor exists first!</span>
         <span class="n">editor</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_editor</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">editor</span><span class="p">[</span><span class="s2">&quot;return_code&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">editor</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
                 <span class="s2">&quot;Editor &#39;</span><span class="si">%s</span><span class="s2">&#39; not found! Update with paks config set config_editor:&lt;name&gt;&quot;</span>
                 <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_editor</span>
             <span class="p">)</span>
-        <span class="n">paks</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">run_command</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">config_editor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings_file</span><span class="p">],</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings_file</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="EmptySettings.get_settings_file"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.settings.EmptySettings.get_settings_file">[docs]</a>    <span class="k">def</span> <span class="nf">get_settings_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

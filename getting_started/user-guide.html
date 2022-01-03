@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Guide &mdash; Paks 0.0.11 documentation</title>
+  <title>User Guide &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -104,14 +104,23 @@ you should read <a class="reference internal" href="installation.html#getting-st
 settings, read <a class="reference internal" href="settings.html#getting-started-settings"><span class="std std-ref">Settings</span></a>.</p>
 <div class="section" id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline"></a></h2>
-<p>After installation, if you want control over Paks settings (discussed next)
-you should create your own copy of the config file.</p>
+<p>After installation, you’ll first need spack to be on your path. If
+you want control over Paks settings (discussed next) you should create your own copy of the config file.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Init your user config
 <span class="gp">$ </span>paks config init
 </pre></div>
 </div>
 <p>This will create a <code class="docutils literal notranslate"><span class="pre">$HOME/.paks/settings.yml</span></code> that you can customize to override
-the defaults. Make sure that you have spack added to your path, to be discovered by paks.
+the defaults. To quickly edit:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks config edit
+</pre></div>
+</div>
+<p>The settings will let you add trusted package registries to try pulling from (which
+also can be set on the fly on the command line) along with a default registry to push to,
+a tag to use, and default cache directory, and others. Browse <a class="reference internal" href="settings.html#getting-started-settings"><span class="std std-ref">Settings</span></a>
+and ensure the settings are to your liking before continuing. And importantly - if you are just
+using paks to install the default provided trusted registry at pakages, you likely don’t need to customize
+anything. Finally, make sure that you have spack added to your path, to be discovered by paks.
 If you are using a pre-built container, this will already be the case.</p>
 </div>
 <div class="section" id="commands">
@@ -136,7 +145,13 @@ more easily or in a Python environment).</p>
 </div>
 <p>This is a traditional install, but it’s also a little more! We generate a software
 bill of materials (SBOM) to go alongside the install, and if the package is available as a binary
-on GitHub packages in your trusted registry it will be retrieved. Note that we use the manifest
+on GitHub packages in your trusted registry it will be retrieved there first. If you don’t need either
+this binary install or the SBOM, you could just install with spack. To change the registry to pull from on the fly
+(given that you don’t want to change permanently in your settings) add <code class="docutils literal notranslate"><span class="pre">--registry</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks install zlib --registry ghcr.io/myorg
+</pre></div>
+</div>
+<p>Note that we use the manifest
 of the artifact to validate the checksum before installing it.</p>
 </div>
 <div class="section" id="local">
@@ -223,6 +238,11 @@ When you do a build, it will show you the location of the build cache.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks build https://github.com/pakages/zlib
 </pre></div>
 </div>
+<p>Akin to install, you can also specify a registry to add to look for build cache entries
+to speed up the install:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks build zlib --registry ghcr.io/myorg
+</pre></div>
+</div>
 </div>
 <div class="section" id="build-and-push">
 <h3>Build and Push<a class="headerlink" href="#build-and-push" title="Permalink to this headline"></a></h3>
@@ -238,7 +258,11 @@ will build, push, and cleanup. You can disable cleanup:</p>
 </pre></div>
 </div>
 <p>If you customize the <code class="docutils literal notranslate"><span class="pre">--cache-dir</span></code> folder cleanup will be disabled, as it is assumed that you don’t want to delete a non-temporary directory.
-The above shows a push using a custom GitHub unique resource identifier. To use the default trusted registry from your settings, just do:</p>
+To force a cleanup of a custom cache directory, add <code class="docutils literal notranslate"><span class="pre">--force</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks build zlib --no-cleanup --force --push ghcr.io/pakages
+</pre></div>
+</div>
+<p>The above examples show a push using a custom GitHub unique resource identifier. To use the default trusted registry from your settings, just do:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks build zlib --pushd
 </pre></div>
 </div>
@@ -251,6 +275,19 @@ The above shows a push using a custom GitHub unique resource identifier. To use 
 </div>
 <p>Or push and cleanup:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks push --cleanup /tmp/paks-tmp.nudv7k0u/ ghcr.io/syspack/paks
+</pre></div>
+</div>
+<p>You can optionally define a default <code class="docutils literal notranslate"><span class="pre">cache_dir</span></code> in your settings, in which case you can leave it out:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks push ghcr.io/syspack/paks
+</pre></div>
+</div>
+<p>The registry will be detected since it starts with <code class="docutils literal notranslate"><span class="pre">ghcr.io</span></code> and the default cache directory used. Alternatively,
+leave the registry out to use the default, and provide the cache directory:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks push /tmp/paks-tmp.nudv7k0u/
+</pre></div>
+</div>
+<p>And finally, if you really want to streamline and use the default registry and cache directory, just push!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks push
 </pre></div>
 </div>
 </div>

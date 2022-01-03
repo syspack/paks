@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.cli &mdash; Paks 0.0.11 documentation</title>
+  <title>paks.cli &mdash; Paks 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -171,9 +171,12 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Clean up (remove) the cache after push.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c1"># Two required args</span>
-    <span class="n">push</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to cache directory&quot;</span><span class="p">)</span>
-    <span class="n">push</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;uri&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;GitHub packages or other oras URI (ghcr.io...)&quot;</span><span class="p">)</span>
+    <span class="c1"># One required, one optional arg</span>
+    <span class="n">push</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;paths&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to cache directory (optional) and GitHub packages or other oras URI (ghcr.io)&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">build</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s2">&quot;build&quot;</span><span class="p">,</span>
@@ -206,7 +209,14 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;push to default trusted endpoint&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-
+    <span class="n">build</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--force&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;force&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;force cleanup of a custom cache directory&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">build</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--no-cleanup&quot;</span><span class="p">,</span>
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_cleanup&quot;</span><span class="p">,</span>
@@ -257,6 +267,23 @@
 
     <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">[</span><span class="n">install</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="n">uninstall</span><span class="p">]:</span>
         <span class="n">command</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;packages&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;install these packages&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">[</span><span class="n">install</span><span class="p">,</span> <span class="n">build</span><span class="p">]:</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--registry&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;registry&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;registry to use for install or build.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">[</span><span class="n">install</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="n">push</span><span class="p">]:</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--tag&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;tag to use for build cache retrieval or push&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">parser</span></div>
 
 
