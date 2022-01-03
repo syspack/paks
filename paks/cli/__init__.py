@@ -219,7 +219,7 @@ def run_main():
 
         version = paks.__version__
 
-        print("\nSingularity Registry (HPC) Client v%s" % version)
+        print("\nPaks v%s" % version)
         parser.print_help()
         sys.exit(return_code)
 
@@ -273,13 +273,15 @@ def run_main():
 
     # Pass on to the correct parser
     return_code = 0
-    try:
-        main(args=args, parser=parser, extra=extra, subparser=helper)
-        sys.exit(return_code)
-    except UnboundLocalError:
-        return_code = 1
+    #    try:
+    main(args=args, parser=parser, extra=extra, subparser=helper)
 
-    help(return_code)
+
+#        sys.exit(return_code)
+#    except UnboundLocalError:
+#        return_code = 1
+
+#    help(return_code)
 
 
 if __name__ == "__main__":
