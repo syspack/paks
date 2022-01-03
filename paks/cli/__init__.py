@@ -93,9 +93,12 @@ def get_parser():
         help="Clean up (remove) the cache after push.",
     )
 
-    # Two required args
-    push.add_argument("cache_dir", help="path to cache directory")
-    push.add_argument("uri", help="GitHub packages or other oras URI (ghcr.io...)")
+    # One required, one optional arg
+    push.add_argument(
+        "paths",
+        help="path to cache directory (optional) and GitHub packages or other oras URI (ghcr.io)",
+        nargs="*",
+    )
 
     build = subparsers.add_parser(
         "build",
@@ -128,7 +131,14 @@ def get_parser():
         default=False,
         help="push to default trusted endpoint",
     )
-
+    build.add_argument(
+        "--force",
+        "-f",
+        dest="force",
+        action="store_true",
+        default=False,
+        help="force cleanup of a custom cache directory",
+    )
     build.add_argument(
         "--no-cleanup",
         dest="no_cleanup",
@@ -179,6 +189,23 @@ paks config init""",
 
     for command in [install, build, uninstall]:
         command.add_argument("packages", help="install these packages", nargs="+")
+
+    for command in [install, build]:
+        command.add_argument(
+            "--registry",
+            "-r",
+            dest="registry",
+            help="registry to use for install or build.",
+        )
+
+    for command in [install, build, push]:
+        command.add_argument(
+            "--tag",
+            "-t",
+            dest="tag",
+            help="tag to use for build cache retrieval or push",
+        )
+
     return parser
 
 

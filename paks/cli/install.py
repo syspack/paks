@@ -15,4 +15,4 @@ def main(args, parser, extra, subparser):
     # Finally, add the repository and install packages
     if repo:
         cli.add_repository(repo.repo_dir)
-    cli.install(args.packages)
+    cli.install(args.packages, registry=args.registry, tag=args.tag)
