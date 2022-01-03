@@ -60,8 +60,8 @@ The following variables can be configured in your user settings:
      - The default trusted packages GitHub organization to push to. If no push registries are provided, we fallback to push here.
      - ghcr.io/pakages
    * - trusted_pull_registries
-     - One or more registries to push from.
-     - ghcr.io/pakages
+     - One or more registries to pull from.
+     - [ghcr.io/pakages]
    * - cache_dir
      - A default cache directory to use - will only be cleaned up for build using ``--force``
      - unset
