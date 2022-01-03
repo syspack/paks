@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.scom/syspack/paks/tree/main) (0.0.x)
+ - More control over custom push/pull registries and settings (0.0.12)
  - Added support for building local path or GitHub remote (0.0.11)
  - First release with ability to install, build, and push with oras (0.0.1)
  - Initial skeleton of project (0.0.0)

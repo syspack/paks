@@ -2,21 +2,12 @@
 
 ## TODO
 
- - add permanent setting for cache to be created cache_dir
- - need to allow for adding one or more trusted registries
- - need a single to push to
- - for each of push/install, need to allow override on command line
- - need default_tag customized also from command line
- - need to clean up tmp repos given that we cloned
  - expand container bases to include more, possibly provide set of solid base images.
  - from @alecbcs - add "trusted" packages repo (tested, signed, etc.)
  - There is eventually going to be a design flaw in installing this if the user doesn't have write to the install location because of spack. Ug.
  - Can we have a nightly run to compare sboms for package releases to clair?
  - create paks metadata spec for container labels? Also add spack labels to container
  - where can we put the trusted registry metadata, aside from the registry configs/labels? E.g., an interface?
- - create pretty docs
- - should we allow external install of spack (probably)
- - should we allow paks to update spack (e.g., `paks update-spack`?
  - get on conda for faster install
  
 ## Old Brainstorming

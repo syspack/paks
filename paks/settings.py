@@ -60,12 +60,12 @@ class EmptySettings:
 
         # Make sure editor exists first!
         editor = paks.utils.which(self.config_editor)
-        if editor["return_code"] != 0:
+        if not os.path.exists(editor):
             logger.exit(
                 "Editor '%s' not found! Update with paks config set config_editor:<name>"
                 % self.config_editor
             )
-        paks.utils.run_command([self.config_editor, self.settings_file], stream=True)
+        os.system("%s %s" % (editor, self.settings_file))
 
     def get_settings_file(self, settings_file=None):
         """

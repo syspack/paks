@@ -48,37 +48,37 @@ class PakClient:
         print(find())
         return json.loads(find("--json"))
 
-    def build(self, packages, cache_dir=None, key=None):
+    def build(self, packages, cache_dir=None, key=None, registry=None, tag=None):
         """
         Build a package into a cache
         """
         # Prepare a cache directory
         cache = paks.cache.BuildCache(
-            cache_dir=cache_dir,
+            cache_dir=cache_dir or self.settings.cache_dir,
             username=self.settings.username,
             email=self.settings.email,
             settings=self.settings,
         )
 
         # Install all packages, and also generate sboms
-        specs = self.install(packages)
+        specs = self.install(packages, registry=registry, tag=tag)
 
         # TODO how can we attach the sbom to the package (aside from being in archive?)
         cache.create(specs, key=key)
         return cache
 
-    def push(self, cache_dir, uri):
+    def push(self, uri, cache_dir=None, tag=None):
         """
         Given an existing cache directory, push known specs to a specific uri
         """
         # Prepare a cache directory
         cache = paks.cache.BuildCache(
-            cache_dir=cache_dir,
+            cache_dir=cache_dir or self.settings.cache_dir,
             username=self.settings.username,
             email=self.settings.email,
             settings=self.settings,
         )
-        cache.push(uri)
+        cache.push(uri, tag=tag)
         return cache
 
     def add_repository(self, path):
@@ -93,12 +93,19 @@ class PakClient:
         repos.insert(0, path)
         spack.config.set("repos", repos)
 
-    def install(self, packages):
+    def install(self, packages, registry=None, tag=None):
         """
         Install one or more packages.
 
         This eventually needs to take into account using the GitHub packages bulid cache
         """
+        # Default to registries defined in settings
+        registries = self.settings.trusted_pull_registries
+
+        # Do we have an additional trusted registry provided on the command line?
+        if registry:
+            registries = [registry] + registries
+
         specs = []
         for spec in self.iter_specs(packages):
             logger.info("Preparing to install %s" % spec.name)
@@ -109,8 +116,8 @@ class PakClient:
 
             spec.package.do_install(
                 force=True,
-                trusted_registry=self.settings.trusted_packages_registry,
-                tag=self.settings.default_tag,
+                registries=registries,
+                tag=tag or self.settings.default_tag,
             )
             specs.append(spec)
         return specs

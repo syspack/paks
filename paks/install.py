@@ -24,7 +24,7 @@ def do_install(self, **kwargs):
     from spack.installer import PackageInstaller
 
     dev_path_var = self.spec.variants.get("dev_path", None)
-    trusted_registry = kwargs.get("trusted_registry")
+    registries = kwargs.get("registries")
     tag = kwargs.get("tag")
 
     if dev_path_var:
@@ -37,7 +37,7 @@ def do_install(self, **kwargs):
         We take this inline approach because we are not able to import it.
         """
 
-        def prepare_cache(self, trusted_registry=None, tag=None):
+        def prepare_cache(self, registries=None, tag=None):
             """
             Given that we have a build cache for a package, install it.
 
@@ -45,10 +45,9 @@ def do_install(self, **kwargs):
             that attempts a pull for an artifact, and just continue if we don't
             have one.
             """
-            # What registry to try fetch from?
-            trusted_registry = (
-                trusted_registry or paks.defaults.trusted_packages_registry
-            )
+            # If no registries in user settings or command line, use default
+            if not registries:
+                registries = [paks.defaults.trusted_packages_registry]
             tag = tag or paks.defaults.default_tag
 
             # prepare oras client
@@ -65,11 +64,20 @@ def do_install(self, **kwargs):
                 # The name of the expected package, and directory to put it
                 name = bd.tarball_name(request.pkg.spec, ".spack")
                 tmpdir = paks.utils.get_tmpdir()
-                uri = "%s/%s:%s" % (trusted_registry, name, tag)
 
-                # Retrieve the artifact (will be None if doesn't exist)
-                artifact = oras.fetch(uri, os.path.join(tmpdir, name))
-                if not artifact:
+                # Try until we get a cache hit
+                cache_hit = False
+                for registry in registries:
+                    uri = "%s/%s:%s" % (registry, name, tag)
+
+                    # Retrieve the artifact (will be None if doesn't exist)
+                    artifact = oras.fetch(uri, os.path.join(tmpdir, name))
+                    if artifact:
+                        cache_hit = True
+                        break
+
+                # Don't continue if not found
+                if not cache_hit:
                     shutil.rmtree(tmpdir)
                     continue
 
@@ -89,7 +97,7 @@ def do_install(self, **kwargs):
     builder = PakInstaller([(self, kwargs)])
 
     # Download what we can find from the GitHub cache
-    builder.prepare_cache(trusted_registry, tag)
+    builder.prepare_cache(registries, tag)
     builder.install()
 
     # If successful, generate an sbom
