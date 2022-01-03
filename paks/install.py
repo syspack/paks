@@ -90,7 +90,9 @@ def do_install(self, **kwargs):
 
                 # If we have an artifact, extract where needed and tell spack it's installed!
                 if artifact:
-                    bd.extract_tarball(request.pkg.spec, artifact)
+
+                    # Note - for now not signing, since we don't have a consistent key strategy
+                    bd.extract_tarball(request.pkg.spec, artifact, unsigned=True)
                     spack.hooks.post_install(request.pkg.spec)
                     spack.store.db.add(request.pkg.spec, spack.store.layout)
 
