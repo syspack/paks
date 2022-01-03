@@ -4,4 +4,5 @@ dist
 env
 paks/spack
 __pycache__
+docs/_build
 paks.egg-info/
