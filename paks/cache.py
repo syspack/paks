@@ -98,10 +98,6 @@ class BuildCache:
         content_type = self.settings.content_type or paks.defaults.content_type
         uri = uri or self.settings.trusted_packages_registry
 
-        # Only add the tag if not already present in uri
-        if ":" not in uri:
-            uri = "%s:%s" % (uri, tag)
-
         # Create an oras client
         oras = paks.oras.Oras()
 
@@ -109,7 +105,7 @@ class BuildCache:
         for archive in utils.recursive_find(self.cache_dir, ".spack"):
 
             package_name = os.path.basename(archive)
-            full_name = "%s/%s" % (uri, package_name)
+            full_name = "%s/%s:%s" % (uri, package_name, tag)
             oras.push(full_name, archive, content_type=content_type)
 
             # TODO how to add sbom? separately?
