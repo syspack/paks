@@ -8,7 +8,10 @@ import paks.defaults
 import paks.settings
 import paks.oras
 import paks.spec
+import paks.archive
 
+import spack.hooks
+import spack.store
 from spack.main import SpackCommand
 import spack.binary_distribution as bd
 
@@ -72,7 +75,6 @@ def prepare_cache(spec, registries, tag=None):
     tmpdir = paks.utils.get_tmpdir()
 
     # Try until we get a cache hit
-    cache_hit = False
     for registry in registries:
         uri = "%s/%s:%s" % (registry, name, tag)
 
@@ -93,7 +95,7 @@ def prepare_cache(spec, registries, tag=None):
 
     # Extract artifact where spack can find it for reuse
     # Note - for now not signing, since we don't have a consistent key strategy
-    extract_tarball(artifact, unsigned=True)
+    paks.archive.extract_tarball(artifact, unsigned=True)
     spack.hooks.post_install(spec)
     spack.store.db.add(spec, spack.store.layout)
 
