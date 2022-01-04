@@ -114,12 +114,12 @@ def extract_tarball(filename, allow_root=False, unsigned=False):
 
     # Note that the loaded spec is hugely missing information
     spec_dict = paks.utils.read_json(spec_json)
-    spec = paks.spec.Spec.from_dict(spec_dict)
+    spec = paks.spec.wrap_spec(paks.spec.Spec.from_dict(spec_dict))
 
     # If the spec already exists, it's already extracted
     if os.path.exists(spec.prefix):
         shutil.rmtree(extract_dir)
-        return
+        return spec
 
     # verify tarball checksum using the spec json
     if not unsigned and not verify_tarball(spec_dict, targz):
@@ -137,3 +137,4 @@ def extract_tarball(filename, allow_root=False, unsigned=False):
     # Do we care if there isn't a manifest file here?
     # Final cleanup!
     shutil.rmtree(extract_dir)
+    return spec
