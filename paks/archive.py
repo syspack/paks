@@ -132,7 +132,7 @@ def extract_tarball(filename, allow_root=False, unsigned=False):
     try:
         bd.relocate_package(spec, allow_root)
     except Exception:
-        cleanup("Failed to relocate package.")
+        pass
 
     # Do we care if there isn't a manifest file here?
     # Final cleanup!
