@@ -33,11 +33,11 @@ class PakClient:
     def __str__(self):
         return "[paks-client]"
 
-    def iter_specs(self, packages, registries=None):
+    def iter_specs(self, packages, registries=None, use_cache=False):
         """
         A shared function to retrieve iterable of specs from packages
         """
-        for spec in paks.spec.parse_specs(packages, registries):
+        for spec in paks.spec.parse_specs(packages, registries, use_cache):
             yield spec
 
     def list_installed(self):
@@ -96,7 +96,7 @@ class PakClient:
         repos.insert(0, path)
         spack.config.set("repos", repos)
 
-    def install(self, packages, registry=None, tag=None):
+    def install(self, packages, registry=None, tag=None, use_cache=True):
         """
         Install one or more packages.
 
@@ -110,7 +110,7 @@ class PakClient:
             registries = [registry] + registries
 
         specs = []
-        for spec in self.iter_specs(packages, registries):
+        for spec in self.iter_specs(packages, registries, use_cache=use_cache):
             logger.info("Preparing to install %s" % spec.name)
             spec.package.do_install(force=True, tag=tag or self.settings.default_tag)
             specs.append(spec)

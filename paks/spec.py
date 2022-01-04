@@ -39,7 +39,7 @@ def wrap_spec(legacy, set_arch=True):
     return spec
 
 
-def parse_specs(packages, registries=None):
+def parse_specs(packages, registries=None, use_cache=False):
     """Parse specs from a list of strings, and concretize"""
     if not isinstance(packages, six.string_types):
         packages = " ".join(spack.util.string.quote(packages))
@@ -49,7 +49,8 @@ def parse_specs(packages, registries=None):
         spec = wrap_spec(legacy)
 
         # Prepare the spec cache before concretize
-        paks.cache.prepare_cache(spec, registries)
+        if use_cache:
+            paks.cache.prepare_cache(spec, registries)
         spec.concretize(reuse=True)
         specs.append(spec)
     return specs
