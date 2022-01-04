@@ -2,12 +2,8 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
-import spack.bootstrap
-import spack.spec
 import paks.utils as utils
 import paks.defaults
-import spack.util.executable
-import spack.util.crypto
 
 from paks.logger import logger
 
@@ -24,6 +20,8 @@ class Oras:
         """
         Get the oras executable (easier to install on your computer over bootstrap)
         """
+        import spack.bootstrap
+
         if not self._oras:
             with spack.bootstrap.ensure_bootstrap_configuration():
                 spec = spack.spec.Spec("oras")
