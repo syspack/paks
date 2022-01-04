@@ -76,11 +76,14 @@ def prepare_cache(spec, registries, tag=None):
     tmpdir = paks.utils.get_tmpdir()
 
     # Try until we get a cache hit
+    artifact = None
     for registry in registries:
         uri = "%s/%s:%s" % (registry, name, tag)
 
-    # Retrieve the artifact (will be None if doesn't exist)
-    artifact = oras.fetch(uri, os.path.join(tmpdir, name))
+        # Retrieve the artifact (will be None if doesn't exist)
+        artifact = oras.fetch(uri, os.path.join(tmpdir, name))
+        if artifact:
+            break
 
     # Don't continue if not found
     if not artifact:
