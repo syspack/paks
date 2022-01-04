@@ -118,7 +118,8 @@ def extract_tarball(filename, allow_root=False, unsigned=False):
 
     # If the spec already exists, it's already extracted
     if os.path.exists(spec.prefix):
-        logger.warning("%s already exists, no need to install again." % spec.prefix)
+        shutil.rmtree(extract_dir)
+        return
 
     # verify tarball checksum using the spec json
     if not unsigned and not verify_tarball(spec_dict, targz):
