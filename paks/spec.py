@@ -2,9 +2,14 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
+
+import paks.repo
+import paks.oras
+import paks.defaults
+
 import spack.spec
 import spack.util.string
-import paks.repo
+
 import six
 
 
@@ -19,29 +24,32 @@ class Spec(spack.spec.Spec):
         return self._package
 
 
-def parse(string):
-    """Returns a list of specs from an input string.
-    For creating one spec, see Spec() constructor.
+def wrap_spec(legacy, set_arch=True):
     """
-    return
+    Get a Paks spec (with the general arch) from a spack legacy spec.
+    """
+    # Create a new Pak spec to copy (duplicate) into
+    spec = Spec()
+    spec._dup(legacy)
+
+    # Always set the arch to be general
+    if set_arch:
+        spec.architecture = spack.spec.ArchSpec()
+        spec.architecture.target = spack.target.Target("x86_64")
+    return spec
 
 
-def parse_specs(packages):
+def parse_specs(packages, registries=None):
     """Parse specs from a list of strings, and concretize"""
     if not isinstance(packages, six.string_types):
         packages = " ".join(spack.util.string.quote(packages))
 
     specs = []
     for legacy in spack.spec.SpecParser().parse(packages):
+        spec = wrap_spec(legacy)
 
-        # Create a new Pak spec to copy (duplicate) into
-        spec = Spec()
-        spec._dup(legacy)
-
-        # Always set the arch to be general
-        spec.architecture = spack.spec.ArchSpec()
-        spec.architecture.target = spack.target.Target("x86_64")
-
-        spec.concretize()
+        # Prepare the spec cache before concretize
+        paks.cache.prepare_cache(spec, registries)
+        spec.concretize(reuse=True)
         specs.append(spec)
     return specs

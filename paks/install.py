@@ -146,85 +146,14 @@ def do_install(self, **kwargs):
     from spack.installer import PackageInstaller
 
     dev_path_var = self.spec.variants.get("dev_path", None)
-    registries = kwargs.get("registries")
     tag = kwargs.get("tag")
 
     if dev_path_var:
         kwargs["keep_stage"] = True
 
-    class PakInstaller(PackageInstaller):
-        """
-        The PakInstaller wraps the PackageInstaller.
-
-        We take this inline approach because we are not able to import it.
-        """
-
-        def prepare_cache(self, registries=None, tag=None):
-            """
-            Given that we have a build cache for a package, install it.
-
-            Since the GitHub packages API requires a token, we take an approach
-            that attempts a pull for an artifact, and just continue if we don't
-            have one.
-            """
-            # If no registries in user settings or command line, use default
-            if not registries:
-                registries = [paks.defaults.trusted_packages_registry]
-            tag = tag or paks.defaults.default_tag
-
-            # prepare oras client
-            oras = paks.oras.Oras()
-
-            # If we want to use Github packages API, it requires token with package;read scope
-            # https://docs.github.com/en/rest/reference/packages#list-packages-for-an-organization
-            for request in self.build_requests:
-
-                # Don't continue if installed!
-                if request.spec.install_status() == True:
-                    continue
-
-                # The name of the expected package, and directory to put it
-                name = bd.tarball_name(request.pkg.spec, ".spack")
-                tmpdir = paks.utils.get_tmpdir()
-
-                # Try until we get a cache hit
-                cache_hit = False
-                for registry in registries:
-                    uri = "%s/%s:%s" % (registry, name, tag)
-
-                    # Retrieve the artifact (will be None if doesn't exist)
-                    artifact = oras.fetch(uri, os.path.join(tmpdir, name))
-                    if artifact:
-                        cache_hit = True
-                        break
-
-                # Don't continue if not found
-                if not cache_hit:
-                    shutil.rmtree(tmpdir)
-                    continue
-
-                # Checksum check (removes sha256 prefix)
-                sha256 = oras.get_manifest_digest(uri)
-                if sha256:
-                    checker = spack.util.crypto.Checker(sha256)
-                    if not checker.check(artifact):
-                        logger.exit("Checksum of %s is not correct." % artifact)
-
-                # TODO: we need to push a binary that doensn't have a hash
-                # then we need to do this same extraction (to the correct directory)
-                # and then make sure install runs with reuse
-                # If we have an artifact, extract where needed and tell spack it's installed!
-                if artifact:
-
-                    # Note - for now not signing, since we don't have a consistent key strategy
-                    extract_tarball(artifact, unsigned=True)
-                    spack.hooks.post_install(request.pkg.spec)
-                    spack.store.db.add(request.pkg.spec, spack.store.layout)
-
-    builder = PakInstaller([(self, kwargs)])
+    builder = PackageInstaller([(self, kwargs)])
 
     # Download what we can find from the GitHub cache
-    builder.prepare_cache(registries, tag)
     builder.install()
 
     # If successful, generate an sbom

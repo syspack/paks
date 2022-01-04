@@ -112,7 +112,7 @@ jobs:
         echo ::set-output name=dockerfile_dir::${basedir}
 
     - name: Deploy Container
-      if: (github.event_name != 'pull_request')
+      #if: (github.event_name != 'pull_request')
       env:
         container: ${{ env.container_name }}
       run: |

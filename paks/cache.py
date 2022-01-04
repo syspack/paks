@@ -4,10 +4,13 @@ __license__ = "Apache-2.0"
 
 from paks.logger import logger
 import paks.utils as utils
-from spack.main import SpackCommand
 import paks.defaults
 import paks.settings
 import paks.oras
+import paks.spec
+
+from spack.main import SpackCommand
+import spack.binary_distribution as bd
 
 import shutil
 import os
@@ -37,6 +40,62 @@ def get_gpg_key():
             key = lines[i - 1].strip()
             break
     return key
+
+
+def prepare_cache(spec, registries, tag=None):
+    """
+    Given that we have a build cache for a package, do pre "install"
+
+    Matching specs can be installed with reuse=True
+    """
+    # If no registries provided, we don't want to prepare
+    if not registries:
+        return
+    tag = tag or paks.defaults.default_tag
+
+    # prepare oras client
+    oras = paks.oras.Oras()
+
+    # If we want to use Github packages API, it requires token with package;read scope
+    # https://docs.github.com/en/rest/reference/packages#list-packages-for-an-organization
+
+    # Don't continue if installed!
+    if spec.install_status() == True:
+        return
+
+    # Create a faux spec to grab the architecture information
+    dummy = paks.spec.wrap_spec(spec, set_arch=False)
+    dummy.concretize()
+
+    # The name of the expected package, and directory to put it
+    name = bd.tarball_name(dummy, ".spack").replace("-" + dummy.dag_hash(), "")
+    tmpdir = paks.utils.get_tmpdir()
+
+    # Try until we get a cache hit
+    cache_hit = False
+    for registry in registries:
+        uri = "%s/%s:%s" % (registry, name, tag)
+
+    # Retrieve the artifact (will be None if doesn't exist)
+    artifact = oras.fetch(uri, os.path.join(tmpdir, name))
+
+    # Don't continue if not found
+    if not artifact:
+        shutil.rmtree(tmpdir)
+        return
+
+    # Checksum check (removes sha256 prefix)
+    sha256 = oras.get_manifest_digest(uri)
+    if sha256:
+        checker = spack.util.crypto.Checker(sha256)
+        if not checker.check(artifact):
+            logger.exit("Checksum of %s is not correct." % artifact)
+
+    # Extract artifact where spack can find it for reuse
+    # Note - for now not signing, since we don't have a consistent key strategy
+    extract_tarball(artifact, unsigned=True)
+    spack.hooks.post_install(spec)
+    spack.store.db.add(spec, spack.store.layout)
 
 
 class BuildCache:

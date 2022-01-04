@@ -33,11 +33,11 @@ class PakClient:
     def __str__(self):
         return "[paks-client]"
 
-    def iter_specs(self, packages, concretize=True):
+    def iter_specs(self, packages, registries=None):
         """
         A shared function to retrieve iterable of specs from packages
         """
-        for spec in paks.spec.parse_specs(packages):
+        for spec in paks.spec.parse_specs(packages, registries):
             yield spec
 
     def list_installed(self):
@@ -59,6 +59,9 @@ class PakClient:
             email=self.settings.email,
             settings=self.settings,
         )
+
+        if not registry:
+            registry = paks.defaults.trusted_packages_registry
 
         # Install all packages, and also generate sboms
         specs = self.install(packages, registry=registry, tag=tag)
@@ -107,18 +110,9 @@ class PakClient:
             registries = [registry] + registries
 
         specs = []
-        for spec in self.iter_specs(packages):
+        for spec in self.iter_specs(packages, registries):
             logger.info("Preparing to install %s" % spec.name)
-
-            # TODO here we actually want to insert preparing GitHub packages build cache
-            # We should match based on a basic set of architectures we know the containers support
-            # E.g., check the platform and spit an error if it's some niche HPC one.
-
-            spec.package.do_install(
-                force=True,
-                registries=registries,
-                tag=tag or self.settings.default_tag,
-            )
+            spec.package.do_install(force=True, tag=tag or self.settings.default_tag)
             specs.append(spec)
         return specs
 

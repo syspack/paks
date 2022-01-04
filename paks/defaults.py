@@ -23,6 +23,9 @@ keys_dir = os.path.join(pakshome, "keys")
 # Fallback content type
 content_type = "application/vnd.spack.package"
 
+# Default tag to fallback to
+default_tag = "latest"
+
 # Allowed variables for the environment
 allowed_envars = ["username"]
 
