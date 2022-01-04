@@ -11,7 +11,7 @@ import paks.oras
 import paks.sbom
 import paks.utils
 import paks.defaults
-import paks.logger as logger
+from paks.logger import logger
 
 import spack.binary_distribution as bd
 import spack.hooks
