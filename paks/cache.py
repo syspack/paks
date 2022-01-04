@@ -71,7 +71,8 @@ def prepare_cache(spec, registries, tag=None):
     dummy.concretize()
 
     # The name of the expected package, and directory to put it
-    name = bd.tarball_name(dummy, ".spack").replace("-" + dummy.dag_hash(), "")
+    name = bd.tarball_name(dummy, ".spack")
+    name = name.rsplit("-", 1)[0] + ".spack"
     tmpdir = paks.utils.get_tmpdir()
 
     # Try until we get a cache hit
@@ -166,6 +167,8 @@ class BuildCache:
         for archive in utils.recursive_find(self.cache_dir, ".spack"):
 
             package_name = os.path.basename(archive)
+            package_name = package_name.rsplit("-", 1)[0] + ".spack"
+
             full_name = "%s/%s:%s" % (uri, package_name, tag)
             oras.push(full_name, archive, content_type=content_type)
 
