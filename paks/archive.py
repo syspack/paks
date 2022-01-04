@@ -112,14 +112,14 @@ def extract_tarball(filename, allow_root=False, unsigned=False):
     if not os.path.exists(spec_json) or not os.path.exists(targz):
         cleanup("%s or %s does not exist in archive." % (spec_json, targz))
 
-    # Note that the loaded spec is hugely missing information
+    # Note that the loaded spec is hugely missing information, and is a spack spec
     spec_dict = paks.utils.read_json(spec_json)
-    spec = paks.spec.wrap_spec(paks.spec.Spec.from_dict(spec_dict))
+    spec = paks.spec.Spec.from_dict(spec_dict)
 
     # If the spec already exists, it's already extracted
     if os.path.exists(spec.prefix):
         shutil.rmtree(extract_dir)
-        return spec
+        return
 
     # verify tarball checksum using the spec json
     if not unsigned and not verify_tarball(spec_dict, targz):
@@ -137,4 +137,4 @@ def extract_tarball(filename, allow_root=False, unsigned=False):
     # Do we care if there isn't a manifest file here?
     # Final cleanup!
     shutil.rmtree(extract_dir)
-    return spec
+    return

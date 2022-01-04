@@ -99,9 +99,8 @@ def prepare_cache(spec, registries, tag=None):
 
     # Extract artifact where spack can find it for reuse
     # Note - for now not signing, since we don't have a consistent key strategy
-    spec = paks.archive.extract_tarball(artifact, unsigned=True)
+    paks.archive.extract_tarball(artifact, unsigned=True)
     spec.concretize(reuse=True)
-    spack.hooks.post_install(spec)
     spack.store.db.add(spec, spack.store.layout)
 
 
