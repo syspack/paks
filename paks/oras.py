@@ -75,13 +75,20 @@ class Oras:
         """
         # We don't have programmatic access to list, so we just try to pull
         logger.info("Fetching oras {0}".format(url))
+        save_dir = os.path.dirname(save_file)
 
         try:
-            self.oras("pull", url, "-a", "--output", os.path.dirname(save_file))
+            self.oras("pull", url, "-a", "--output", save_dir)
         except:
             logger.info("{0} is not available for pull.".format(url))
             return
 
+        # Rename the archive to what is expected so it exists
+        found_files = os.listdir(save_dir)
+        if not found_files:
+            return
+        updated_file = os.path.join(save_dir, found_files[0])
+
         # Return the file if exists
-        if os.path.exists(save_file):
-            return save_file
+        if os.path.exists(updated_file):
+            return updated_file
