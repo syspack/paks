@@ -5,8 +5,9 @@ FROM ghcr.io/rse-ops/ubuntu:$ubuntu_version
 
 # Build all software with debug flags!
 ENV SPACK_ADD_DEBUG_FLAGS=true
+ENV ubuntu_version=${ubuntu_version}
 
-RUN apt-get install -y python3-dev || echo "Python3 dev not found"
+RUN /bin/bash -c "if [[ \"${ubuntu_version}\" != \"22.04\" ]]; then apt-get update && apt-get install -y python3-dev; fi"
 
 # install oras so we don't need to bootstrap
 RUN curl -LO https://github.com/oras-project/oras/releases/download/v0.12.0/oras_0.12.0_linux_amd64.tar.gz && \
