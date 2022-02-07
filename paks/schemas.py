@@ -16,6 +16,7 @@ settingsProperties = {
     "username": {"type": ["string", "null"]},
     "email": {"type": ["string", "null"]},
     "cache_dir": {"type": ["string", "null"]},
+    "container_tech": {"type": "string", "enum": ["docker", "podman"]},
     # We pull from these
     "trusted_pull_registries": {"type": "array", "items": {"type": "string"}},
     # This is where we push to

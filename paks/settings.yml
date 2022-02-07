@@ -2,7 +2,11 @@
 
 email: null
 username: null
-content_type: application/vnd.spack.package
+content_type: application/vnd.paks.container
+
+# Default container backend
+# one of docker or podman
+container_tech: docker
 
 # Default editor to edit config
 config_editor: vim

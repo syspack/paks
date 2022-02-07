@@ -1,24 +1,23 @@
 # Paks
 
-> Paks is a framework for building community packages and containers 📦️
+> Paks is a developer wrapper for containers 📦️ (in Python)
 
 ![docs/assets/img/paks.png](docs/assets/img/paks.png)
 
 ⭐️ [Documentation](https://syspack.github.io/paks) ⭐️
 
-You can see trusted packages under the [pakages](https://github.com/pakages) organization. Trusted means
-that they are built, tested, and deployed from modular repositories, and can be
-installed into consistent container bases that Paks provides.
+With paks you can save the state of your current container, and issue other 
+commands to it while developing. The sibling of this library is [syspack/pack](https://github.com/syspack/pack)
+which is implemented in Go.
 
-## Goals
+## TODO
 
-We want a framework that is optimized to help people build packages from source,
-and distribute the binaries via GitHub packages and also provide robust metadata
-and an organization scheme that works well for containers. We want a focus on that
-and then testing and automatically updating the individual packages provided.
-Paks provides this functionality by wrapping spack to perform builds, and then
-providing tooling to release to a GitHub packages build cache, and to run base
-containers that will reliably hit the cache.
+- add equivalent container backends
+- translate commands over to run
+- add additional commands with a registry?
+- allow user to define custom commands on fly for container
+- can we create some packaged thing with container, sbom?
+- can we add custom config file from remote? pakages?
 
 🚧️ **under development** 🚧️
 
