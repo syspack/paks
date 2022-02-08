@@ -8,4 +8,9 @@ from paks.logger import logger
 
 def main(args, parser, extra, subparser):
     cli = PakClient(args.settings_file)
-    cli.run(args.image, registry=args.registry)
+    cli.run(
+        args.image,
+        registry=args.registry,
+        shell=args.shell,
+        container_tech=args.container_tech,
+    )

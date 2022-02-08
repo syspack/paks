@@ -7,11 +7,6 @@ import paks.handlers.github
 import paks.utils as utils
 from paks.logger import logger
 
-import spack.repo
-import spack.config
-import llnl.util.lang
-import spack.util.naming as nm
-
 import six
 import shutil
 import sys
@@ -151,10 +146,6 @@ def _singleton_path(repo_dirs=None):
     path = RepoPath(*repo_dirs)
     sys.meta_path.append(path)
     return path
-
-
-#: Singleton repo path instance
-path = llnl.util.lang.Singleton(_singleton_path)
 
 
 def get(spec):

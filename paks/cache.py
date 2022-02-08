@@ -4,16 +4,12 @@ __license__ = "Apache-2.0"
 
 from paks.logger import logger
 import paks.utils as utils
-from spack.main import SpackCommand
 import paks.defaults
 import paks.settings
 import paks.oras
 
 import shutil
 import os
-
-gpg = SpackCommand("gpg")
-bc = SpackCommand("buildcache")
 
 
 def gpg_init(dirname):

@@ -8,6 +8,9 @@ content_type: application/vnd.paks.container
 # one of docker or podman
 container_tech: docker
 
+# Default container shell
+container_shell: /bin/bash
+
 # Default editor to edit config
 config_editor: vim
 

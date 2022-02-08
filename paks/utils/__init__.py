@@ -6,7 +6,6 @@ from .terminal import (
     which,
     confirm_action,
 )
-from .spack import add_spack_to_path, add_paks_spack_repo, install_spack
 from .fileio import (
     copyfile,
     get_file_hash,

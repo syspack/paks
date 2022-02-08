@@ -2,11 +2,11 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
+from paks.backends import get_container_backend
 from paks.logger import logger
 import paks.cache
 from .settings import Settings
 import json
-
 
 
 class PakClient:
@@ -26,9 +26,10 @@ class PakClient:
     def __str__(self):
         return "[paks-client]"
 
-    def run(self, image, registry=None):
+    def run(self, image, registry=None, shell=None, container_tech=None):
         """
         Run a paks image
         """
-        import IPython
-        IPython.embed()
+        shell = shell or self.settings.container_shell
+        backend = get_container_backend(container_tech or self.settings.container_tech)
+        backend(image).run(shell)

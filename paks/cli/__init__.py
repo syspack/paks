@@ -70,6 +70,13 @@ def get_parser():
         help="suffix to add to image to save to.",
     )
 
+    run.add_argument(
+        "--shell",
+        "--sh",
+        dest="shell",
+        help="Use a one-off shell instead of the one defined in your config.",
+    )
+
     config = subparsers.add_parser(
         "config",
         description="update configuration settings. Use set or get to see or set information.",
@@ -104,6 +111,12 @@ paks config init""",
             "-r",
             dest="registry",
             help="registry to use, if required for command.",
+        )
+        command.add_argument(
+            "--container-tech",
+            "-c",
+            dest="container_tech",
+            help="container technology to use, to over-ride user settings.",
         )
 
     return parser

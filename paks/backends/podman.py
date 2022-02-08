@@ -13,6 +13,8 @@ class PodmanContainer(DockerContainer):
     A Podman container controller, which is the same as Docker.
     """
 
+    command = "podman"
+
     def shell(self, image):
         """
         Interactive shell into a container image.

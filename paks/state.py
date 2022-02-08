@@ -12,16 +12,6 @@ import sys
 import os
 
 
-def generate_name():
-    return "".join([random.choices(string.ascii_lowercase)[0] for x in range(8)])
-
-
-def convert2boolean(arg):
-    if not isinstance(arg, bool):
-        return arg.lower() in ("yes", "true", "t", "1", "y")
-    return arg
-
-
 def run_container(name="ubuntu", entrypoint="bash"):
     """This function starts an interactive session with a container of interest.
     Run with threading, we can know when the container is exited for a final save.

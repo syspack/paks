@@ -47,6 +47,9 @@ The following variables can be configured in your user settings:
    * - Name
      - Description
      - Default
+   * - container_tech
+     - The container technology to use (docker or podman)
+     - Defaults to ``docker``
    * - username
      - A username to use to sign packages (only required when using build)
      - Defaults to your ``$USER``
