@@ -4,11 +4,9 @@ __license__ = "Apache-2.0"
 
 from paks.utils.names import namer
 from .command import Command
-import subprocess
 import shutil
 import tempfile
 import os
-import sys
 
 # Every command must:
 # 1. subclass Command

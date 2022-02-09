@@ -3,10 +3,7 @@ __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 from paks.backends import get_container_backend
-from paks.logger import logger
-import paks.cache
 from .settings import Settings
-import json
 
 
 class PakClient:

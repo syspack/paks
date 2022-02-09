@@ -7,11 +7,7 @@ import paks.commands
 from .base import ContainerTechnology, ContainerName
 import paks.utils
 
-from datetime import datetime
 import subprocess
-import json
-import os
-import sys
 
 
 class DockerContainer(ContainerTechnology):

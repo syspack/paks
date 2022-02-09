@@ -79,6 +79,10 @@ This will take you into a shell where you can interact! For example, here is a s
     Successfully saved container! ⭐️
     #save
 
-The main issue now is that tab and arrows won't work, I haven't found a solution that works well
-for this yet. The only promising one was pynput but I couldn't control logging to a single terminal
-window (e.g., it's going to keylog you everywhere!)
+
+More commands coming soon!
+
+ - docker inspect of different metadata
+ - saving of sboms outside of the container
+ - saving and loading environments
+ - and probably more!

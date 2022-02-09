@@ -3,7 +3,6 @@ __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 from random import choice
-import sys
 
 
 class RobotNamer:

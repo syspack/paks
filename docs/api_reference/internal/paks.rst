@@ -13,10 +13,10 @@ paks.cli module
     :show-inheritance:
 
 
-paks.cli.build module
----------------------
+paks.cli.run module
+-------------------
 
-.. automodule:: paks.cli.build
+.. automodule:: paks.cli.run
     :members:
     :undoc-members:
     :show-inheritance:
@@ -26,49 +26,6 @@ paks.cli.config module
 ----------------------
 
 .. automodule:: paks.cli.config
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-paks.cli.helpers module
------------------------
-
-.. automodule:: paks.cli.helpers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-paks.cli.install module
------------------------
-
-.. automodule:: paks.cli.install
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-paks.cli.ls module
-------------------
-
-.. automodule:: paks.cli.ls
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-paks.cli.push module
---------------------
-
-.. automodule:: paks.cli.push
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-paks.cache module
------------------
-
-.. automodule:: paks.cache
     :members:
     :undoc-members:
     :show-inheritance:
@@ -91,57 +48,6 @@ paks.defaults module
     :show-inheritance:
 
 
-paks.handlers module
---------------------
-
-.. automodule:: paks.handlers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-paks.handlers.github module
----------------------------
-
-.. automodule:: paks.handlers.github
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-paks.install module
---------------------
-
-.. automodule:: paks.install
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-paks.oras module
-----------------
-
-.. automodule:: paks.oras
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-paks.repo module
-----------------
-
-.. automodule:: paks.repo
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-paks.sbom module
-----------------
-
-.. automodule:: paks.sbom
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 paks.schemas module
 -------------------
 
@@ -155,14 +61,6 @@ paks.settings module
 --------------------
 
 .. automodule:: paks.settings
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-paks.spec module
-----------------
-
-.. automodule:: paks.spec
     :members:
     :undoc-members:
     :show-inheritance:
@@ -184,11 +82,96 @@ paks.logger module
     :undoc-members:
     :show-inheritance:
 
-    
+
+paks.backends module
+--------------------
+
+.. automodule:: paks.backends
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+paks.backends.base module
+-------------------------
+
+.. automodule:: paks.backends.base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+paks.backends.docker module
+---------------------------
+
+.. automodule:: paks.backends.docker
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+paks.backends.podman module
+---------------------------
+
+.. automodule:: paks.backends.podman
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+paks.commands module
+--------------------
+
+.. automodule:: paks.commands
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+paks.commands.command module
+----------------------------
+
+.. automodule:: paks.commands.command
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+paks.commands.state module
+---------------------------
+
+.. automodule:: paks.commands.state
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 paks.utils module
 -----------------
 
 .. automodule:: paks.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+paks.utils.fileio module
+------------------------
+
+.. automodule:: paks.utils.fileio
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+paks.utils.names module
+-----------------------
+
+.. automodule:: paks.utils.names
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    
+paks.utils.terminal module
+--------------------------
+
+.. automodule:: paks.utils.terminal
     :members:
     :undoc-members:
     :show-inheritance:

@@ -107,7 +107,7 @@ class Command:
         """
         if self.tech not in self.supported_tech:
             return self.return_failure(
-                "This command is not specified to run with %s." % tech
+                "This command is not specified to run with %s." % self.tech
             )
 
         # Required args for all commands
@@ -143,7 +143,7 @@ class Command:
                 continue
 
             # This is a kwarg
-            key, val = art.split("=", 1)
+            key, val = arg.split("=", 1)
             kwargs[key.strip()] = val.strip()
         return args, kwargs
 
