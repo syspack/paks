@@ -2,7 +2,7 @@ ARG ubuntu_version
 FROM ubuntu:$ubuntu_version
 
 # docker build --build-arg ubuntu_version=20.04 -t ghcr.io/syspack/paks-ubuntu-20.04 .
-
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y python3-dev python3-pip
 # install oras so we don't need to bootstrap
 # RUN curl -LO https://github.com/oras-project/oras/releases/download/v0.12.0/oras_0.12.0_linux_amd64.tar.gz && \
