@@ -272,27 +272,11 @@ texinfo_documents = [
 # texinfo_no_detailmenu = False
 
 
-def spack_clone(*args, **kwargs):
-    import tempfile
-
-    spack = os.path.join(tempfile.gettempdir(), "spack")
-    if not os.path.exists(spack):
-        os.system(
-            "git clone --depth 1 https://github.com/spack/spack %s"
-            % spack
-        )
-    path = "%s/bin:%s" % (spack, os.environ["PATH"])
-    os.putenv("PATH", path)
-    os.environ["PATH"] = path
-    from paks.utils import add_spack_to_path
-    add_spack_to_path()
-
 version = "devel"
 release = version
 
 def setup(app):
     app.add_css_file("sphinx-argparse.css")
-    app.connect("config-inited", spack_clone)
     from paks.version import __version__ as version
     global version
     global release

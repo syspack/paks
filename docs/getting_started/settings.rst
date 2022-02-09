@@ -5,8 +5,7 @@ Settings
 ========
 
 Most defaults should work without changing, however you will likely want to customize 
-settings in the case that you are deploying packages (as a developer)
-or if you want to install from a different trusted registry (as a user). 
+settings in the case that you are a developer.
 
 Updating Settings
 =================
@@ -47,6 +46,9 @@ The following variables can be configured in your user settings:
    * - Name
      - Description
      - Default
+   * - container_tech
+     - The container technology to use (docker or podman)
+     - Defaults to ``docker``
    * - username
      - A username to use to sign packages (only required when using build)
      - Defaults to your ``$USER``
@@ -72,8 +74,3 @@ The following variables can be configured in your user settings:
      - The default content type for the spack package (not recommended to change)
      - application/vnd.spack.package
 
-
-Note that we will be extending settings to include allowing more than one trusted registry to be added,
-and they will be queried in the order they are provided. We will also separate the trusted packages registry
-to use for install from a default to push, as they could easily be different. These variables will also be added for customization on
-the command line (not added yet).

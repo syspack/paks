@@ -90,9 +90,14 @@ class EmptySettings:
         if not os.path.exists(self.settings_file):
             logger.exit("%s does not exist." % self.settings_file)
 
-        # Store the original settings for update as we go
-        with open(self.settings_file, "r") as fd:
+        # Always load default settings first
+        with open(defaults.default_settings_file, "r") as fd:
             self._settings = yaml.load(fd.read(), yaml.SafeLoader)
+
+        # Update with user or custom settings if not equal to default
+        if self.settings_file != defaults.default_settings_file:
+            with open(self.settings_file, "r") as fd:
+                self._settings.update(yaml.load(fd.read(), yaml.SafeLoader))
 
     def get(self, key, default=None):
         """

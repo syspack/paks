@@ -8,6 +8,9 @@ from paks.logger import logger
 
 def main(args, parser, extra, subparser):
     cli = PakClient(args.settings_file)
-    installed = cli.list_installed()
-    if not installed:
-        logger.warning("There are no packages installed.")
+    cli.run(
+        args.image,
+        registry=args.registry,
+        shell=args.shell,
+        container_tech=args.container_tech,
+    )

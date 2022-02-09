@@ -17,16 +17,17 @@ pakshome = os.path.expanduser("~/.paks")
 # The user settings file can be created to over-ride default
 user_settings_file = os.path.join(pakshome, "settings.yml")
 
-# Default directory for keys
-keys_dir = os.path.join(pakshome, "keys")
+# Default directory for encrypted environments?
+envs_dir = os.path.join(pakshome, "envs")
 
 # Fallback content type
-content_type = "application/vnd.spack.package"
+content_type = "application/vnd.paks.container"
 
 # Allowed variables for the environment
 allowed_envars = ["username"]
 
 # Default registry prefix to install from
+# TODO should we have some kind of pakages here meaning sets of commands?
 trusted_packages_registry = "ghcr.io/pakages"
 
 # The GitHub repository for paks

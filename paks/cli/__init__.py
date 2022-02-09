@@ -13,7 +13,7 @@ import os
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description="paks community package manager",
+        description="paks interactive container commands",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
@@ -57,94 +57,24 @@ def get_parser():
     # print version and exit
     subparsers.add_parser("version", description="show software version")
 
-    # Install, Uninstall and Build
-    install = subparsers.add_parser(
-        "install",
-        description="install a Pak to the current environment",
+    run = subparsers.add_parser(
+        "run",
+        description="run an interactive container",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
-    uninstall = subparsers.add_parser(
-        "uninstall",
-        description="install a Pak from the current environment",
-        formatter_class=argparse.RawTextHelpFormatter,
+    run.add_argument(
+        "--suffix",
+        "-s",
+        dest="suffix",
+        help="suffix to add to image to save to.",
     )
 
-    # List installed packages
-    ls = subparsers.add_parser(
-        "list",
-        description="list installed packages",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-
-    push = subparsers.add_parser(
-        "push",
-        description="push an existing cache",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-
-    # For a push we assue we don't want default cleanup
-    push.add_argument(
-        "--cleanup",
-        "-c",
-        dest="cleanup",
-        default=False,
-        action="store_true",
-        help="Clean up (remove) the cache after push.",
-    )
-
-    # One required, one optional arg
-    push.add_argument(
-        "paths",
-        help="path to cache directory (optional) and GitHub packages or other oras URI (ghcr.io)",
-        nargs="*",
-    )
-
-    build = subparsers.add_parser(
-        "build",
-        description="build into a cache",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-
-    build.add_argument(
-        "--cache-dir",
-        dest="cache_dir",
-        help="path to cache directory",
-    )
-
-    build.add_argument(
-        "--key",
-        "-k",
-        dest="key",
-        help="specify the gpg key hash to use",
-    )
-    build.add_argument(
-        "--push",
-        "-p",
-        dest="push",
-        help="push to a named oras endpoint",
-    )
-    build.add_argument(
-        "--pushd",
-        dest="push_trusted",
-        action="store_true",
-        default=False,
-        help="push to default trusted endpoint",
-    )
-    build.add_argument(
-        "--force",
-        "-f",
-        dest="force",
-        action="store_true",
-        default=False,
-        help="force cleanup of a custom cache directory",
-    )
-    build.add_argument(
-        "--no-cleanup",
-        dest="no_cleanup",
-        default=False,
-        action="store_true",
-        help="Given that --push is added, don't clean up the build cache.",
+    run.add_argument(
+        "--shell",
+        "--sh",
+        dest="shell",
+        help="Use a one-off shell instead of the one defined in your config.",
     )
 
     config = subparsers.add_parser(
@@ -172,38 +102,21 @@ paks config init""",
         type=str,
     )
 
-    # Local shell with client loaded
-    shell = subparsers.add_parser(
-        "shell",
-        description="shell into a Python session with a client.",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-    shell.add_argument(
-        "--interpreter",
-        "-i",
-        dest="interpreter",
-        help="python interpreter",
-        choices=["ipython", "python"],
-        default="ipython",
-    )
+    for command in [run]:
+        command.add_argument("image", help="image to run")
 
-    for command in [install, build, uninstall]:
-        command.add_argument("packages", help="install these packages", nargs="+")
-
-    for command in [install, build]:
+    for command in [run]:
         command.add_argument(
             "--registry",
             "-r",
             dest="registry",
-            help="registry to use for install or build.",
+            help="registry to use, if required for command.",
         )
-
-    for command in [install, build, push]:
         command.add_argument(
-            "--tag",
-            "-t",
-            dest="tag",
-            help="tag to use for build cache retrieval or push",
+            "--container-tech",
+            "-c",
+            dest="container_tech",
+            help="container technology to use, to over-ride user settings.",
         )
 
     return parser
@@ -219,7 +132,7 @@ def run_main():
 
         version = paks.__version__
 
-        print("\nSingularity Registry (HPC) Client v%s" % version)
+        print("\nPaks v%s" % version)
         parser.print_help()
         sys.exit(return_code)
 
@@ -256,30 +169,20 @@ def run_main():
                 helper = subparser
                 break
 
-    if args.command == "build":
-        from .build import main
+    if args.command == "run":
+        from .run import main
     elif args.command == "config":
         from .config import main
-    elif args.command == "list":
-        from .ls import main
-    elif args.command == "install":
-        from .install import main
-    elif args.command == "push":
-        from .push import main
-    elif args.command == "shell":
-        from .shell import main
-    elif args.command == "uninstall":
-        from .uninstall import main
 
     # Pass on to the correct parser
     return_code = 0
-    try:
-        main(args=args, parser=parser, extra=extra, subparser=helper)
-        sys.exit(return_code)
-    except UnboundLocalError:
-        return_code = 1
+    # try:
+    main(args=args, parser=parser, extra=extra, subparser=helper)
+    #    sys.exit(return_code)
+    # except UnboundLocalError:
+    #    return_code = 1
 
-    help(return_code)
+    # help(return_code)
 
 
 if __name__ == "__main__":

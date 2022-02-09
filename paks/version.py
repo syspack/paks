@@ -2,12 +2,12 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
-__version__ = "0.0.12"
+__version__ = "0.1.0"
 AUTHOR = "Vanessa Sochat, Alec Scott"
 NAME = "paks"
 PACKAGE_URL = "https://github.com/syspack/paks"
-KEYWORDS = "software, GitHub packages."
-DESCRIPTION = "GitHub packages package manager."
+KEYWORDS = "containers, interactive commands."
+DESCRIPTION = "Interactive container commands."
 LICENSE = "LICENSE"
 
 ################################################################################

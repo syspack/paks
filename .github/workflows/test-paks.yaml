@@ -26,25 +26,3 @@ jobs:
         run: |
            docker build --build-arg ubuntu_version=${{ matrix.container[0]}} \
                         -t ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest .
-
-      # Repos that use pre-built containers don't need to use this manual format
-      - name: Build Package
-        env:        
-          user: ${{ github.actor }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker run --env deploy=false \
-                     --env package=zlib \
-                     --env user=${user} \
-                     --env token=${token} ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest
-
-
-      - name: Build Remote Package
-        env:        
-          user: ${{ github.actor }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker run --env deploy=false \
-                     --env package=https://github.com/pakages/zlib \
-                     --env user=${user} \
-                     --env token=${token} ghcr.io/syspack/paks-ubuntu-${{ matrix.container[0] }}:latest

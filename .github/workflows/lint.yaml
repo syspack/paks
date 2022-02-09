@@ -26,4 +26,5 @@ jobs:
           pyflakes paks/utils/fileio.py 
           pyflakes paks/utils/terminal.py
           pyflakes paks/*.py
-          pyflakes paks/handlers/*.py
+          pyflakes paks/commands/*.py
+          pyflakes paks/backends/*.py
