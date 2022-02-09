@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings &mdash; Paks 0.0.12 documentation</title>
+  <title>Settings &mdash; Paks 0.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.12
+                0.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -91,8 +91,7 @@
   <div class="section" id="settings">
 <span id="getting-started-settings"></span><h1>Settings<a class="headerlink" href="#settings" title="Permalink to this headline"></a></h1>
 <p>Most defaults should work without changing, however you will likely want to customize
-settings in the case that you are deploying packages (as a developer)
-or if you want to install from a different trusted registry (as a user).</p>
+settings in the case that you are a developer.</p>
 <div class="section" id="updating-settings">
 <h2>Updating Settings<a class="headerlink" href="#updating-settings" title="Permalink to this headline"></a></h2>
 <p>To change defaults you can either edit the settings.yml file in the installation directory
@@ -128,44 +127,44 @@ the build cache artifacts):</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>username</td>
+<tr class="row-even"><td>container_tech</td>
+<td>The container technology to use (docker or podman)</td>
+<td>Defaults to <code class="docutils literal notranslate"><span class="pre">docker</span></code></td>
+</tr>
+<tr class="row-odd"><td>username</td>
 <td>A username to use to sign packages (only required when using build)</td>
 <td>Defaults to your <code class="docutils literal notranslate"><span class="pre">$USER</span></code></td>
 </tr>
-<tr class="row-odd"><td>email</td>
+<tr class="row-even"><td>email</td>
 <td>An email to use to sign packages (only required when using build)</td>
 <td>Defaults to <code class="docutils literal notranslate"><span class="pre">$USER&#64;users.noreply.spack.io</span></code></td>
 </tr>
-<tr class="row-even"><td>trusted_packages_org</td>
+<tr class="row-odd"><td>trusted_packages_org</td>
 <td>The trusted packages GitHub organization to install from</td>
 <td>pakages</td>
 </tr>
-<tr class="row-odd"><td>trusted_packages_registry</td>
+<tr class="row-even"><td>trusted_packages_registry</td>
 <td>The default trusted packages GitHub organization to push to. If no push registries are provided, we fallback to push here.</td>
 <td>ghcr.io/pakages</td>
 </tr>
-<tr class="row-even"><td>trusted_pull_registries</td>
+<tr class="row-odd"><td>trusted_pull_registries</td>
 <td>One or more registries to pull from.</td>
 <td>[ghcr.io/pakages]</td>
 </tr>
-<tr class="row-odd"><td>cache_dir</td>
+<tr class="row-even"><td>cache_dir</td>
 <td>A default cache directory to use - will only be cleaned up for build using <code class="docutils literal notranslate"><span class="pre">--force</span></code></td>
 <td>unset</td>
 </tr>
-<tr class="row-even"><td>default_tag</td>
+<tr class="row-odd"><td>default_tag</td>
 <td>The default tag to use to push artifacts.</td>
 <td>latest</td>
 </tr>
-<tr class="row-odd"><td>content_type</td>
+<tr class="row-even"><td>content_type</td>
 <td>The default content type for the spack package (not recommended to change)</td>
 <td>application/vnd.spack.package</td>
 </tr>
 </tbody>
 </table>
-<p>Note that we will be extending settings to include allowing more than one trusted registry to be added,
-and they will be queried in the order they are provided. We will also separate the trusted packages registry
-to use for install from a default to push, as they could easily be different. These variables will also be added for customization on
-the command line (not added yet).</p>
 </div>
 </div>
 

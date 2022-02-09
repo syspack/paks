@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.client &mdash; Paks 0.0.12 documentation</title>
+  <title>paks.client &mdash; Paks 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.12
+                0.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -80,18 +80,8 @@
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2021-2022, Vanessa Sochat and Alec Scott&quot;</span>
 <span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;Apache-2.0&quot;</span>
 
-<span class="kn">from</span> <span class="nn">paks.logger</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">import</span> <span class="nn">paks.cache</span>
+<span class="kn">from</span> <span class="nn">paks.backends</span> <span class="kn">import</span> <span class="n">get_container_backend</span>
 <span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">Settings</span>
-
-<span class="kn">import</span> <span class="nn">spack.cmd</span>
-<span class="kn">import</span> <span class="nn">spack.target</span>
-<span class="kn">import</span> <span class="nn">spack.main</span>
-<span class="kn">import</span> <span class="nn">spack.config</span>
-
-<span class="kn">import</span> <span class="nn">json</span>
-
-<span class="kn">import</span> <span class="nn">paks.spec</span>
 
 
 <div class="viewcode-block" id="PakClient"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient">[docs]</a><span class="k">class</span> <span class="nc">PakClient</span><span class="p">:</span>
@@ -111,104 +101,13 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;[paks-client]&quot;</span>
 
-<div class="viewcode-block" id="PakClient.iter_specs"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.iter_specs">[docs]</a>    <span class="k">def</span> <span class="nf">iter_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">concretize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PakClient.run"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">container_tech</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A shared function to retrieve iterable of specs from packages</span>
+<span class="sd">        Run a paks image</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">paks</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">parse_specs</span><span class="p">(</span><span class="n">packages</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">spec</span></div>
-
-<div class="viewcode-block" id="PakClient.list_installed"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.list_installed">[docs]</a>    <span class="k">def</span> <span class="nf">list_installed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        List installed packages</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">find</span> <span class="o">=</span> <span class="n">spack</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">SpackCommand</span><span class="p">(</span><span class="s2">&quot;find&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">find</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;--json&quot;</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="PakClient.build"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Build a package into a cache</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Prepare a cache directory</span>
-        <span class="n">cache</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">BuildCache</span><span class="p">(</span>
-            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
-            <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-            <span class="n">email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
-            <span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Install all packages, and also generate sboms</span>
-        <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
-
-        <span class="c1"># TODO how can we attach the sbom to the package (aside from being in archive?)</span>
-        <span class="n">cache</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cache</span></div>
-
-<div class="viewcode-block" id="PakClient.push"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given an existing cache directory, push known specs to a specific uri</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Prepare a cache directory</span>
-        <span class="n">cache</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">BuildCache</span><span class="p">(</span>
-            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
-            <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-            <span class="n">email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
-            <span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">cache</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cache</span></div>
-
-<div class="viewcode-block" id="PakClient.add_repository"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.add_repository">[docs]</a>    <span class="k">def</span> <span class="nf">add_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a repository.</span>
-
-<span class="sd">        Given a path that exists, add the repository to the</span>
-<span class="sd">        underlying spack. If you need to add a GitHub uri, create a</span>
-<span class="sd">        paks.repo.PakRepo first.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">repos</span> <span class="o">=</span> <span class="n">spack</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">)</span>
-        <span class="n">repos</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-        <span class="n">spack</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="n">repos</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="PakClient.install"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Install one or more packages.</span>
-
-<span class="sd">        This eventually needs to take into account using the GitHub packages bulid cache</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Default to registries defined in settings</span>
-        <span class="n">registries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trusted_pull_registries</span>
-
-        <span class="c1"># Do we have an additional trusted registry provided on the command line?</span>
-        <span class="k">if</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="n">registries</span> <span class="o">=</span> <span class="p">[</span><span class="n">registry</span><span class="p">]</span> <span class="o">+</span> <span class="n">registries</span>
-
-        <span class="n">specs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_specs</span><span class="p">(</span><span class="n">packages</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing to install </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">spec</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-            <span class="c1"># TODO here we actually want to insert preparing GitHub packages build cache</span>
-            <span class="c1"># We should match based on a basic set of architectures we know the containers support</span>
-            <span class="c1"># E.g., check the platform and spit an error if it&#39;s some niche HPC one.</span>
-
-            <span class="n">spec</span><span class="o">.</span><span class="n">package</span><span class="o">.</span><span class="n">do_install</span><span class="p">(</span>
-                <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">registries</span><span class="o">=</span><span class="n">registries</span><span class="p">,</span>
-                <span class="n">tag</span><span class="o">=</span><span class="n">tag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_tag</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">specs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">specs</span></div>
-
-<div class="viewcode-block" id="PakClient.uninstall"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient.uninstall">[docs]</a>    <span class="k">def</span> <span class="nf">uninstall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packages</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Uninstall a spack package</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_specs</span><span class="p">(</span><span class="n">packages</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">spec</span><span class="o">.</span><span class="n">package</span><span class="o">.</span><span class="n">do_uninstall</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span></div></div>
+        <span class="n">shell</span> <span class="o">=</span> <span class="n">shell</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">container_shell</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="n">get_container_backend</span><span class="p">(</span><span class="n">container_tech</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">container_tech</span><span class="p">)</span>
+        <span class="n">backend</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

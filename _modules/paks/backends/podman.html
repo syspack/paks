@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>paks.cli.helpers &mdash; Paks 0.0.12 documentation</title>
+  <title>paks.backends.podman &mdash; Paks 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/sphinx-argparse.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.12
+                0.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -66,8 +66,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-          <li><a href="../cli.html">paks.cli</a> &raquo;</li>
-      <li>paks.cli.helpers</li>
+          <li><a href="../backends.html">paks.backends</a> &raquo;</li>
+      <li>paks.backends.podman</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,46 +76,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for paks.cli.helpers</h1><div class="highlight"><pre>
+  <h1>Source code for paks.backends.podman</h1><div class="highlight"><pre>
 <span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Vanessa Sochat, Alec Scott&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2021-2022, Vanessa Sochat and Alec Scott&quot;</span>
 <span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;Apache-2.0&quot;</span>
 
-<span class="kn">from</span> <span class="nn">paks.repo</span> <span class="kn">import</span> <span class="n">PakRepo</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">.docker</span> <span class="kn">import</span> <span class="n">DockerContainer</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
 
 
-<div class="viewcode-block" id="parse_package_request"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.cli.helpers.parse_package_request">[docs]</a><span class="k">def</span> <span class="nf">parse_package_request</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="PodmanContainer"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.podman.PodmanContainer">[docs]</a><span class="k">class</span> <span class="nc">PodmanContainer</span><span class="p">(</span><span class="n">DockerContainer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Given args, parse the packages and repo (if any) from it.</span>
-<span class="sd">    This is shared between install and build</span>
+<span class="sd">    A Podman container controller, which is the same as Docker.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># By defualt, assume not adding a repository</span>
-    <span class="n">repo</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1"># Case 1: we have an install directed at the present working directory</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
-        <span class="n">repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;podman&quot;</span>
 
-    <span class="c1"># If we have a path (akin to the first)</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">repo</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># OR if we have a github URI</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;(http|https)://github.com&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">repo</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># Add the repository, if defined</span>
-    <span class="k">if</span> <span class="n">repo</span><span class="p">:</span>
-        <span class="n">repo</span> <span class="o">=</span> <span class="n">PakRepo</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
-
-    <span class="c1"># If we don&#39;t have packages and we have a repo, derive from PWD</span>
-    <span class="k">if</span> <span class="n">repo</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">:</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">packages</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_packages</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">,</span> <span class="n">repo</span></div>
+<div class="viewcode-block" id="PodmanContainer.shell"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.podman.PodmanContainer.shell">[docs]</a>    <span class="k">def</span> <span class="nf">shell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interactive shell into a container image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
+            <span class="s2">&quot;podman run -it --rm --entrypoint </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">podman_shell</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
            </div>

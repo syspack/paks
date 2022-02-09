@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developer Guide &mdash; Paks 0.0.12 documentation</title>
+  <title>Developer Guide &mdash; Paks 0.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sphinx-argparse.css" type="text/css" />
@@ -31,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> Paks
           </a>
               <div class="version">
-                0.0.12
+                0.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -45,16 +45,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#developer-goals">Developer Goals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#paks-development">Paks Development</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#github-token">GitHub Token</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#github-packages">GitHub Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#repository-creation">Repository Creation</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -89,51 +80,9 @@
              
   <div class="section" id="developer-guide">
 <span id="getting-started-developer-guide"></span><h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline"></a></h1>
-<p>This developer guide includes more detail about how to build and distribute your own
-paks repository, or how to create a module package repository.
+<p>This developer guide will detail how to write paks interactive commands.
 If you haven’t read <a class="reference internal" href="installation.html#getting-started-installation"><span class="std std-ref">Installation</span></a> you should do that first, along
-with learning how to customize settings via <a class="reference internal" href="settings.html#getting-started-settings"><span class="std std-ref">Settings</span></a>.
-You will need to set a username and email to sign packages.</p>
-<div class="section" id="developer-goals">
-<h2>Developer Goals<a class="headerlink" href="#developer-goals" title="Permalink to this headline"></a></h2>
-<p>Paks is a packaging framework that is optimized for community packages, meaning that
-anyone can generate a simple repository with a package specification and then:</p>
-<ol class="arabic simple">
-<li>The repository automatically detects new versions of a package upstream and builds</li>
-<li>Building is recommended to perform testing</li>
-<li>A successful update, build, and test leads to a new release</li>
-<li>The repository then serves metadata about the package via RESTful API</li>
-<li>(Optionally) the repository can provide single containers</li>
-</ol>
-<p>While we use Spack as the underlying manager for building, we have extended a Spack
-spec and other concepts to be flexible to installing from a source like GitHub.</p>
-</div>
-<div class="section" id="paks-development">
-<h2>Paks Development<a class="headerlink" href="#paks-development" title="Permalink to this headline"></a></h2>
-<p>The following sections will provide detail about how to provide packages.</p>
-<div class="section" id="github-token">
-<h3>GitHub Token<a class="headerlink" href="#github-token" title="Permalink to this headline"></a></h3>
-<p>If you intend to push packages to a registry, you will need to provide a <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code>
-in the environment. The CI recipes will give you an error if you forget to add this in
-your workflow, and locally running Pak from the command line will too.</p>
-</div>
-<div class="section" id="github-packages">
-<h3>GitHub Packages<a class="headerlink" href="#github-packages" title="Permalink to this headline"></a></h3>
-<p>If you are using Paks as a developer, you likely want to build and deploy binaries
-of your own packages. This means you will need to push packages to your organization,
-and ideally via an automated workflow that deploys to a specific repository namespace.
-To allow packages to be pushed you will need to go to Settings -&gt; Packages
-and ensure that the public box is checked. Otherwise, all packages will be private (and not seen by
-the tool) unless you are using them privately in CI only. Note that by default we use
-packages from <a class="reference external" href="https://github.com/pakages">the pakages organization</a> , which you likely
-won’t have permission to push to, but you can pull/install from.</p>
-</div>
-<div class="section" id="repository-creation">
-<h3>Repository Creation<a class="headerlink" href="#repository-creation" title="Permalink to this headline"></a></h3>
-<p>These instructions will be written soon! We are still working on core of Paks and
-developing the CI workflows for a package repository.</p>
-</div>
-</div>
+with learning how to customize settings via <a class="reference internal" href="settings.html#getting-started-settings"><span class="std std-ref">Settings</span></a>.</p>
 </div>
 
 
