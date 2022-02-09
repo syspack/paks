@@ -46,8 +46,7 @@ class DockerContainer(ContainerTechnology):
             self.image,
             shell,
         ]
-        pty, tty, p = self.run_pty_command(cmd, ignore_control_c=True)
-        name = self.command_listen(p, pty)
+        name = self.interactive_command(cmd)
 
         # Remove the temporary container.
         if name:

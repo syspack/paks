@@ -8,6 +8,7 @@ import subprocess
 import shutil
 import tempfile
 import os
+import sys
 
 # Every command must:
 # 1. subclass Command
@@ -37,12 +38,9 @@ class SaveContainer(Command):
         suffix = self.kwargs.get("suffix", "-saved")
 
         # Run the command (show in real time)
-        p = subprocess.Popen([self.tech, "commit", container_name, tmp_name])
-        p.wait()
-        if p.returncode != 0:
-            return self.failed_result(
-                "Failed to commit container %s to %s." % (container_name, tmp_name)
-            )
+        result = self.run_command([self.tech, "commit", container_name, tmp_name])
+        if result:
+            return result
 
         # Keep track of where we are to change back to
         here = os.getcwd()
@@ -54,19 +52,19 @@ class SaveContainer(Command):
             fd.write("FROM %s\n" % tmp_name)
         os.chdir(tempdir)
 
-        p = subprocess.Popen([self.tech, "build", "--squash", "-t", name + suffix, "."])
-        p.wait()
-        if p.returncode != 0:
-            return self.failed_result(
-                "Failed to build and squash %s." % (name + suffix)
-            )
+        result = self.run_command(
+            [self.tech, "build", "--squash", "-t", name + suffix, "."], "error"
+        )
+        if result:
+            return result
 
-        p = subprocess.Popen([self.tech, "rmi", tmp_name])
-        p.wait()
+        result = self.run_command([self.tech, "rmi", tmp_name])
+        if result:
+            return result
 
         # Remove dangling None images (not recommended lol)
         os.system(
-            '%s rmi --force $(%s images --filter "dangling=true" -q --no-trunc)'
+            '%s rmi --force $(%s images --filter "dangling=true" -q --no-trunc) >/dev/null 2>&1'
             % (self.tech, self.tech)
         )
         os.chdir(here)

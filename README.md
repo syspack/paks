@@ -12,10 +12,11 @@ which is implemented in Go.
 
 ## TODO
 
-- add equivalent container backends
-- translate commands over to run
-- add additional commands with a registry?
-- allow user to define custom commands on fly for container
+- add singularity backend?
+- add docker inspect (thing) commands
+- add commands to save exported env to named env, and load named env
+- some commands to interact with a registry?
+- allow user to define custom commands on fly for container?
 - can we create some packaged thing with container, sbom?
 - can we add custom config file from remote? pakages?
 

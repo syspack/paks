@@ -96,6 +96,7 @@ class Command:
     def __init__(self, tech, required=None):
         self.tech = tech
         self.required = required or []
+        self.failed = False
 
     def check(self, **kwargs):
         """
@@ -118,8 +119,11 @@ class Command:
         self.kwargs = kwargs
 
         # Get args (parsing from the original command line)
+        parsed_args = []
         if args:
-            self.kwargs.update(self.get_args(args))
+            parsed_args, kwargs = self.get_args(args)
+            self.kwargs.update(kwargs)
+        self.args = parsed_args
 
     def get_args(self, cmd):
         """
@@ -129,13 +133,19 @@ class Command:
 
         # Pop off the command (we already use it)
         parts.pop(0).strip()
-        args = {}
+        kwargs = {}
+        args = []
         for arg in parts:
+
+            # This is an arg
             if "=" not in arg:
+                args.append(arg.strip())
                 continue
+
+            # This is a kwarg
             key, val = art.split("=", 1)
-            args[key.strip()] = val.strip()
-        return args
+            kwargs[key.strip()] = val.strip()
+        return args, kwargs
 
     def return_failure(self, message, out=None, err=None):
         """
@@ -148,6 +158,46 @@ class Command:
         Return a successful result
         """
         return Result(msg=message, retval=0, out=None, err=None)
+
+    def run_command(self, cmd, output="output"):
+        """
+        Wrapper to stream a command, which handles returning a result on error.
+        """
+        print("\r")
+        lines = self.stream_command(cmd, output)
+        while True:
+            try:
+                line = next(lines)
+                print(line, end="\r")
+
+            # We use this to return the result
+            except StopIteration as e:
+                return e.value
+                break
+
+    def stream_command(self, cmd, output="output"):
+        """
+        Stream a command and use output or error.
+        """
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
+        )
+        stream = process.stdout.readline
+        if output == "error":
+            stream = process.stderr.readline
+
+        # Stream lines back to the caller
+        for line in iter(stream, ""):
+            yield line
+
+        # If there is an error, raise.
+        process.stdout.close()
+        process.stderr.close()
+        return_code = process.wait()
+
+        # If failed, send failed result up to calling function
+        if return_code:
+            return self.failed_result("Failed: %s" % " ".join(cmd))
 
     def parse_command(self, cmd):
         """this is called when a new command is provided to ensure we have

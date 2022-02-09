@@ -8,9 +8,12 @@ import paks.utils
 import paks.templates
 import paks.signal
 
+
 import subprocess
 import select
 import pty
+import termios
+import tty
 import os
 import sys
 import re
@@ -96,6 +99,83 @@ class ContainerTechnology:
     def encode(self, msg):
         return bytes((msg).encode("utf-8"))
 
+    def interactive_command(self, cmd):
+        """
+        Ensure we always restore original TTY otherwise terminal gets messed up
+        """
+        # save original tty setting then set it to raw mode
+        old_tty = termios.tcgetattr(sys.stdin)
+        old_pty = termios.tcgetattr(sys.stdout)
+        try:
+            self._interactive_command(cmd)
+        finally:
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
+            termios.tcsetattr(sys.stdout, termios.TCSADRAIN, old_pty)
+
+    def _interactive_command(self, cmd):
+        """
+        Run an interactive command.
+        """
+        tty.setraw(sys.stdin.fileno())
+
+        # open pseudo-terminal to interact with subprocess
+        openpty, opentty = pty.openpty()
+
+        # use os.setsid() make it run in a new process group, or bash job control will not be enabled
+        p = subprocess.Popen(
+            cmd,
+            preexec_fn=os.setsid,
+            stdin=opentty,
+            stdout=opentty,
+            stderr=opentty,
+            universal_newlines=True,
+        )
+
+        # Since every poll is for a character, we need to keep adding to
+        # the string until we detect a newline (then parse for a command)
+        string_input = ""
+        while p.poll() is None:
+            r, w, e = select.select([sys.stdin, openpty], [], [])
+            if sys.stdin in r:
+                terminal_input = os.read(sys.stdin.fileno(), 10240)
+                string_input += terminal_input.decode("utf-8")
+
+                # If we don't have a newline, continue adding on to new input
+                if "\n" not in string_input and "\r" not in string_input:
+                    os.write(openpty, terminal_input)
+                    continue
+
+                # Universal exit command
+                if "exit" in string_input:
+                    print("\n\rContainer exited. ")
+                    return self.uri.extended_name
+
+                # Parse the command and determine if it's a match!
+                executor = self.commands.get_executor(string_input)
+                if executor is not None:
+
+                    # Provide pre-command message to the terminal
+                    if executor.pre_message:
+                        print("\n\r" + executor.pre_message)
+
+                    # If we have an executor for the command, run it!
+                    # All commands require the original / current name
+                    result = executor.run(
+                        name=self.image,
+                        container_name=self.uri.extended_name,
+                        original=string_input,
+                    )
+                    if result.message:
+                        print("\r" + result.message)
+
+                os.write(openpty, terminal_input)
+                string_input = ""
+
+            elif openpty in r:
+                o = os.read(openpty, 10240)
+                if o:
+                    os.write(sys.stdout.fileno(), o)
+
     def command_listen(self, p, pty):
         """
         A wrapper to listen to and respond to terminal commands.
@@ -140,13 +220,11 @@ class ContainerTechnology:
                             sys.stdout.fileno(), self.encode(result.message + "\n")
                         )
 
-                os.write(pty, input_from_terminal)
+                os.write(pty, terminal_input)
 
             elif pty in r:
                 output_from_docker = os.read(pty, 10240)
                 os.write(sys.stdout.fileno(), output_from_docker)
-
-        listener.stop()
 
     def __str__(self):
         return str(self.__class__.__name__)

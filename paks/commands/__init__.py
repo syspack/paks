@@ -25,7 +25,7 @@ class DockerCommands:
 
     def parse_name(self, cmd):
         parts = cmd.split(" ")
-        return parts.pop(0).strip()
+        return parts.pop(0).replace("\n", "").replace("\r", "").strip()
 
     def has_command(self, name):
         name, _ = self.parse_name(name)
