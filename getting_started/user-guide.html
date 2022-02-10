@@ -50,6 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#run">Run</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#paks-commands">Paks Commands</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
@@ -126,8 +127,25 @@ if needed:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run --container-tech podman busybox
 </pre></div>
 </div>
-<p>This will take you into a shell where you can interact! For example, here is a save:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/ # #save</span>
+<p>This will take you into a shell where you can interact, and issue Paks commands,
+discussed next.</p>
+</div>
+</div>
+<div class="section" id="paks-commands">
+<h2>Paks Commands<a class="headerlink" href="#paks-commands" title="Permalink to this headline"></a></h2>
+<p>The most useful thing (I think) as a developer that I sometimes want to do is
+save my container. This obviously doesn’t include mounted volumes, but it does
+include changes I’ve made the filesystem. A save comes down to:</p>
+<ol class="arabic simple">
+<li>Committing the current state</li>
+<li>Squashing layers to not be in danger of going over the limit.</li>
+<li>Saving the container with a suffix (e.g., <code class="docutils literal notranslate"><span class="pre">-saved</span></code>).</li>
+</ol>
+<p>So let’s say that we do a paks run, and then attempt a save. That might
+look like this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp"># </span>touch PANCAKES
+<span class="gp"># </span><span class="c1">#save</span>
 <span class="go">Saving container...</span>
 <span class="go">sha256:d82aaa268feb59344cf31a757ce7f5c0caa6a6bbd10b8d0af1d55cdbc50b609b</span>
 <span class="go">[+] Building 0.2s (5/5) FINISHED</span>
@@ -141,6 +159,27 @@ if needed:</p>
 <span class="gp">#</span>save
 </pre></div>
 </div>
+<p>And then you can see that there is an ubuntu-saved container!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker images <span class="p">|</span> grep ubuntu
+<span class="go">ubuntu-saved                                      latest    93e336d994de   2 minutes ago   72.8MB</span>
+<span class="go">ubuntu                                            latest    54c9d81cbb44   7 days ago      72.8MB</span>
+</pre></div>
+</div>
+<p>We could change the suffix of the thing saved too, because paks commands accept different kinds of arguments
+and key word arguments (kwargs). In this case, the suffix is a keyword:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp"># </span>touch PANCAKES
+<span class="gp"># </span><span class="c1">#save suffix=-pancakes</span>
+<span class="go">...</span>
+<span class="gp">#</span><span class="m">5</span> writing image sha256:6d3b5b27d0b15054eada3159a14c8c1a7fb251e6553adeddc37f54f0cfc9cc33 <span class="k">done</span>
+<span class="gp">#</span><span class="m">5</span> naming to docker.io/library/ubuntu-pancakes <span class="k">done</span>
+<span class="gp">#</span><span class="m">5</span> DONE <span class="m">0</span>.0s
+
+<span class="go">Untagged: dockerio-ubuntu-rugged-leg-4547-whispering-nunchucks-1604:latest</span>
+<span class="go">Deleted: sha256:e6609a04affa74dd17fc931f1217503207f1b5030d82edaf657d30627511d53c</span>
+<span class="go">Successfully saved container! ⭐️</span>
+</pre></div>
+</div>
 <p>More commands coming soon!</p>
 <blockquote>
 <div><ul class="simple">
@@ -150,7 +189,6 @@ if needed:</p>
 <li>and probably more!</li>
 </ul>
 </div></blockquote>
-</div>
 </div>
 </div>
 
