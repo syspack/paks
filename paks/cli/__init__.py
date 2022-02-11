@@ -77,6 +77,31 @@ def get_parser():
         help="Use a one-off shell instead of the one defined in your config.",
     )
 
+    # Paks environments
+    env = subparsers.add_parser(
+        "env",
+        description="interact with paks environments",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    env.add_argument(
+        "params",
+        nargs="*",
+        help="""interact with named environments written to ~/.paks/envs
+paks env edit <env-name>
+paks env add name=value <env-name>
+paks env remove name <env-name>
+paks env rm name <env-name>
+""",
+    )
+    env.add_argument(
+        "--force",
+        dest="force",
+        help="force replacement if environemnt variable already exists (for add)",
+        default=False,
+        action="store_true",
+    )
+
     config = subparsers.add_parser(
         "config",
         description="update configuration settings. Use set or get to see or set information.",
@@ -173,6 +198,8 @@ def run_main():
         from .run import main
     elif args.command == "config":
         from .config import main
+    elif args.command == "env":
+        from .env import main
 
     # Pass on to the correct parser
     return_code = 0

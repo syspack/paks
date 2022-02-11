@@ -68,8 +68,6 @@ discussed in the next section "Paks Commands."
 Env
 ---
 
-**not implemented yet**
-
 Named environments are stored in ``~/.paks/envs``, and they can be added to and loaded in containers.
 but also on the host. You can use the paks command line tool to do this:
 
@@ -78,12 +76,20 @@ but also on the host. You can use the paks command line tool to do this:
     
     # Add GITHUB_TOKEN to the named environment github
     $ paks env add GITHUB_TOKEN=xxxxxxxxxxx github
+    GITHUB_TOKEN was added to environment github
 
     # Remove GITHUB_TOKEN to the named environment github
     $ paks env rm GITHUB_TOKEN=xxxxxxxxxxx github
+    GITHUB_TOKEN was removed from environment github
 
 This would create an environment file ``~/.paks/envs/github`` that you could also
-manually open up to tweak. Note that envars can also be added on the fly in containers,
+manually open up to tweak, or ask paks to open up your editor to tweak:
+
+.. code-block:: console
+
+    $ paks env edit github
+
+Note that envars can also be added on the fly in containers,
 discussed in the next section.
 
 

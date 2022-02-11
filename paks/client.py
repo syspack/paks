@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 
 from paks.backends import get_container_backend
 from .settings import Settings
+from .env import Environment
 
 
 class PakClient:
@@ -16,6 +17,7 @@ class PakClient:
         validate = kwargs.get("validate", True)
         if not hasattr(self, "settings"):
             self.settings = Settings(settings_file, validate=validate)
+        self.env = Environment(self.settings.config_editor)
 
     def __repr__(self):
         return str(self)

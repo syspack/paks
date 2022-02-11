@@ -14,6 +14,9 @@ default_settings_file = os.path.join(reps["$install_dir"], "settings.yml")
 # Paks home stores user specific keys, etc
 pakshome = os.path.expanduser("~/.paks")
 
+# Paks environments
+paksenvs = os.path.join(pakshome, "envs")
+
 # The user settings file can be created to over-ride default
 user_settings_file = os.path.join(pakshome, "settings.yml")
 
