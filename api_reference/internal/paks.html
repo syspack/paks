@@ -468,9 +468,15 @@ Prints the output to the console.
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paks.backends.base.ContainerTechnology">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">paks.backends.base.</span></code><code class="sig-name descname"><span class="pre">ContainerTechnology</span></code><a class="reference internal" href="../../_modules/paks/backends/base.html#ContainerTechnology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.backends.base.ContainerTechnology" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">paks.backends.base.</span></code><code class="sig-name descname"><span class="pre">ContainerTechnology</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">history_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/backends/base.html#ContainerTechnology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.backends.base.ContainerTechnology" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A base class for a container technology</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="paks.backends.base.ContainerTechnology.add_history">
+<code class="sig-name descname"><span class="pre">add_history</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">string_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/backends/base.html#ContainerTechnology.add_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.backends.base.ContainerTechnology.add_history" title="Permalink to this definition"></a></dt>
+<dd><p>Save history, but only 100 back.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="paks.backends.base.ContainerTechnology.clear_history">
 <code class="sig-name descname"><span class="pre">clear_history</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/backends/base.html#ContainerTechnology.clear_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.backends.base.ContainerTechnology.clear_history" title="Permalink to this definition"></a></dt>
@@ -655,6 +661,11 @@ system default, if appropriate</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="paks.commands.command.Command.do_print">
+<code class="sig-name descname"><span class="pre">do_print</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">line</span></span></em>, <em><span class="n"><span class="pre">clear</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/commands/command.html#Command.do_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.commands.command.Command.do_print" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="paks.commands.command.Command.execute">
 <code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd</span></span></em>, <em><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">do_capture</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/commands/command.html#Command.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.commands.command.Command.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Execute a system command and return a result</p>
@@ -682,12 +693,12 @@ as the initialization might not occur in the runtime environment.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="paks.commands.command.Command.return_failure">
 <code class="sig-name descname"><span class="pre">return_failure</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">message</span></span></em>, <em><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">err</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/commands/command.html#Command.return_failure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.commands.command.Command.return_failure" title="Permalink to this definition"></a></dt>
-<dd><p>Return a failed result.</p>
+<dd><p>Return a failed result (requires a message)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paks.commands.command.Command.return_success">
-<code class="sig-name descname"><span class="pre">return_success</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">message</span></span></em>, <em><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">err</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/commands/command.html#Command.return_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.commands.command.Command.return_success" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname"><span class="pre">return_success</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">err</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/paks/commands/command.html#Command.return_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paks.commands.command.Command.return_success" title="Permalink to this definition"></a></dt>
 <dd><p>Return a successful result</p>
 </dd></dl>
 

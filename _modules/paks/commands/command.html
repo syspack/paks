@@ -192,7 +192,7 @@
         <span class="c1"># Required args for all commands</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">entry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_result</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is required.&quot;</span> <span class="o">%</span> <span class="n">entry</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_failure</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is required.&quot;</span> <span class="o">%</span> <span class="n">entry</span><span class="p">)</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
@@ -228,15 +228,20 @@
 
 <div class="viewcode-block" id="Command.return_failure"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.return_failure">[docs]</a>    <span class="k">def</span> <span class="nf">return_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a failed result.</span>
+<span class="sd">        Return a failed result (requires a message)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">retval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Command.return_success"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.return_success">[docs]</a>    <span class="k">def</span> <span class="nf">return_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Command.return_success"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.return_success">[docs]</a>    <span class="k">def</span> <span class="nf">return_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a successful result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">retval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.do_print"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.do_print">[docs]</a>    <span class="k">def</span> <span class="nf">do_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">clear</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.run_command"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.run_command">[docs]</a>    <span class="k">def</span> <span class="nf">run_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -247,7 +252,7 @@
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">do_print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
             <span class="c1"># We use this to return the result</span>
             <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -276,7 +281,7 @@
 
         <span class="c1"># If failed, send failed result up to calling function</span>
         <span class="k">if</span> <span class="n">return_code</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_result</span><span class="p">(</span><span class="s2">&quot;Failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_failure</span><span class="p">(</span><span class="s2">&quot;Failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Command.parse_command"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.parse_command">[docs]</a>    <span class="k">def</span> <span class="nf">parse_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;this is called when a new command is provided to ensure we have</span>

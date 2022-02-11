@@ -48,9 +48,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#run">Run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#env">Env</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#paks-commands">Paks Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#paks-commands">Paks Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#save">Save</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect">Inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment">Environment</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
@@ -128,11 +134,32 @@ if needed:</p>
 </pre></div>
 </div>
 <p>This will take you into a shell where you can interact, and issue Paks commands,
-discussed next.</p>
+discussed in the next section “Paks Commands.”</p>
+</div>
+<div class="section" id="env">
+<h3>Env<a class="headerlink" href="#env" title="Permalink to this headline"></a></h3>
+<p><strong>not implemented yet</strong></p>
+<p>Named environments are stored in <code class="docutils literal notranslate"><span class="pre">~/.paks/envs</span></code>, and they can be added to and loaded in containers.
+but also on the host. You can use the paks command line tool to do this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Add GITHUB_TOKEN to the named environment github
+<span class="gp">$ </span>paks env add <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxxxx github
+
+<span class="gp"># </span>Remove GITHUB_TOKEN to the named environment github
+<span class="gp">$ </span>paks env rm <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxxxx github
+</pre></div>
+</div>
+<p>This would create an environment file <code class="docutils literal notranslate"><span class="pre">~/.paks/envs/github</span></code> that you could also
+manually open up to tweak. Note that envars can also be added on the fly in containers,
+discussed in the next section.</p>
 </div>
 </div>
 <div class="section" id="paks-commands">
 <h2>Paks Commands<a class="headerlink" href="#paks-commands" title="Permalink to this headline"></a></h2>
+<p>The following commands can be run from inside a container, e.g., after doing a
+<code class="docutils literal notranslate"><span class="pre">paks</span> <span class="pre">run</span> <span class="pre">&lt;container&gt;</span></code>. Some of them interact with the host but they don’t necessarily
+need to.</p>
+<div class="section" id="save">
+<h3>Save<a class="headerlink" href="#save" title="Permalink to this headline"></a></h3>
 <p>The most useful thing (I think) as a developer that I sometimes want to do is
 save my container. This obviously doesn’t include mounted volumes, but it does
 include changes I’ve made the filesystem. A save comes down to:</p>
@@ -180,15 +207,60 @@ and key word arguments (kwargs). In this case, the suffix is a keyword:</p>
 <span class="go">Successfully saved container! ⭐️</span>
 </pre></div>
 </div>
-<p>More commands coming soon!</p>
+</div>
+<div class="section" id="inspect">
+<h3>Inspect<a class="headerlink" href="#inspect" title="Permalink to this headline"></a></h3>
+<p>If you are forgetting labels or environment, inspect can help! The basic inspect will
+dump the entire json to the terminal:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@bdda5c133e23:/# #</span>inspect
+<span class="go">Inspecting Container...</span>
+<span class="go">[</span>
+<span class="go">    {</span>
+<span class="go">        &quot;Id&quot;: &quot;bdda5c133e230c70112899c0d9a800d68487884380b441fbd4ce2874b3c91696&quot;,</span>
+<span class="go">        &quot;Created&quot;: &quot;2022-02-10T20:48:51.114405695Z&quot;,</span>
+<span class="go">        &quot;Path&quot;: &quot;/bin/bash&quot;,</span>
+<span class="go">        &quot;Args&quot;: [],</span>
+<span class="go">        &quot;State&quot;: {</span>
+<span class="go">            &quot;Status&quot;: &quot;running&quot;,</span>
+<span class="go">            &quot;Running&quot;: true,</span>
+<span class="go">            ...</span>
+</pre></div>
+</div>
+<p>]</p>
+<p>That gives you the entire inspection (config, networking, mounts, drivers, etc.) however
+you can also ask to see a specific section in entirety:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@bdda5c133e23:/# #</span>inspect config
+</pre></div>
+</div>
+</div>
+<div class="section" id="environment">
+<h3>Environment<a class="headerlink" href="#environment" title="Permalink to this headline"></a></h3>
+<p>Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
+(not implemented yet!). For example, let’s say you are in a container and want to save an envar to a named
+environment. You might do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@bdda5c133e23:/# </span><span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxx <span class="c1">#envsave github</span>
+</pre></div>
+</div>
+<p>The above will save your GITHUB_TOKEN to a named environment, which you can then
+load on demand in the same (or another) container:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@bdda5c133e23:/# #</span>envload github
+</pre></div>
+</div>
+<p>The names of the commands above are subject to change!</p>
+<p>You can also save</p>
 <blockquote>
 <div><ul class="simple">
-<li>docker inspect of different metadata</li>
 <li>saving of sboms outside of the container</li>
-<li>saving and loading environments</li>
+<li>saving and loading named environments (inside and outside container)</li>
+<li>loading custom command groups</li>
 <li>and probably more!</li>
 </ul>
 </div></blockquote>
+</div>
 </div>
 </div>
 

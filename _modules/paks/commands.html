@@ -76,13 +76,14 @@
            <div itemprop="articleBody">
              
   <h1>Source code for paks.commands</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.state</span> <span class="kn">import</span> <span class="n">SaveContainer</span>
+<span></span><span class="kn">from</span> <span class="nn">.inspect</span> <span class="kn">import</span> <span class="n">InspectContainer</span>
+<span class="kn">from</span> <span class="nn">.state</span> <span class="kn">import</span> <span class="n">SaveContainer</span>
 
 <span class="c1"># Based functions provided by paks</span>
 <span class="c1"># These are currently all for docker and podman</span>
 
 <span class="c1"># lookup of named commands and settings</span>
-<span class="n">docker_commands</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;#save&quot;</span><span class="p">:</span> <span class="n">SaveContainer</span><span class="p">}</span>
+<span class="n">docker_commands</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;#save&quot;</span><span class="p">:</span> <span class="n">SaveContainer</span><span class="p">,</span> <span class="s2">&quot;#inspect&quot;</span><span class="p">:</span> <span class="n">InspectContainer</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.commands.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">:</span>
