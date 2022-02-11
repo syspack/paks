@@ -1,10 +1,11 @@
+from .inspect import InspectContainer
 from .state import SaveContainer
 
 # Based functions provided by paks
 # These are currently all for docker and podman
 
 # lookup of named commands and settings
-docker_commands = {"#save": SaveContainer}
+docker_commands = {"#save": SaveContainer, "#inspect": InspectContainer}
 
 
 class Command:

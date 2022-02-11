@@ -73,10 +73,13 @@ class ContainerTechnology:
     A base class for a container technology
     """
 
-    def __init__(self):
+    def __init__(self, history_limit=100):
 
         # Save history for the length of one interactive command (shell)
         self.clear_history()
+
+        # How many commands back should we save?
+        self.history_limit = history_limit
 
         # If we weren't created with settings, add empty
         if not hasattr(self, "settings"):
@@ -120,6 +123,16 @@ class ContainerTechnology:
         finally:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
             termios.tcsetattr(sys.stdout, termios.TCSADRAIN, old_pty)
+
+    def add_history(self, string_input):
+        """
+        Save history, but only 100 back.
+        """
+        self.history.append(string_input)
+        if self.history_limit and len(self.history) > self.history_limit:
+
+            # Need to remove from the front - so the most recent 100
+            self.history = self.history[-self.history_limit :]
 
     def _interactive_command(self, cmd):
         """
@@ -167,15 +180,21 @@ class ContainerTechnology:
                     r"[^a-zA-Z0-9%s\n\r\w ]" % string.punctuation, "", string_input
                 )
 
-                # If we don't have a newline, continue adding on to new input
-                if "\n" not in string_input and "\r" not in string_input:
-                    os.write(openpty, terminal_input)
+                # If no change, do not continue
+                if not string_input:
                     continue
 
                 # If we are looking for history with up [A or down [B arrows
                 # Note there is a preceding escape we are ignoring (ord 27)
                 if "[A" in string_input or "[B" in string_input:
+                    os.write(openpty, terminal_input)
                     string_input = self.get_history(string_input.strip())
+                    continue
+
+                # If we don't have a newline, continue adding on to new input
+                if "\n" not in string_input and "\r" not in string_input:
+                    os.write(openpty, terminal_input)
+                    continue
 
                 # Universal exit command
                 if "exit" in string_input:
@@ -187,7 +206,10 @@ class ContainerTechnology:
                     continue
 
                 # Add derived line to the history
-                self.history.append(string_input)
+                self.add_history(string_input.strip())
+
+                # Get rid of left/right
+                string_input = string_input.replace("[D", "").replace("[C", "")
 
                 # Parse the command and determine if it's a match!
                 executor = self.commands.get_executor(string_input)

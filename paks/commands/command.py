@@ -113,7 +113,7 @@ class Command:
         # Required args for all commands
         for entry in self.required:
             if entry not in kwargs:
-                return self.failed_result("%s is required." % entry)
+                return self.return_failure("%s is required." % entry)
 
         args = kwargs.get("original")
         self.kwargs = kwargs
@@ -149,15 +149,20 @@ class Command:
 
     def return_failure(self, message, out=None, err=None):
         """
-        Return a failed result.
+        Return a failed result (requires a message)
         """
         return Result(msg=message, retval=1, out=out, err=err)
 
-    def return_success(self, message, out=None, err=None):
+    def return_success(self, message=None, out=None, err=None):
         """
         Return a successful result
         """
         return Result(msg=message, retval=0, out=None, err=None)
+
+    def do_print(self, line, clear=True):
+        if clear:
+            print("\r")
+        print(line, end="\r")
 
     def run_command(self, cmd, output="output"):
         """
@@ -168,7 +173,7 @@ class Command:
         while True:
             try:
                 line = next(lines)
-                print(line, end="\r")
+                self.do_print(line, False)
 
             # We use this to return the result
             except StopIteration as e:
@@ -197,7 +202,7 @@ class Command:
 
         # If failed, send failed result up to calling function
         if return_code:
-            return self.failed_result("Failed: %s" % " ".join(cmd))
+            return self.return_failure("Failed: %s" % " ".join(cmd))
 
     def parse_command(self, cmd):
         """this is called when a new command is provided to ensure we have

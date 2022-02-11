@@ -63,10 +63,39 @@ Or the container backend:
 
 
 This will take you into a shell where you can interact, and issue Paks commands,
-discussed next.
+discussed in the next section "Paks Commands."
+
+Env
+---
+
+**not implemented yet**
+
+Named environments are stored in ``~/.paks/envs``, and they can be added to and loaded in containers.
+but also on the host. You can use the paks command line tool to do this:
+
+
+.. code-block:: console
+    
+    # Add GITHUB_TOKEN to the named environment github
+    $ paks env add GITHUB_TOKEN=xxxxxxxxxxx github
+
+    # Remove GITHUB_TOKEN to the named environment github
+    $ paks env rm GITHUB_TOKEN=xxxxxxxxxxx github
+
+This would create an environment file ``~/.paks/envs/github`` that you could also
+manually open up to tweak. Note that envars can also be added on the fly in containers,
+discussed in the next section.
+
 
 Paks Commands
 =============
+
+The following commands can be run from inside a container, e.g., after doing a 
+``paks run <container>``. Some of them interact with the host but they don't necessarily
+need to.
+
+Save
+----
 
 The most useful thing (I think) as a developer that I sometimes want to do is
 save my container. This obviously doesn't include mounted volumes, but it does
@@ -123,9 +152,67 @@ and key word arguments (kwargs). In this case, the suffix is a keyword:
     Successfully saved container! ⭐️
 
 
-More commands coming soon!
+Inspect
+-------
 
- - docker inspect of different metadata
+If you are forgetting labels or environment, inspect can help! The basic inspect will
+dump the entire json to the terminal:
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@bdda5c133e23:/# #inspect
+    Inspecting Container...
+    [
+        {
+            "Id": "bdda5c133e230c70112899c0d9a800d68487884380b441fbd4ce2874b3c91696",
+            "Created": "2022-02-10T20:48:51.114405695Z",
+            "Path": "/bin/bash",
+            "Args": [],
+            "State": {
+                "Status": "running",
+                "Running": true,
+                ...
+]
+
+
+That gives you the entire inspection (config, networking, mounts, drivers, etc.) however
+you can also ask to see a specific section in entirety:
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@bdda5c133e23:/# #inspect config
+
+
+Environment
+-----------
+
+Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
+(not implemented yet!). For example, let's say you are in a container and want to save an envar to a named
+environment. You might do:
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@bdda5c133e23:/# export GITHUB_TOKEN=xxxxxxxxx #envsave github
+
+The above will save your GITHUB_TOKEN to a named environment, which you can then
+load on demand in the same (or another) container:
+
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@bdda5c133e23:/# #envload github
+
+
+The names of the commands above are subject to change!
+
+
+You can also save 
+
  - saving of sboms outside of the container
- - saving and loading environments
+ - saving and loading named environments (inside and outside container)
+ - loading custom command groups
  - and probably more!
