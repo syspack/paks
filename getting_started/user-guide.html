@@ -138,18 +138,23 @@ discussed in the next section “Paks Commands.”</p>
 </div>
 <div class="section" id="env">
 <h3>Env<a class="headerlink" href="#env" title="Permalink to this headline"></a></h3>
-<p><strong>not implemented yet</strong></p>
 <p>Named environments are stored in <code class="docutils literal notranslate"><span class="pre">~/.paks/envs</span></code>, and they can be added to and loaded in containers.
 but also on the host. You can use the paks command line tool to do this:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Add GITHUB_TOKEN to the named environment github
 <span class="gp">$ </span>paks env add <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxxxx github
+<span class="go">GITHUB_TOKEN was added to environment github</span>
 
 <span class="gp"># </span>Remove GITHUB_TOKEN to the named environment github
 <span class="gp">$ </span>paks env rm <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxxxx github
+<span class="go">GITHUB_TOKEN was removed from environment github</span>
 </pre></div>
 </div>
 <p>This would create an environment file <code class="docutils literal notranslate"><span class="pre">~/.paks/envs/github</span></code> that you could also
-manually open up to tweak. Note that envars can also be added on the fly in containers,
+manually open up to tweak, or ask paks to open up your editor to tweak:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks env edit github
+</pre></div>
+</div>
+<p>Note that envars can also be added on the fly in containers,
 discussed in the next section.</p>
 </div>
 </div>

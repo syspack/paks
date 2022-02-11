@@ -82,6 +82,7 @@
 
 <span class="kn">from</span> <span class="nn">paks.backends</span> <span class="kn">import</span> <span class="n">get_container_backend</span>
 <span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">Settings</span>
+<span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">Environment</span>
 
 
 <div class="viewcode-block" id="PakClient"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.client.PakClient">[docs]</a><span class="k">class</span> <span class="nc">PakClient</span><span class="p">:</span>
@@ -94,6 +95,7 @@
         <span class="n">validate</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;validate&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="n">settings_file</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">validate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">config_editor</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
