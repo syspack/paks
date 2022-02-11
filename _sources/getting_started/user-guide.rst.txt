@@ -190,9 +190,24 @@ you can also ask to see a specific section in entirety:
     $ paks run ubuntu
     root@bdda5c133e23:/# #inspect config
 
+Load
+----
+
+**Not implemented yet**
+
+Given a custom set of paks commands (from an external repo or provided as modules in paks) you can load
+them into your shell as follows:
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@bdda5c133e23:/# #load commandgroup
+
 
 Environment
 -----------
+
+**not implemented yet**
 
 Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
 (not implemented yet!). For example, let's say you are in a container and want to save an envar to a named
@@ -213,12 +228,16 @@ load on demand in the same (or another) container:
     root@bdda5c133e23:/# #envload github
 
 
+If there is an envar exported in your host environment that you forgot to include?
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@bdda5c133e23:/# #envhost GITHUB_TOKEN
+
+
 The names of the commands above are subject to change!
+More coming soon!
 
-
-You can also save 
-
- - saving of sboms outside of the container
- - saving and loading named environments (inside and outside container)
- - loading custom command groups
+ - saving of sboms outside of the container (custom container)
  - and probably more!

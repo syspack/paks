@@ -54,6 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#paks-commands">Paks Commands</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#save">Save</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inspect">Inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#load">Load</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#environment">Environment</a></li>
 </ul>
 </li>
@@ -240,8 +241,19 @@ you can also ask to see a specific section in entirety:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="load">
+<h3>Load<a class="headerlink" href="#load" title="Permalink to this headline"></a></h3>
+<p><strong>Not implemented yet</strong></p>
+<p>Given a custom set of paks commands (from an external repo or provided as modules in paks) you can load
+them into your shell as follows:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@bdda5c133e23:/# #</span>load commandgroup
+</pre></div>
+</div>
+</div>
 <div class="section" id="environment">
 <h3>Environment<a class="headerlink" href="#environment" title="Permalink to this headline"></a></h3>
+<p><strong>not implemented yet</strong></p>
 <p>Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
 (not implemented yet!). For example, let’s say you are in a container and want to save an envar to a named
 environment. You might do:</p>
@@ -255,13 +267,16 @@ load on demand in the same (or another) container:</p>
 <span class="gp">root@bdda5c133e23:/# #</span>envload github
 </pre></div>
 </div>
-<p>The names of the commands above are subject to change!</p>
-<p>You can also save</p>
+<p>If there is an envar exported in your host environment that you forgot to include?</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@bdda5c133e23:/# #</span>envhost GITHUB_TOKEN
+</pre></div>
+</div>
+<p>The names of the commands above are subject to change!
+More coming soon!</p>
 <blockquote>
 <div><ul class="simple">
-<li>saving of sboms outside of the container</li>
-<li>saving and loading named environments (inside and outside container)</li>
-<li>loading custom command groups</li>
+<li>saving of sboms outside of the container (custom container)</li>
 <li>and probably more!</li>
 </ul>
 </div></blockquote>
