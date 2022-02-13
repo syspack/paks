@@ -212,7 +212,12 @@
 
             <span class="c1"># This is an arg</span>
             <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                <span class="c1"># Don&#39;t append empty args</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">arg</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># This is a kwarg</span>

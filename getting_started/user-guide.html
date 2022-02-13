@@ -55,9 +55,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#save">Save</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inspect">Inspect</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load">Load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#copy">Copy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#environment">Environment</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
@@ -279,6 +281,27 @@ them into your shell as follows:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="copy">
+<h3>Copy<a class="headerlink" href="#copy" title="Permalink to this headline"></a></h3>
+<p>It’s relatively easy to copy files to the host from the container and vice versa.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>touch PANCAKES.txt
+<span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@68e45b9af2b6:/# #</span>cp host:PANCAKES.txt CONTAINER-PANCAKES.txt
+<span class="gp">root@e4434757d343:/# </span>ls
+<span class="go">CONTAINER-PANCAKES.txt  dev   lib    libx32  opt   run   sys  var</span>
+<span class="go">bin                     etc   lib32  media   proc  sbin  tmp</span>
+<span class="go">boot                    home  lib64  mnt     root  srv   usr</span>
+</pre></div>
+</div>
+<p>And then copy it back!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@68e45b9af2b6:/# #</span>cp CONTAINER-PANCAKES.txt host:FINISHED-PANCAKES.txt
+<span class="gp">root@68e45b9af2b6:/#</span>
+<span class="gp">$ </span>ls <span class="p">|</span>grep FINISHED
+<span class="go">FINISHED-PANCAKES.txt</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="environment">
 <h3>Environment<a class="headerlink" href="#environment" title="Permalink to this headline"></a></h3>
 <p>Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
@@ -332,6 +355,13 @@ You can grab it.</p>
 </ul>
 </div></blockquote>
 </div>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline"></a></h2>
+<p>Paks is intended to be run by a developer user that has both control of the host
+and the container. Since copying / saving and otherwise interacting with the host
+is possible, you would not run Paks on a production system for an untrusted user
+to allow interactions with the host machine.</p>
 </div>
 </div>
 

@@ -239,6 +239,32 @@ them into your shell as follows:
     root@bdda5c133e23:/# #load commandgroup
 
 
+Copy
+----
+
+It's relatively easy to copy files to the host from the container and vice versa.
+
+.. code-block:: console
+
+    $ touch PANCAKES.txt
+    $ paks run ubuntu
+    root@68e45b9af2b6:/# #cp host:PANCAKES.txt CONTAINER-PANCAKES.txt
+    root@e4434757d343:/# ls
+    CONTAINER-PANCAKES.txt  dev   lib    libx32  opt   run   sys  var
+    bin                     etc   lib32  media   proc  sbin  tmp
+    boot                    home  lib64  mnt     root  srv   usr
+
+And then copy it back!
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@68e45b9af2b6:/# #cp CONTAINER-PANCAKES.txt host:FINISHED-PANCAKES.txt
+    root@68e45b9af2b6:/#
+    $ ls |grep FINISHED
+    FINISHED-PANCAKES.txt
+
+
 Environment
 -----------
 
@@ -298,3 +324,13 @@ More coming soon!
 
  - saving of sboms outside of the container (custom container)
  - and probably more!
+ 
+ 
+Security
+========
+
+Paks is intended to be run by a developer user that has both control of the host
+and the container. Since copying / saving and otherwise interacting with the host
+is possible, you would not run Paks on a production system for an untrusted user
+to allow interactions with the host machine.
+
