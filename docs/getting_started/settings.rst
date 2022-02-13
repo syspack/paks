@@ -26,9 +26,9 @@ the build cache artifacts):
 
 .. code-block:: console
 
-    $ paks config set username:dinosaur
+    $ paks config set username=dinosaur
     Updated username to be dinosaur
-    $ paks config set email:dinosaur@users.noreply.github.io
+    $ paks config set email=dinosaur@users.noreply.github.io
     Updated email to be dinosaur@users.noreply.github.io
 
 

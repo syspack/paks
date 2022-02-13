@@ -5,8 +5,10 @@ __license__ = "Apache-2.0"
 from paks.utils.names import namer
 from paks.logger import logger
 import paks.utils
+import paks.defaults
 import paks.templates
-
+import paks.commands
+import paks.settings
 
 import subprocess
 import select
@@ -73,24 +75,12 @@ class ContainerTechnology:
     A base class for a container technology
     """
 
-    def __init__(self, history_limit=100):
+    def __init__(self, settings=None):
+        if not settings:
+            settings = paks.settings.Settings(paks.defaults.settings_file)
+        self.settings = settings
 
-        # Save history for the length of one interactive command (shell)
-        self.clear_history()
-
-        # How many commands back should we save?
-        self.history_limit = history_limit
-
-        # If we weren't created with settings, add empty
-        if not hasattr(self, "settings"):
-            from paks.settings import EmptySettings
-
-            self.settings = EmptySettings()
-
-    def clear_history(self):
-        self.history = []
-
-    def get_history(self, line):
+    def get_history(self, line, openpty):
         """
         Given an input with some number of up/down and newline, derive command.
         """
@@ -98,15 +88,29 @@ class ContainerTechnology:
         down = line.count("[B")
         change = up - down
 
-        # 0 change - we are on same line
-        # here we are looking back up into history (negative index)
-        if change > 0 and len(self.history) >= change:
-            newline = self.history[-1 * change]
-            newline += line.replace("[A", "").replace("[B", "")
-            return newline
+        # pushed down below history
+        if change <= 0:
+            return ""
+        history = self.hist.run(
+            container_name=self.uri.extended_name,
+            out=openpty,
+            history_file=self.settings.history_file,
+            user=self.settings.user,
+        )
+        history = [x for x in history.split("\n") if x]
 
-        # If we get here, either down error or no change
-        return ""
+        if not history:
+            return ""
+
+        if change > len(history):
+            return ""
+
+        # here we are looking back up into history (negative index)
+        newline = history[-1 * change]
+
+        # Add back any characters typed
+        newline += re.split("(\[A|\[B)", line, 1)[-1]
+        return newline
 
     def encode(self, msg):
         return bytes((msg).encode("utf-8"))
@@ -115,6 +119,9 @@ class ContainerTechnology:
         """
         Ensure we always restore original TTY otherwise terminal gets messed up
         """
+        # Controller to get history
+        self.hist = self.commands.history
+
         # save original tty setting then set it to raw mode
         old_tty = termios.tcgetattr(sys.stdin)
         old_pty = termios.tcgetattr(sys.stdout)
@@ -124,15 +131,45 @@ class ContainerTechnology:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
             termios.tcsetattr(sys.stdout, termios.TCSADRAIN, old_pty)
 
-    def add_history(self, string_input):
+    def run_executor(self, string_input, openpty):
         """
-        Save history, but only 100 back.
+        Given a string input, run executor
         """
-        self.history.append(string_input)
-        if self.history_limit and len(self.history) > self.history_limit:
+        string_input = string_input.replace("[A", "").replace("[B", "")
+        if not string_input.startswith("#"):
+            return
 
-            # Need to remove from the front - so the most recent 100
-            self.history = self.history[-self.history_limit :]
+        executor = self.commands.get_executor(string_input, out=openpty)
+        if executor is not None:
+
+            # Provide pre-command message to the terminal
+            if executor.pre_message:
+                print("\n\r" + executor.pre_message)
+
+            # If we have an executor for the command, run it!
+            # All commands require the original / current name
+            result = executor.run(
+                name=self.image,
+                container_name=self.uri.extended_name,
+                original=string_input,
+            )
+            if result.message:
+                print("\r" + result.message)
+
+    def clean(self, string_input):
+        string_input = re.sub(
+            r"[^a-zA-Z0-9%s\n\r\w ]" % string.punctuation, "", string_input
+        )
+        return string_input.replace("\x1b", "")
+
+    def welcome(self, openpty):
+        """
+        Welcome the user and clear terminal
+        """
+        # Don't add commands executed to history
+        os.write(openpty, self.encode(" export PROMPT_COMMAND='history -a'\r"))
+        os.write(openpty, self.encode(" clear\r"))
+        os.write(openpty, self.encode(" ### Welcome to PAKS! ###\r"))
 
     def _interactive_command(self, cmd):
         """
@@ -142,9 +179,6 @@ class ContainerTechnology:
 
         # open pseudo-terminal to interact with subprocess
         openpty, opentty = pty.openpty()
-
-        # The user will likely press up / down, we can store a limited history back
-        self.clear_history()
 
         # use os.setsid() make it run in a new process group, or bash job control will not be enabled
         p = subprocess.Popen(
@@ -156,9 +190,10 @@ class ContainerTechnology:
             universal_newlines=True,
         )
 
-        # Since every poll is for a character, we need to keep adding to
-        # the string until we detect a newline (then parse for a command)
+        # Welcome to Paks!
+        self.welcome(openpty)
         string_input = ""
+
         while p.poll() is None:
             r, w, e = select.select([sys.stdin, openpty], [], [])
             if sys.stdin in r:
@@ -166,71 +201,52 @@ class ContainerTechnology:
                 new_char = terminal_input.decode("utf-8")
 
                 # if we have a backspace (ord 127)
-                if (
-                    len(new_char) == 1
-                    and ord(new_char) == 127
-                    and len(string_input) > 0
-                ):
-                    string_input = string_input[:-1]
+                if len(new_char) == 1 and ord(new_char) == 127:
+
+                    # Backspace to empty line
+                    if len(string_input) > 0:
+                        string_input = string_input[:-1]
+                    if not string_input:
+                        os.write(openpty, terminal_input)
+                        continue
                 else:
                     string_input = string_input + new_char
 
-                # Replace weird characters
-                string_input = re.sub(
-                    r"[^a-zA-Z0-9%s\n\r\w ]" % string.punctuation, "", string_input
-                )
+                # Get rid of left/right
+                string_input = string_input.replace("[D", "").replace("[C", "")
+                has_newline = "\n" in string_input or "\r" in string_input
 
-                # If no change, do not continue
-                if not string_input:
-                    continue
-
-                # If we are looking for history with up [A or down [B arrows
-                # Note there is a preceding escape we are ignoring (ord 27)
-                if "[A" in string_input or "[B" in string_input:
-                    os.write(openpty, terminal_input)
-                    string_input = self.get_history(string_input.strip())
-                    continue
-
-                # If we don't have a newline, continue adding on to new input
-                if "\n" not in string_input and "\r" not in string_input:
-                    os.write(openpty, terminal_input)
-                    continue
+                # Replace weird characters and escape sequences
+                string_input = self.clean(string_input)
 
                 # Universal exit command
-                if "exit" in string_input:
+                if "exit" in string_input and has_newline:
                     print("\n\rContainer exited.\n\r")
                     return self.uri.extended_name
 
-                # If no change, do not continue
+                # Pressing up or down, but not enter
+                if ("[A" in string_input or "[B" in string_input) and not has_newline:
+                    string_input = self.get_history(string_input, openpty)
+                    os.write(openpty, terminal_input)
+                    continue
+
+                # Pressing up or down with enter
+                if ("[A" in string_input or "[B" in string_input) and has_newline:
+                    string_input = self.get_history(string_input, openpty)
+                    os.write(openpty, terminal_input)
+
                 if not string_input:
                     continue
 
-                # Add derived line to the history
-                self.add_history(string_input.strip())
+                # If we have a newline (and possibly a command)
+                if has_newline:
+                    self.run_executor(string_input, openpty)
 
-                # Get rid of left/right
-                string_input = string_input.replace("[D", "").replace("[C", "")
-
-                # Parse the command and determine if it's a match!
-                executor = self.commands.get_executor(string_input)
-                if executor is not None:
-
-                    # Provide pre-command message to the terminal
-                    if executor.pre_message:
-                        print("\n\r" + executor.pre_message)
-
-                    # If we have an executor for the command, run it!
-                    # All commands require the original / current name
-                    result = executor.run(
-                        name=self.image,
-                        container_name=self.uri.extended_name,
-                        original=string_input,
-                    )
-                    if result.message:
-                        print("\r" + result.message)
-
-                os.write(openpty, terminal_input)
-                string_input = ""
+                    # Add derived line to the history
+                    os.write(openpty, terminal_input)
+                    string_input = ""
+                else:
+                    os.write(openpty, terminal_input)
 
             elif openpty in r:
                 o = os.read(openpty, 10240)

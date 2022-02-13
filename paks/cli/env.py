@@ -2,7 +2,6 @@ __author__ = "Vanessa Sochat, Alec Scott"
 __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
-import paks.defaults as defaults
 from paks.client import PakClient
 from paks.logger import logger
 import sys
@@ -35,6 +34,9 @@ def main(args, parser, extra, subparser):
     # For each new setting, update and save!
     if command == "edit":
         return cli.env.edit(envname)
+    elif command == "show":
+        content = cli.env.show(envname)
+        print(content)
     elif command in ["rm", "remove"]:
         varname = envname
         if not args.params:

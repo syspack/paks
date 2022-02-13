@@ -62,6 +62,15 @@ Or the container backend:
     $ paks run --container-tech podman busybox
 
 
+And if you want to change a setting on the fly, you can add as many as you need with ``-s``.
+For example, we retrieve history assuming a particular user (default is root) and history file (``/root/.bash_history``)
+and this might not be the case for your container. This would be using the defaults (no change):
+
+.. code-block:: console
+    
+    $ paks run -s user=root -s history_file:/root/.bash_history ubuntu 
+
+Notice that we define a separate ``-s`` group for each.
 This will take you into a shell where you can interact, and issue Paks commands,
 discussed in the next section "Paks Commands."
 
@@ -89,6 +98,14 @@ manually open up to tweak, or ask paks to open up your editor to tweak:
 
     $ paks env edit github
 
+You can also quickly show an environment:
+
+.. code-block:: console
+
+    $ paks env show github
+    GITHUB_TOKEN=xxxxxxxxxxx
+
+
 Note that envars can also be added on the fly in containers,
 discussed in the next section.
 
@@ -99,6 +116,16 @@ Paks Commands
 The following commands can be run from inside a container, e.g., after doing a 
 ``paks run <container>``. Some of them interact with the host but they don't necessarily
 need to.
+
+.. warning::
+
+    Paks commands work by way of ensuring that history is written to file upon container init 
+    using ``history -a``. If your container OS doesn't support this you will still be able to run
+    Paks commands, but likely not via history (pressing up or down). To retrieve history
+    we also assume the history file to be at ``~/root/bash_history`` so if this is
+    different for your container, make sure to set ``-s history_file=/path/.history``
+    when you paks run.
+
 
 Save
 ----
@@ -158,6 +185,14 @@ and key word arguments (kwargs). In this case, the suffix is a keyword:
     Successfully saved container! ⭐️
 
 
+.. warning::
+
+    Your bash history will be written to ~/.bash_history. This (along with other likely
+    precautions) we will need to think about carefully and write up the documentation here.
+    For now you should assume that this is for your development purposes only and
+    the tool should only be run by a trusted user in an environment he or she owns.
+
+
 Inspect
 -------
 
@@ -207,36 +242,58 @@ them into your shell as follows:
 Environment
 -----------
 
-**not implemented yet**
-
 Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
 (not implemented yet!). For example, let's say you are in a container and want to save an envar to a named
-environment. You might do:
+environment. This will export AND save the environment:
 
 .. code-block:: console
 
     $ paks run ubuntu
-    root@bdda5c133e23:/# export GITHUB_TOKEN=xxxxxxxxx #envsave github
+    root@9ec6c3d43591:/# #envsave github GITHUB_USER=dinosaur
+    Saving environment variable...
+    Successfully added and exported environment variables.
+                                                  
+    root@9ec6c3d43591:/#  export GITHUB_USER=dinosaur
 
-The above will save your GITHUB_TOKEN to a named environment, which you can then
-load on demand in the same (or another) container:
-
+The above will save your GITHUB_USER to the named environment ``github``, which you can then
+load on demand in the same (or another) container. How do you load an environment? Like this:
+Notice that the export is written in plain site for you to verify.
+Now let's try loading. We originally just had a token, so now we should have
+the username "dinosaur" too:
 
 .. code-block:: console
 
-    $ paks run ubuntu
-    root@bdda5c133e23:/# #envload github
+    root@9ec6c3d43591:/# #envload github
+    Loading environment...
+    Successfully loaded environment github
+                                       
+    root@9ec6c3d43591:/#  export GITHUB_TOKEN=xxxxxxxxx 
+    root@9ec6c3d43591:/#  export GITHUB_USER=dinosaur
 
+Let's now verify the envars are exported to the environment!
+
+.. code-block:: console
+
+    root@9ec6c3d43591:/# env | grep GITHUB
+    GITHUB_USER=dinosaur
+    GITHUB_TOKEN=xxxxxxxxx
 
 If there is an envar exported in your host environment that you forgot to include?
+You can grab it.
 
 .. code-block:: console
 
+    $ export PANCAKES=thebest
     $ paks run ubuntu
-    root@bdda5c133e23:/# #envhost GITHUB_TOKEN
+    root@71d6d3e92249:/# #envhost PANCAKES
+    Getting host environment variable...
+    Successfully loaded environment variables.
+
+    root@71d6d3e92249:/# export PANCAKES=thebest
+    root@71d6d3e92249:/# env | grep PANCAKES
+    PANCAKES=thebest
 
 
-The names of the commands above are subject to change!
 More coming soon!
 
  - saving of sboms outside of the container (custom container)

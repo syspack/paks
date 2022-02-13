@@ -17,13 +17,13 @@ class DockerContainer(ContainerTechnology):
 
     command = "docker"
 
-    def __init__(self, image):
+    def __init__(self, image, settings=None):
         if not paks.utils.which(self.command):
             logger.exit(
                 "%s is required to use the '%s' base."
                 % (self.command.capitalize(), self.command)
             )
-        super(DockerContainer, self).__init__()
+        super(DockerContainer, self).__init__(settings)
         self.image = image
         self.uri = ContainerName(self.add_registry(image))
         self.commands = paks.commands.DockerCommands("docker")

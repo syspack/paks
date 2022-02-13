@@ -1,8 +1,8 @@
 # Paks custom settings
 
-email: null
-username: null
-content_type: application/vnd.paks.container
+# Default user settings (important for setting home, etc.)
+user: root
+history_file: /root/.bash_history
 
 # Default container backend
 # one of docker or podman
@@ -15,10 +15,12 @@ container_shell: /bin/bash
 config_editor: vim
 
 # Default cache_dir unset, meaning created in /tmp
+# Not currently in use! ##########################
 cache_dir: null
 
 # Default registry prefix to install from
 trusted_packages_registry: ghcr.io/pakages
+content_type: application/vnd.paks.container
 
 # Registries we pull from
 trusted_pull_registries:

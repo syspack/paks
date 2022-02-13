@@ -64,17 +64,13 @@ def get_parser():
     )
 
     run.add_argument(
-        "--suffix",
-        "-s",
-        dest="suffix",
-        help="suffix to add to image to save to.",
-    )
-
-    run.add_argument(
         "--shell",
         "--sh",
         dest="shell",
         help="Use a one-off shell instead of the one defined in your config.",
+    )
+    run.add_argument(
+        "-s", action="append", help="key=value argument to update settings."
     )
 
     # Paks environments
@@ -203,13 +199,12 @@ def run_main():
 
     # Pass on to the correct parser
     return_code = 0
-    # try:
-    main(args=args, parser=parser, extra=extra, subparser=helper)
-    #    sys.exit(return_code)
-    # except UnboundLocalError:
-    #    return_code = 1
-
-    # help(return_code)
+    try:
+        main(args=args, parser=parser, extra=extra, subparser=helper)
+        sys.exit(return_code)
+    except UnboundLocalError:
+        return_code = 1
+    help(return_code)
 
 
 if __name__ == "__main__":

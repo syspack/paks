@@ -11,9 +11,10 @@ import os
 
 
 class Environment:
-    def __init__(self, config_editor="vim"):
+    def __init__(self, config_editor="vim", quiet=False):
         self.config_editor = config_editor
         self.envars = {}
+        self.quiet = quiet
 
     def load(self, name):
         """
@@ -35,7 +36,7 @@ class Environment:
         envpath = os.path.join(paks.defaults.paksenvs, envname)
         with open(envpath, "w") as fd:
             for key, value in self.envars.items():
-                fd.write("%s=%s" % (key, value))
+                fd.write("%s=%s\n" % (key, value))
 
     def ensure_exists(self, envpath):
         """
@@ -45,9 +46,23 @@ class Environment:
             paks.utils.mkdir_p(paks.defaults.paksenvs)
         envpath = os.path.join(paks.defaults.paksenvs, envpath)
         if not os.path.exists(envpath):
-            logger.info("Creating %s" % envpath)
-            time.sleep(0.5)
+
+            # We have quiet mode for inside container commands
+            if not self.quiet:
+                logger.info("Creating %s" % envpath)
+                time.sleep(0.5)
             Path(envpath).touch()
+
+    def show(self, envpath):
+        """
+        show (print) a named environment to the terminal
+        """
+        envpath = os.path.join(paks.defaults.paksenvs, envpath)
+        if not os.path.exists(envpath):
+            logger.error("%s does not exist." % envpath)
+        with open(envpath, "r") as fd:
+            content = fd.read()
+        return content
 
     def edit(self, envpath):
         """
@@ -71,16 +86,20 @@ class Environment:
         """
         envpath = os.path.join(paks.defaults.paksenvs, envname)
         if not os.path.exists(envpath):
-            logger.error("%s does not exist." % envpath)
-            return
+            if not self.quiet:
+                logger.error("%s does not exist." % envpath)
+            return False
         self.load(envname)
         if varname in self.envars:
             del self.envars[varname]
         else:
-            logger.error("%s is not found in %s" % (varname, envpath))
-            return
+            if not self.quiet:
+                logger.error("%s is not found in %s" % (varname, envpath))
+            return False
         self.save(envname)
-        logger.info("%s was removed from environment %s" % (varname, envname))
+        if not self.quiet:
+            logger.info("%s was removed from environment %s" % (varname, envname))
+        return True
 
     def parse_envar(self, param):
         """
@@ -110,4 +129,6 @@ class Environment:
             return
         self.envars[key] = value
         self.save(envname)
-        logger.info("%s was added to environment %s" % (key, envname))
+        if not self.quiet:
+            logger.info("%s was added to environment %s" % (key, envname))
+        return True
