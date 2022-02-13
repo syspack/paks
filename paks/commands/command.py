@@ -6,10 +6,7 @@ import os
 import locale
 import subprocess
 import shlex
-import shutil
-import termios
 import sys
-import tempfile
 import paks.env
 import paks.utils
 

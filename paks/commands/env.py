@@ -3,11 +3,7 @@ __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 from .command import Command
-import subprocess
-import shutil
-import tempfile
 import os
-import sys
 
 # Every command must:
 # 1. subclass Command
@@ -86,7 +82,7 @@ class EnvHost(Command):
 
         # inspect defaults to labels and environment
         if not self.args:
-            return return_failure(
+            return self.return_failure(
                 "You must provide the name of one or more environment variables."
             )
 
@@ -100,7 +96,7 @@ class EnvHost(Command):
             self.execute("export %s=%s" % (name, value))
 
         if not found:
-            return return_failure("No matching environment variables were found.")
+            return self.return_failure("No matching environment variables were found.")
         return self.return_success("Successfully loaded environment variables.")
 
 
@@ -118,7 +114,7 @@ class EnvLoad(Command):
 
         # inspect defaults to labels and environment
         if not self.args:
-            return return_failure("You must provide the name of an environment.")
+            return self.return_failure("You must provide the name of an environment.")
 
         # Load the environment!
         envname = self.args[0]
@@ -128,7 +124,6 @@ class EnvLoad(Command):
                 "Environment %s does not have any variables." % envname
             )
 
-        # TODO need to write to terminal here...
         for key, value in self.env.envars.items():
             self.execute("export %s=%s" % (key, value))
         return self.return_success("Successfully loaded environment %s" % envname)

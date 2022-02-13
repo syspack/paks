@@ -3,13 +3,6 @@ __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 from .command import Command
-import readline
-import shutil
-import os
-import sys
-
-import subprocess
-import tempfile
 
 # Every command must:
 # 1. subclass Command
@@ -42,6 +35,3 @@ class History(Command):
             ]
         )
         return out
-        return self.execute_get(
-            runcmd=runcmd,
-        )

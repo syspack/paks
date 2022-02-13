@@ -2,7 +2,6 @@ from .inspect import InspectContainer
 from .state import SaveContainer
 from .env import EnvLoad, EnvHost, EnvSave
 from .history import History
-import sys
 
 
 # Based functions provided by paks

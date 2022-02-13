@@ -3,11 +3,6 @@ __copyright__ = "Copyright 2021-2022, Vanessa Sochat and Alec Scott"
 __license__ = "Apache-2.0"
 
 from .command import Command
-import subprocess
-import shutil
-import tempfile
-import os
-import sys
 
 # Every command must:
 # 1. subclass Command
