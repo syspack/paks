@@ -9,18 +9,22 @@
 With paks you can save the state of your current container, and issue other 
 commands to it while developing. For example:
 
-```bash
+```
 # Load my environment "github" that I share between development containers
-root@9ec6c3d43591:/# #envload github
+:> #envload github
 
 # Save a new or updated variable to it on the fly!
-root@9ec6c3d43591:/# #envsave github GITHUB_USER=abetterdinosaur
+:> #envsave github GITHUB_USER=abetterdinosaur
 
 # Save my running container "ubuntu" to the default "ubuntu-saved" preserving filesystem changes
-root@9ec6c3d43591:/# #save
+:> #save
 
 # Oops I forgot something about the container. Inspect the config
-root@9ec6c3d43591:/# #inspect config
+:> #inspect config
+
+# Copy from host to container and back again
+:> #cp host:PANCAKES.txt CONTAINER-PANCAKES.txt
+:> #cp CONTAINER-PANCAKES.txt host:FINISHED-PANCAKES.txt
 ```
 
 All of the above is possible without leaving your container! 🎉️ And more custom commands to

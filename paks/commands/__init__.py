@@ -2,7 +2,7 @@ from .inspect import InspectContainer
 from .state import SaveContainer
 from .env import EnvLoad, EnvHost, EnvSave
 from .history import History
-
+from .cp import Copy
 
 # Based functions provided by paks
 # These are currently all for docker and podman
@@ -14,6 +14,7 @@ docker_commands = {
     "#envload": EnvLoad,
     "#envhost": EnvHost,
     "#envsave": EnvSave,
+    "#cp": Copy,
 }
 
 

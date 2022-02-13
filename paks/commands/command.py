@@ -133,7 +133,12 @@ class Command:
 
             # This is an arg
             if "=" not in arg:
-                args.append(arg.strip())
+                arg = arg.strip()
+
+                # Don't append empty args
+                if not arg:
+                    continue
+                args.append(arg)
                 continue
 
             # This is a kwarg
