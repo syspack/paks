@@ -28,6 +28,7 @@ class DockerContainer(ContainerTechnology):
         self.uri = ContainerName(self.add_registry(image))
         self.commands = paks.commands.DockerCommands("docker")
 
+ 
     def run(self, shell):
         """
         Interactive shell into a container image.

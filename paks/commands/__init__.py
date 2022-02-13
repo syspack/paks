@@ -1,19 +1,15 @@
 from .inspect import InspectContainer
 from .state import SaveContainer
+from .env import EnvLoad, EnvHost, EnvSave
+from .history import History
+import sys
+
 
 # Based functions provided by paks
 # These are currently all for docker and podman
 
 # lookup of named commands and settings
-docker_commands = {"#save": SaveContainer, "#inspect": InspectContainer}
-
-
-class Command:
-    def __init__(self, name, cls, args):
-        self.cls = cls
-        self.name = name
-        self.args = args
-
+docker_commands = {"#save": SaveContainer, "#inspect": InspectContainer, "#envload": EnvLoad, "#envhost": EnvHost, "#envsave": EnvSave}
 
 class DockerCommands:
 
@@ -32,7 +28,14 @@ class DockerCommands:
         name, _ = self.parse_name(name)
         return name in self.lookup
 
-    def get_executor(self, name):
+    @property
+    def history(self):
+        return History(self.command)
+ 
+    def get_executor(self, name, out=None):
+        """
+        Backend is required to update history
+        """
         name = self.parse_name(name)
         if name in self.lookup:
-            return self.lookup[name](self.command, required=self.required)
+            return self.lookup[name](self.command, required=self.required, out=out)

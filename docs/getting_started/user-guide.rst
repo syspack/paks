@@ -89,6 +89,14 @@ manually open up to tweak, or ask paks to open up your editor to tweak:
 
     $ paks env edit github
 
+You can also quickly show an environment:
+
+.. code-block:: console
+
+    $ paks env show github
+    GITHUB_TOKEN=xxxxxxxxxxx
+
+
 Note that envars can also be added on the fly in containers,
 discussed in the next section.
 
@@ -158,6 +166,14 @@ and key word arguments (kwargs). In this case, the suffix is a keyword:
     Successfully saved container! ⭐️
 
 
+.. warning::
+
+    Your bash history will be written to ~/.bash_history. This (along with other likely
+    precautions) we will need to think about carefully and write up the documentation here.
+    For now you should assume that this is for your development purposes only and
+    the tool should only be run by a trusted user in an environment he or she owns.
+
+
 Inspect
 -------
 
@@ -207,33 +223,43 @@ them into your shell as follows:
 Environment
 -----------
 
-**not implemented yet**
-
 Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
 (not implemented yet!). For example, let's say you are in a container and want to save an envar to a named
-environment. You might do:
+environment. This will export AND save the environment:
 
 .. code-block:: console
 
     $ paks run ubuntu
-    root@bdda5c133e23:/# export GITHUB_TOKEN=xxxxxxxxx #envsave github
+    root@bdda5c133e23:/# #envsave github GITHUB_USER=dinosaur
 
-The above will save your GITHUB_TOKEN to a named environment, which you can then
-load on demand in the same (or another) container:
-
+The above will save your GITHUB_USER to the named environment ``github``, which you can then
+load on demand in the same (or another) container. How do you load an environment? Like this:
 
 .. code-block:: console
 
     $ paks run ubuntu
-    root@bdda5c133e23:/# #envload github
+    root@cd6ee4452ce5:/# #envload github
+    Loading environment...
+    Successfully loaded environment github
 
+    root@cd6ee4452ce5:/# export GITHUB_TOKEN=xxxxxxxxxxx
+    root@cd6ee4452ce5:/# env | grep GITHUB
+    GITHUB_TOKEN=xxxxxxxxxxx
 
 If there is an envar exported in your host environment that you forgot to include?
+You can grab it.
 
 .. code-block:: console
 
+    $ export PANCAKES=thebest
     $ paks run ubuntu
-    root@bdda5c133e23:/# #envhost GITHUB_TOKEN
+    root@71d6d3e92249:/# #envhost PANCAKES
+    Getting host environment variable...
+    Successfully loaded environment variables.
+
+    root@71d6d3e92249:/# export PANCAKES=thebest
+    root@71d6d3e92249:/# env | grep PANCAKES
+    PANCAKES=thebest
 
 
 The names of the commands above are subject to change!

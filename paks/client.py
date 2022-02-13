@@ -31,4 +31,6 @@ class PakClient:
         """
         shell = shell or self.settings.container_shell
         backend = get_container_backend(container_tech or self.settings.container_tech)
+
+        # Pass settings and environment to the environment!
         backend(image).run(shell)

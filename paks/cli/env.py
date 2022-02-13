@@ -35,6 +35,9 @@ def main(args, parser, extra, subparser):
     # For each new setting, update and save!
     if command == "edit":
         return cli.env.edit(envname)
+    elif command == "show":
+        content = cli.env.show(envname)
+        print(content)
     elif command in ["rm", "remove"]:
         varname = envname
         if not args.params:
