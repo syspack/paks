@@ -32,13 +32,13 @@ def main(args, parser, extra, subparser):
         return cli.settings.edit()
     elif command in ["set", "add", "remove"]:
         for param in args.params:
-            if ":" not in param:
+            if "=" not in param:
                 logger.warning(
-                    "Param %s is missing a :, should be key:value pair. Skipping."
+                    "Param %s is missing a =, should be key=value pair. Skipping."
                     % param
                 )
                 continue
-            key, value = param.split(":", 1)
+            key, value = param.split("=", 1)
             if command == "set":
                 cli.settings.set(key, value)
                 logger.info("Updated %s to be %s" % (key, value))

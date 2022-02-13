@@ -13,8 +13,8 @@ settingsProperties = {
     "content_type": {"type": "string"},
     "config_editor": {"type": "string"},
     "updated_at": {"type": ["string", "null"]},
-    "username": {"type": ["string", "null"]},
-    "email": {"type": ["string", "null"]},
+    "user": {"type": "string"},
+    "history_file": {"type": "string"},
     "cache_dir": {"type": ["string", "null"]},
     "container_shell": {
         "type": "string",

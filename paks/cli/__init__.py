@@ -64,17 +64,13 @@ def get_parser():
     )
 
     run.add_argument(
-        "--suffix",
-        "-s",
-        dest="suffix",
-        help="suffix to add to image to save to.",
-    )
-
-    run.add_argument(
         "--shell",
         "--sh",
         dest="shell",
         help="Use a one-off shell instead of the one defined in your config.",
+    )
+    run.add_argument(
+        "-s", action="append", help="key=value argument to update settings."
     )
 
     # Paks environments

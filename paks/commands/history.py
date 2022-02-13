@@ -19,7 +19,7 @@ class History(Command):
 
         # Always run this first to make sure container tech is valid
         self.check(**kwargs)
-        history_file = kwargs.get("history_file", "~/.bash_history")
+        history_file = kwargs.get("history_file", "/root/.bash_history")
         self.out = self.kwargs.get("out", self.out)
 
         # These are both required for docker/podman

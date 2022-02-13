@@ -5,8 +5,10 @@ __license__ = "Apache-2.0"
 from paks.utils.names import namer
 from paks.logger import logger
 import paks.utils
+import paks.defaults
 import paks.templates
 import paks.commands
+import paks.settings
 
 import subprocess
 import select
@@ -73,6 +75,11 @@ class ContainerTechnology:
     A base class for a container technology
     """
 
+    def __init__(self, settings=None):
+        if not settings:
+            settings = paks.settings.Settings(paks.defaults.settings_file)
+        self.settings = settings
+
     def get_history(self, line, openpty):
         """
         Given an input with some number of up/down and newline, derive command.
@@ -84,7 +91,12 @@ class ContainerTechnology:
         # pushed down below history
         if change <= 0:
             return ""
-        history = self.hist.run(container_name=self.uri.extended_name, out=openpty)
+        history = self.hist.run(
+            container_name=self.uri.extended_name,
+            out=openpty,
+            history_file=self.settings.history_file,
+            user=self.settings.user,
+        )
         history = [x for x in history.split("\n") if x]
 
         if not history:
@@ -93,10 +105,8 @@ class ContainerTechnology:
         if change > len(history):
             return ""
 
-        return history[-1 * change]
-
         # here we are looking back up into history (negative index)
-        newline = self.history[-1 * change]
+        newline = history[-1 * change]
 
         # Add back any characters typed
         newline += re.split("(\[A|\[B)", line, 1)[-1]
