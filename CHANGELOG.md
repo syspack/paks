@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/syspack/paks/tree/main) (0.0.x)
+ - First release of new version of Paks for testing with pakages (0.1.1)
  - Refactoring to be about interactive container commands (0.1.0)
  - More control over custom push/pull registries and settings (0.0.12)
  - Added support for building local path or GitHub remote (0.0.11)
