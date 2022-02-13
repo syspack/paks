@@ -134,7 +134,14 @@ if needed:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run --container-tech podman busybox
 </pre></div>
 </div>
-<p>This will take you into a shell where you can interact, and issue Paks commands,
+<p>And if you want to change a setting on the fly, you can add as many as you need with <code class="docutils literal notranslate"><span class="pre">-s</span></code>.
+For example, we retrieve history assuming a particular user (default is root) and history file (<code class="docutils literal notranslate"><span class="pre">/root/.bash_history</span></code>)
+and this might not be the case for your container. This would be using the defaults (no change):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run -s <span class="nv">user</span><span class="o">=</span>root -s history_file:/root/.bash_history ubuntu
+</pre></div>
+</div>
+<p>Notice that we define a separate <code class="docutils literal notranslate"><span class="pre">-s</span></code> group for each.
+This will take you into a shell where you can interact, and issue Paks commands,
 discussed in the next section “Paks Commands.”</p>
 </div>
 <div class="section" id="env">
@@ -155,6 +162,11 @@ manually open up to tweak, or ask paks to open up your editor to tweak:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks env edit github
 </pre></div>
 </div>
+<p>You can also quickly show an environment:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks env show github
+<span class="go">GITHUB_TOKEN=xxxxxxxxxxx</span>
+</pre></div>
+</div>
 <p>Note that envars can also be added on the fly in containers,
 discussed in the next section.</p>
 </div>
@@ -164,6 +176,15 @@ discussed in the next section.</p>
 <p>The following commands can be run from inside a container, e.g., after doing a
 <code class="docutils literal notranslate"><span class="pre">paks</span> <span class="pre">run</span> <span class="pre">&lt;container&gt;</span></code>. Some of them interact with the host but they don’t necessarily
 need to.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Paks commands work by way of ensuring that history is written to file upon container init
+using <code class="docutils literal notranslate"><span class="pre">history</span> <span class="pre">-a</span></code>. If your container OS doesn’t support this you will still be able to run
+Paks commands, but likely not via history (pressing up or down). To retrieve history
+we also assume the history file to be at <code class="docutils literal notranslate"><span class="pre">~/root/bash_history</span></code> so if this is
+different for your container, make sure to set <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">history_file=/path/.history</span></code>
+when you paks run.</p>
+</div>
 <div class="section" id="save">
 <h3>Save<a class="headerlink" href="#save" title="Permalink to this headline"></a></h3>
 <p>The most useful thing (I think) as a developer that I sometimes want to do is
@@ -213,6 +234,13 @@ and key word arguments (kwargs). In this case, the suffix is a keyword:</p>
 <span class="go">Successfully saved container! ⭐️</span>
 </pre></div>
 </div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Your bash history will be written to ~/.bash_history. This (along with other likely
+precautions) we will need to think about carefully and write up the documentation here.
+For now you should assume that this is for your development purposes only and
+the tool should only be run by a trusted user in an environment he or she owns.</p>
+</div>
 </div>
 <div class="section" id="inspect">
 <h3>Inspect<a class="headerlink" href="#inspect" title="Permalink to this headline"></a></h3>
@@ -253,27 +281,50 @@ them into your shell as follows:</p>
 </div>
 <div class="section" id="environment">
 <h3>Environment<a class="headerlink" href="#environment" title="Permalink to this headline"></a></h3>
-<p><strong>not implemented yet</strong></p>
 <p>Paks will have a suite of commands intended to load, save, and otherwise interact with the environment.
 (not implemented yet!). For example, let’s say you are in a container and want to save an envar to a named
-environment. You might do:</p>
+environment. This will export AND save the environment:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
-<span class="gp">root@bdda5c133e23:/# </span><span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxx <span class="c1">#envsave github</span>
+<span class="gp">root@9ec6c3d43591:/# #</span>envsave github <span class="nv">GITHUB_USER</span><span class="o">=</span>dinosaur
+<span class="go">Saving environment variable...</span>
+<span class="go">Successfully added and exported environment variables.</span>
+
+<span class="gp">root@9ec6c3d43591:/#  </span><span class="nb">export</span> <span class="nv">GITHUB_USER</span><span class="o">=</span>dinosaur
 </pre></div>
 </div>
-<p>The above will save your GITHUB_TOKEN to a named environment, which you can then
-load on demand in the same (or another) container:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
-<span class="gp">root@bdda5c133e23:/# #</span>envload github
+<p>The above will save your GITHUB_USER to the named environment <code class="docutils literal notranslate"><span class="pre">github</span></code>, which you can then
+load on demand in the same (or another) container. How do you load an environment? Like this:
+Notice that the export is written in plain site for you to verify.
+Now let’s try loading. We originally just had a token, so now we should have
+the username “dinosaur” too:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">root@9ec6c3d43591:/# #</span>envload github
+<span class="go">Loading environment...</span>
+<span class="go">Successfully loaded environment github</span>
+
+<span class="gp">root@9ec6c3d43591:/#  </span><span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>xxxxxxxxx
+<span class="gp">root@9ec6c3d43591:/#  </span><span class="nb">export</span> <span class="nv">GITHUB_USER</span><span class="o">=</span>dinosaur
 </pre></div>
 </div>
-<p>If there is an envar exported in your host environment that you forgot to include?</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>paks run ubuntu
-<span class="gp">root@bdda5c133e23:/# #</span>envhost GITHUB_TOKEN
+<p>Let’s now verify the envars are exported to the environment!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">root@9ec6c3d43591:/# </span>env <span class="p">|</span> grep GITHUB
+<span class="go">GITHUB_USER=dinosaur</span>
+<span class="go">GITHUB_TOKEN=xxxxxxxxx</span>
 </pre></div>
 </div>
-<p>The names of the commands above are subject to change!
-More coming soon!</p>
+<p>If there is an envar exported in your host environment that you forgot to include?
+You can grab it.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span> <span class="nv">PANCAKES</span><span class="o">=</span>thebest
+<span class="gp">$ </span>paks run ubuntu
+<span class="gp">root@71d6d3e92249:/# #</span>envhost PANCAKES
+<span class="go">Getting host environment variable...</span>
+<span class="go">Successfully loaded environment variables.</span>
+
+<span class="gp">root@71d6d3e92249:/# </span><span class="nb">export</span> <span class="nv">PANCAKES</span><span class="o">=</span>thebest
+<span class="gp">root@71d6d3e92249:/# </span>env <span class="p">|</span> grep PANCAKES
+<span class="go">PANCAKES=thebest</span>
+</pre></div>
+</div>
+<p>More coming soon!</p>
 <blockquote>
 <div><ul class="simple">
 <li>saving of sboms outside of the container (custom container)</li>

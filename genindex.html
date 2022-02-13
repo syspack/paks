@@ -89,7 +89,6 @@
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
- | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -106,8 +105,6 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.add_history">add_history() (paks.backends.base.ContainerTechnology method)</a>
-</li>
       <li><a href="api_reference/internal/paks.html#paks.backends.docker.DockerContainer.add_registry">add_registry() (paks.backends.docker.DockerContainer method)</a>
 </li>
   </ul></td>
@@ -132,21 +129,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/internal/paks.html#paks.logger.ColorizingStreamHandler.can_color_tty">can_color_tty() (paks.logger.ColorizingStreamHandler method)</a>
 </li>
-      <li><a href="api_reference/internal/paks.html#paks.commands.command.Capturing">Capturing (class in paks.commands.command)</a>
-</li>
       <li><a href="api_reference/internal/paks.html#paks.settings.EmptySettings.change_validate">change_validate() (paks.settings.EmptySettings method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.check">check() (paks.commands.command.Command method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.utils.terminal.check_install">check_install() (in module paks.utils.terminal)</a>
 </li>
-      <li><a href="api_reference/internal/paks.html#paks.commands.command.Capturing.cleanup">cleanup() (paks.commands.command.Capturing method)</a>
-
-      <ul>
-        <li><a href="api_reference/internal/paks.html#paks.logger.Logger.cleanup">(paks.logger.Logger method)</a>
+      <li><a href="api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.clean">clean() (paks.backends.base.ContainerTechnology method)</a>
 </li>
-      </ul></li>
-      <li><a href="api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.clear_history">clear_history() (paks.backends.base.ContainerTechnology method)</a>
+      <li><a href="api_reference/internal/paks.html#paks.logger.Logger.cleanup">cleanup() (paks.logger.Logger method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.logger.ColorizingStreamHandler.COLOR_SEQ">COLOR_SEQ (paks.logger.ColorizingStreamHandler attribute)</a>
 </li>
@@ -156,12 +147,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/internal/paks.html#paks.logger.ColorizingStreamHandler.colors">colors (paks.logger.ColorizingStreamHandler attribute)</a>
 </li>
-      <li><a href="api_reference/internal/paks.html#paks.commands.Command">Command (class in paks.commands)</a>
-
-      <ul>
-        <li><a href="api_reference/internal/paks.html#paks.commands.command.Command">(class in paks.commands.command)</a>
+      <li><a href="api_reference/internal/paks.html#paks.commands.command.Command">Command (class in paks.commands.command)</a>
 </li>
-      </ul></li>
       <li><a href="api_reference/internal/paks.html#paks.backends.docker.DockerContainer.command">command (paks.backends.docker.DockerContainer attribute)</a>
 
       <ul>
@@ -213,14 +200,20 @@
       <li><a href="api_reference/internal/paks.html#paks.settings.EmptySettings">EmptySettings (class in paks.settings)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.encode">encode() (paks.backends.base.ContainerTechnology method)</a>
+
+      <ul>
+        <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.encode">(paks.commands.command.Command method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/internal/paks.html#paks.commands.command.Capturing.err">err (paks.commands.command.Capturing property)</a>
-</li>
       <li><a href="api_reference/internal/paks.html#paks.logger.Logger.error">error() (paks.logger.Logger method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.execute">execute() (paks.commands.command.Command method)</a>
+</li>
+      <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.execute_get">execute_get() (paks.commands.command.Command method)</a>
+</li>
+      <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.execute_host">execute_host() (paks.commands.command.Command method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.logger.Logger.exit">exit() (paks.logger.Logger method)</a>
 </li>
@@ -275,6 +268,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/internal/paks.html#paks.commands.DockerCommands.has_command">has_command() (paks.commands.DockerCommands method)</a>
+</li>
+      <li><a href="api_reference/internal/paks.html#paks.commands.DockerCommands.history">history (paks.commands.DockerCommands property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -382,14 +377,6 @@
   </ul></td>
 </tr></table>
 
-<h2 id="O">O</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/internal/paks.html#paks.commands.command.Capturing.out">out (paks.commands.command.Capturing property)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -479,8 +466,6 @@
         <li><a href="api_reference/internal/paks.html#module-paks.commands.state">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     paks.defaults
 
@@ -488,6 +473,8 @@
         <li><a href="api_reference/internal/paks.html#module-paks.defaults">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     paks.logger
 
@@ -548,6 +535,8 @@
 </li>
       <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.parse_command">parse_command() (paks.commands.command.Command method)</a>
 </li>
+      <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.parse_kwargs">parse_kwargs (paks.commands.command.Command attribute)</a>
+</li>
       <li><a href="api_reference/internal/paks.html#paks.commands.DockerCommands.parse_name">parse_name() (paks.commands.DockerCommands method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.backends.podman.PodmanContainer">PodmanContainer (class in paks.backends.podman)</a>
@@ -586,10 +575,10 @@
 </li>
       <li><a href="api_reference/internal/paks.html#paks.commands.command.Result">Result (class in paks.commands.command)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.return_failure">return_failure() (paks.commands.command.Command method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.return_success">return_success() (paks.commands.command.Command method)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.utils.names.RobotNamer">RobotNamer (class in paks.utils.names)</a>
@@ -608,6 +597,10 @@
         <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.run_command">(paks.commands.command.Command method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.run_executor">run_executor() (paks.backends.base.ContainerTechnology method)</a>
+</li>
+      <li><a href="api_reference/internal/paks.html#paks.commands.command.Command.run_hidden">run_hidden() (paks.commands.command.Command method)</a>
+</li>
       <li><a href="api_reference/internal/paks.html#paks.cli.run_main">run_main() (in module paks.cli)</a>
 </li>
   </ul></td>
@@ -624,16 +617,12 @@
 </li>
       <li><a href="api_reference/internal/paks.html#paks.logger.Logger.set_level">set_level() (paks.logger.Logger method)</a>
 </li>
-      <li><a href="api_reference/internal/paks.html#paks.commands.command.Capturing.set_stderr">set_stderr() (paks.commands.command.Capturing method)</a>
-</li>
-      <li><a href="api_reference/internal/paks.html#paks.commands.command.Capturing.set_stdout">set_stdout() (paks.commands.command.Capturing method)</a>
-</li>
       <li><a href="api_reference/internal/paks.html#paks.logger.Logger.set_stream_handler">set_stream_handler() (paks.logger.Logger method)</a>
+</li>
+      <li><a href="api_reference/internal/paks.html#paks.settings.Settings">Settings (class in paks.settings)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/internal/paks.html#paks.settings.Settings">Settings (class in paks.settings)</a>
-</li>
       <li><a href="api_reference/internal/paks.html#paks.logger.setup_logger">setup_logger() (in module paks.logger)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.backends.podman.PodmanContainer.shell">shell() (paks.backends.podman.PodmanContainer method)</a>
@@ -672,12 +661,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/internal/paks.html#paks.logger.Logger.warning">warning() (paks.logger.Logger method)</a>
 </li>
-      <li><a href="api_reference/internal/paks.html#paks.utils.terminal.which">which() (in module paks.utils.terminal)</a>
+      <li><a href="api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.welcome">welcome() (paks.backends.base.ContainerTechnology method)</a>
 </li>
-      <li><a href="api_reference/internal/paks.html#paks.logger.ColorizingStreamHandler.WHITE">WHITE (paks.logger.ColorizingStreamHandler attribute)</a>
+      <li><a href="api_reference/internal/paks.html#paks.utils.terminal.which">which() (in module paks.utils.terminal)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference/internal/paks.html#paks.logger.ColorizingStreamHandler.WHITE">WHITE (paks.logger.ColorizingStreamHandler attribute)</a>
+</li>
       <li><a href="api_reference/internal/paks.html#paks.utils.fileio.workdir">workdir() (in module paks.utils.fileio)</a>
 </li>
       <li><a href="api_reference/internal/paks.html#paks.utils.fileio.write_file">write_file() (in module paks.utils.fileio)</a>

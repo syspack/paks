@@ -85,67 +85,9 @@
 <span class="kn">import</span> <span class="nn">locale</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">shlex</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">paks.env</span>
 <span class="kn">import</span> <span class="nn">paks.utils</span>
-
-
-<div class="viewcode-block" id="Capturing"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Capturing">[docs]</a><span class="k">class</span> <span class="nc">Capturing</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;capture output from stdout and stderr into capture object.</span>
-<span class="sd">    This is based off of github.com/vsoch/gridtest but modified</span>
-<span class="sd">    to write files. The stderr and stdout are set to temporary files at</span>
-<span class="sd">    the init of the capture, and then they are closed when we exit. This</span>
-<span class="sd">    means expected usage looks like:</span>
-
-<span class="sd">    with Capturing() as capture:</span>
-<span class="sd">        process = subprocess.Popen(...)</span>
-
-<span class="sd">    And then the output and error are retrieved from reading the files:</span>
-<span class="sd">    and exposed as properties to the client:</span>
-
-<span class="sd">        capture.out</span>
-<span class="sd">        capture.err</span>
-
-<span class="sd">    And cleanup means deleting these files, if they exist.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_stdout</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_stderr</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
-<div class="viewcode-block" id="Capturing.set_stdout"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Capturing.set_stdout">[docs]</a>    <span class="k">def</span> <span class="nf">set_stdout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Capturing.set_stderr"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Capturing.set_stderr">[docs]</a>    <span class="k">def</span> <span class="nf">set_stderr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return output stream. Returns empty string if empty or doesn&#39;t exist.</span>
-<span class="sd">        Returns (str) : output stream written to file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">paks</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return error stream. Returns empty string if empty or doesn&#39;t exist.</span>
-<span class="sd">        Returns (str) : error stream written to file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">paks</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-
-<div class="viewcode-block" id="Capturing.cleanup"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Capturing.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Result"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Result">[docs]</a><span class="k">class</span> <span class="nc">Result</span><span class="p">:</span>
@@ -172,10 +114,62 @@
     <span class="c1"># Message to print before run</span>
     <span class="n">pre_message</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># Parse kwargs? (e.g., envars will have=)</span>
+    <span class="n">parse_kwargs</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Backend is required to update history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tech</span> <span class="o">=</span> <span class="n">tech</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="n">required</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+
+        <span class="c1"># We don&#39;t need editor for interactive commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Don&#39;t add commands executed to history</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">putenv</span><span class="p">(</span><span class="s2">&quot;HISTCONTROL&quot;</span><span class="p">,</span> <span class="s2">&quot;ignorespace&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;HISTCONTROL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ignorespace&quot;</span>
+
+<div class="viewcode-block" id="Command.execute"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a command to the container</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Extra space prevents saving to history</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\r</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Command.execute_get"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.execute_get">[docs]</a>    <span class="k">def</span> <span class="nf">execute_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">getcmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute and get runs a command inside the container (pipes to temporary</span>
+<span class="sd">        file) and then loads from the outside.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This is run inside the container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_hidden</span><span class="p">(</span><span class="n">runcmd</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_host</span><span class="p">(</span><span class="n">getcmd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Command.execute_host"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.execute_host">[docs]</a>    <span class="k">def</span> <span class="nf">execute_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a command to the host, return out and error</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This is run outside the container</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span></div>
+
+<div class="viewcode-block" id="Command.run_hidden"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.run_hidden">[docs]</a>    <span class="k">def</span> <span class="nf">run_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a hidden command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO how to hide this?</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%s</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Command.check"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -222,8 +216,13 @@
                 <span class="k">continue</span>
 
             <span class="c1"># This is a kwarg</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_kwargs</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c1"># A command can choose to not split/parse</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span></div>
 
 <div class="viewcode-block" id="Command.return_failure"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.return_failure">[docs]</a>    <span class="k">def</span> <span class="nf">return_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -292,56 +291,8 @@
             <span class="n">cmd</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cmd</span></div>
 
-<div class="viewcode-block" id="Command.execute"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_capture</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Execute a system command and return a result&quot;&quot;&quot;</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_command</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-
-        <span class="c1"># Reset the output and error records</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">Result</span><span class="p">()</span>
-
-        <span class="c1"># The executable must be found, return code 1 if not</span>
-        <span class="n">executable</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">executable</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">err</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not found.&quot;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">return</span> <span class="n">result</span>
-
-        <span class="c1"># remove the original executable</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-
-        <span class="c1"># Use updated command with executable and remainder (list)</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">executable</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
-
-        <span class="c1"># Capturing provides temporary output and error files</span>
-        <span class="k">if</span> <span class="n">do_capture</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">Capturing</span><span class="p">()</span> <span class="k">as</span> <span class="n">capture</span><span class="p">:</span>
-                <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="p">,</span>
-                    <span class="n">stdout</span><span class="o">=</span><span class="n">capture</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
-                    <span class="n">stderr</span><span class="o">=</span><span class="n">capture</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
-                    <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">returncode</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
-
-                <span class="c1"># Iterate through the output</span>
-                <span class="k">while</span> <span class="n">returncode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">returncode</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
-
-            <span class="c1"># Get the remainder of lines, add return code</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">out</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">capture</span><span class="o">.</span><span class="n">out</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">err</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">capture</span><span class="o">.</span><span class="n">err</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
-
-            <span class="c1"># Cleanup capture files and save final return code</span>
-            <span class="n">capture</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-            <span class="n">returncode</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;return_code&quot;</span><span class="p">]</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span>
-
-        <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">=</span> <span class="n">returncode</span>
-        <span class="k">return</span> <span class="n">result</span></div>
+<div class="viewcode-block" id="Command.encode"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Command.decode"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.commands.command.Command.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Given a line of output (error or regular) decode using the</span>

@@ -87,6 +87,16 @@
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.cli.run.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">extra</span><span class="p">,</span> <span class="n">subparser</span><span class="p">):</span>
     <span class="n">cli</span> <span class="o">=</span> <span class="n">PakClient</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">settings_file</span><span class="p">)</span>
+
+    <span class="c1"># Update settings</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">s</span> <span class="ow">or</span> <span class="p">[]:</span>
+        <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Malformed setting </span><span class="si">%s</span><span class="s2">: skipping.&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">cli</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># Run the container!</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
         <span class="n">args</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
         <span class="n">registry</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span>

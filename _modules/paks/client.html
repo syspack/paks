@@ -109,7 +109,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">shell</span> <span class="o">=</span> <span class="n">shell</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">container_shell</span>
         <span class="n">backend</span> <span class="o">=</span> <span class="n">get_container_backend</span><span class="p">(</span><span class="n">container_tech</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">container_tech</span><span class="p">)</span>
-        <span class="n">backend</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span></div></div>
+
+        <span class="c1"># Pass settings to the backend!</span>
+        <span class="n">backend</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

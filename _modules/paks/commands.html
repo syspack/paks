@@ -78,19 +78,21 @@
   <h1>Source code for paks.commands</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.inspect</span> <span class="kn">import</span> <span class="n">InspectContainer</span>
 <span class="kn">from</span> <span class="nn">.state</span> <span class="kn">import</span> <span class="n">SaveContainer</span>
+<span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">EnvLoad</span><span class="p">,</span> <span class="n">EnvHost</span><span class="p">,</span> <span class="n">EnvSave</span>
+<span class="kn">from</span> <span class="nn">.history</span> <span class="kn">import</span> <span class="n">History</span>
+
 
 <span class="c1"># Based functions provided by paks</span>
 <span class="c1"># These are currently all for docker and podman</span>
 
 <span class="c1"># lookup of named commands and settings</span>
-<span class="n">docker_commands</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;#save&quot;</span><span class="p">:</span> <span class="n">SaveContainer</span><span class="p">,</span> <span class="s2">&quot;#inspect&quot;</span><span class="p">:</span> <span class="n">InspectContainer</span><span class="p">}</span>
-
-
-<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.commands.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cls</span> <span class="o">=</span> <span class="bp">cls</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></div>
+<span class="n">docker_commands</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;#save&quot;</span><span class="p">:</span> <span class="n">SaveContainer</span><span class="p">,</span>
+    <span class="s2">&quot;#inspect&quot;</span><span class="p">:</span> <span class="n">InspectContainer</span><span class="p">,</span>
+    <span class="s2">&quot;#envload&quot;</span><span class="p">:</span> <span class="n">EnvLoad</span><span class="p">,</span>
+    <span class="s2">&quot;#envhost&quot;</span><span class="p">:</span> <span class="n">EnvHost</span><span class="p">,</span>
+    <span class="s2">&quot;#envsave&quot;</span><span class="p">:</span> <span class="n">EnvSave</span><span class="p">,</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="DockerCommands"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.commands.DockerCommands">[docs]</a><span class="k">class</span> <span class="nc">DockerCommands</span><span class="p">:</span>
@@ -110,10 +112,17 @@
         <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span></div>
 
-<div class="viewcode-block" id="DockerCommands.get_executor"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.commands.DockerCommands.get_executor">[docs]</a>    <span class="k">def</span> <span class="nf">get_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">History</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DockerCommands.get_executor"><a class="viewcode-back" href="../../api_reference/internal/paks.html#paks.commands.DockerCommands.get_executor">[docs]</a>    <span class="k">def</span> <span class="nf">get_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Backend is required to update history</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">)</span></div></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">required</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

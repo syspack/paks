@@ -84,8 +84,10 @@
 <span class="kn">from</span> <span class="nn">paks.utils.names</span> <span class="kn">import</span> <span class="n">namer</span>
 <span class="kn">from</span> <span class="nn">paks.logger</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">import</span> <span class="nn">paks.utils</span>
+<span class="kn">import</span> <span class="nn">paks.defaults</span>
 <span class="kn">import</span> <span class="nn">paks.templates</span>
-
+<span class="kn">import</span> <span class="nn">paks.commands</span>
+<span class="kn">import</span> <span class="nn">paks.settings</span>
 
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">select</span>
@@ -152,24 +154,12 @@
 <span class="sd">    A base class for a container technology</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_limit</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="n">paks</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Settings</span><span class="p">(</span><span class="n">paks</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">settings_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
 
-        <span class="c1"># Save history for the length of one interactive command (shell)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clear_history</span><span class="p">()</span>
-
-        <span class="c1"># How many commands back should we save?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history_limit</span> <span class="o">=</span> <span class="n">history_limit</span>
-
-        <span class="c1"># If we weren&#39;t created with settings, add empty</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">paks.settings</span> <span class="kn">import</span> <span class="n">EmptySettings</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">EmptySettings</span><span class="p">()</span>
-
-<div class="viewcode-block" id="ContainerTechnology.clear_history"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.clear_history">[docs]</a>    <span class="k">def</span> <span class="nf">clear_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">[]</span></div>
-
-<div class="viewcode-block" id="ContainerTechnology.get_history"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.get_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<div class="viewcode-block" id="ContainerTechnology.get_history"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.get_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">openpty</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given an input with some number of up/down and newline, derive command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -177,15 +167,29 @@
         <span class="n">down</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;[B&quot;</span><span class="p">)</span>
         <span class="n">change</span> <span class="o">=</span> <span class="n">up</span> <span class="o">-</span> <span class="n">down</span>
 
-        <span class="c1"># 0 change - we are on same line</span>
-        <span class="c1"># here we are looking back up into history (negative index)</span>
-        <span class="k">if</span> <span class="n">change</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">change</span><span class="p">:</span>
-            <span class="n">newline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">change</span><span class="p">]</span>
-            <span class="n">newline</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[A&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[B&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">newline</span>
+        <span class="c1"># pushed down below history</span>
+        <span class="k">if</span> <span class="n">change</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">container_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">extended_name</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">openpty</span><span class="p">,</span>
+            <span class="n">history_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">history_file</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">history</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
 
-        <span class="c1"># If we get here, either down error or no change</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">change</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># here we are looking back up into history (negative index)</span>
+        <span class="n">newline</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">change</span><span class="p">]</span>
+
+        <span class="c1"># Add back any characters typed</span>
+        <span class="n">newline</span> <span class="o">+=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\[A|\[B)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">newline</span></div>
 
 <div class="viewcode-block" id="ContainerTechnology.encode"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">((</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
@@ -194,6 +198,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure we always restore original TTY otherwise terminal gets messed up</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Controller to get history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">history</span>
+
         <span class="c1"># save original tty setting then set it to raw mode</span>
         <span class="n">old_tty</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
         <span class="n">old_pty</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
@@ -203,15 +210,45 @@
             <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSADRAIN</span><span class="p">,</span> <span class="n">old_tty</span><span class="p">)</span>
             <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSADRAIN</span><span class="p">,</span> <span class="n">old_pty</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContainerTechnology.add_history"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.add_history">[docs]</a>    <span class="k">def</span> <span class="nf">add_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string_input</span><span class="p">):</span>
+<div class="viewcode-block" id="ContainerTechnology.run_executor"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.run_executor">[docs]</a>    <span class="k">def</span> <span class="nf">run_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string_input</span><span class="p">,</span> <span class="n">openpty</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Save history, but only 100 back.</span>
+<span class="sd">        Given a string input, run executor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string_input</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_limit</span><span class="p">:</span>
+        <span class="n">string_input</span> <span class="o">=</span> <span class="n">string_input</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[A&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[B&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">string_input</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
 
-            <span class="c1"># Need to remove from the front - so the most recent 100</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">history_limit</span> <span class="p">:]</span></div>
+        <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">get_executor</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">openpty</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="c1"># Provide pre-command message to the terminal</span>
+            <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">pre_message</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">executor</span><span class="o">.</span><span class="n">pre_message</span><span class="p">)</span>
+
+            <span class="c1"># If we have an executor for the command, run it!</span>
+            <span class="c1"># All commands require the original / current name</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
+                <span class="n">container_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">extended_name</span><span class="p">,</span>
+                <span class="n">original</span><span class="o">=</span><span class="n">string_input</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContainerTechnology.clean"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string_input</span><span class="p">):</span>
+        <span class="n">string_input</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9</span><span class="si">%s</span><span class="s2">\n\r\w ]&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string_input</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">string_input</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContainerTechnology.welcome"><a class="viewcode-back" href="../../../api_reference/internal/paks.html#paks.backends.base.ContainerTechnology.welcome">[docs]</a>    <span class="k">def</span> <span class="nf">welcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">openpty</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Welcome the user and clear terminal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Don&#39;t add commands executed to history</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot; export PROMPT_COMMAND=&#39;history -a&#39;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot; clear</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot; ### Welcome to PAKS! ###</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">))</span></div>
 
     <span class="k">def</span> <span class="nf">_interactive_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -221,9 +258,6 @@
 
         <span class="c1"># open pseudo-terminal to interact with subprocess</span>
         <span class="n">openpty</span><span class="p">,</span> <span class="n">opentty</span> <span class="o">=</span> <span class="n">pty</span><span class="o">.</span><span class="n">openpty</span><span class="p">()</span>
-
-        <span class="c1"># The user will likely press up / down, we can store a limited history back</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clear_history</span><span class="p">()</span>
 
         <span class="c1"># use os.setsid() make it run in a new process group, or bash job control will not be enabled</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
@@ -235,9 +269,10 @@
             <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># Since every poll is for a character, we need to keep adding to</span>
-        <span class="c1"># the string until we detect a newline (then parse for a command)</span>
+        <span class="c1"># Welcome to Paks!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">welcome</span><span class="p">(</span><span class="n">openpty</span><span class="p">)</span>
         <span class="n">string_input</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
         <span class="k">while</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">openpty</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
             <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
@@ -245,71 +280,52 @@
                 <span class="n">new_char</span> <span class="o">=</span> <span class="n">terminal_input</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
                 <span class="c1"># if we have a backspace (ord 127)</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="n">new_char</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-                    <span class="ow">and</span> <span class="nb">ord</span><span class="p">(</span><span class="n">new_char</span><span class="p">)</span> <span class="o">==</span> <span class="mi">127</span>
-                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">string_input</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                <span class="p">):</span>
-                    <span class="n">string_input</span> <span class="o">=</span> <span class="n">string_input</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_char</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">ord</span><span class="p">(</span><span class="n">new_char</span><span class="p">)</span> <span class="o">==</span> <span class="mi">127</span><span class="p">:</span>
+
+                    <span class="c1"># Backspace to empty line</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string_input</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">string_input</span> <span class="o">=</span> <span class="n">string_input</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">string_input</span><span class="p">:</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
+                        <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">string_input</span> <span class="o">=</span> <span class="n">string_input</span> <span class="o">+</span> <span class="n">new_char</span>
 
-                <span class="c1"># Replace weird characters</span>
-                <span class="n">string_input</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-                    <span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9</span><span class="si">%s</span><span class="s2">\n\r\w ]&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string_input</span>
-                <span class="p">)</span>
+                <span class="c1"># Get rid of left/right</span>
+                <span class="n">string_input</span> <span class="o">=</span> <span class="n">string_input</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[D&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[C&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">has_newline</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">string_input</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">string_input</span>
 
-                <span class="c1"># If no change, do not continue</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">string_input</span><span class="p">:</span>
-                    <span class="k">continue</span>
-
-                <span class="c1"># If we are looking for history with up [A or down [B arrows</span>
-                <span class="c1"># Note there is a preceding escape we are ignoring (ord 27)</span>
-                <span class="k">if</span> <span class="s2">&quot;[A&quot;</span> <span class="ow">in</span> <span class="n">string_input</span> <span class="ow">or</span> <span class="s2">&quot;[B&quot;</span> <span class="ow">in</span> <span class="n">string_input</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
-                    <span class="n">string_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_history</span><span class="p">(</span><span class="n">string_input</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-                    <span class="k">continue</span>
-
-                <span class="c1"># If we don&#39;t have a newline, continue adding on to new input</span>
-                <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string_input</span> <span class="ow">and</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string_input</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
-                    <span class="k">continue</span>
+                <span class="c1"># Replace weird characters and escape sequences</span>
+                <span class="n">string_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">string_input</span><span class="p">)</span>
 
                 <span class="c1"># Universal exit command</span>
-                <span class="k">if</span> <span class="s2">&quot;exit&quot;</span> <span class="ow">in</span> <span class="n">string_input</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;exit&quot;</span> <span class="ow">in</span> <span class="n">string_input</span> <span class="ow">and</span> <span class="n">has_newline</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">Container exited.</span><span class="se">\n\r</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">extended_name</span>
 
-                <span class="c1"># If no change, do not continue</span>
+                <span class="c1"># Pressing up or down, but not enter</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;[A&quot;</span> <span class="ow">in</span> <span class="n">string_input</span> <span class="ow">or</span> <span class="s2">&quot;[B&quot;</span> <span class="ow">in</span> <span class="n">string_input</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_newline</span><span class="p">:</span>
+                    <span class="n">string_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_history</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">openpty</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Pressing up or down with enter</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;[A&quot;</span> <span class="ow">in</span> <span class="n">string_input</span> <span class="ow">or</span> <span class="s2">&quot;[B&quot;</span> <span class="ow">in</span> <span class="n">string_input</span><span class="p">)</span> <span class="ow">and</span> <span class="n">has_newline</span><span class="p">:</span>
+                    <span class="n">string_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_history</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">openpty</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">string_input</span><span class="p">:</span>
                     <span class="k">continue</span>
 
-                <span class="c1"># Add derived line to the history</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_history</span><span class="p">(</span><span class="n">string_input</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="c1"># If we have a newline (and possibly a command)</span>
+                <span class="k">if</span> <span class="n">has_newline</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">run_executor</span><span class="p">(</span><span class="n">string_input</span><span class="p">,</span> <span class="n">openpty</span><span class="p">)</span>
 
-                <span class="c1"># Get rid of left/right</span>
-                <span class="n">string_input</span> <span class="o">=</span> <span class="n">string_input</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[D&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[C&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-
-                <span class="c1"># Parse the command and determine if it&#39;s a match!</span>
-                <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">get_executor</span><span class="p">(</span><span class="n">string_input</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-                    <span class="c1"># Provide pre-command message to the terminal</span>
-                    <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">pre_message</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">executor</span><span class="o">.</span><span class="n">pre_message</span><span class="p">)</span>
-
-                    <span class="c1"># If we have an executor for the command, run it!</span>
-                    <span class="c1"># All commands require the original / current name</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                        <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
-                        <span class="n">container_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">extended_name</span><span class="p">,</span>
-                        <span class="n">original</span><span class="o">=</span><span class="n">string_input</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-
-                <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
-                <span class="n">string_input</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="c1"># Add derived line to the history</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
+                    <span class="n">string_input</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="n">terminal_input</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">openpty</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
                 <span class="n">o</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">openpty</span><span class="p">,</span> <span class="mi">10240</span><span class="p">)</span>
