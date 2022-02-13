@@ -13,7 +13,6 @@ import select
 import string
 import pty
 import termios
-import time
 import tty
 import os
 import sys
@@ -181,15 +180,9 @@ class ContainerTechnology:
             universal_newlines=True,
         )
 
-        string_input = ""
-
-        # TODO try putting this in history.py without the space
-        # also be cautious about writing to tmp (should we write to home?)
-        # directory to write can be set in settings, default to tempfile.gettempdir()
-        # os.write(openpty, self.encode('history -a\r'))
-
         # Welcome to Paks!
         self.welcome(openpty)
+        string_input = ""
 
         while p.poll() is None:
             r, w, e = select.select([sys.stdin, openpty], [], [])
