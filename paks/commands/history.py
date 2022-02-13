@@ -16,18 +16,19 @@ import tempfile
 # 2. defined what container techs supported for (class attribute) defaults to all
 # 3. define run function with kwargs
 
+
 class History(Command):
 
-    supported_for = ["docker", "podman"]    
+    supported_for = ["docker", "podman"]
     required = ["container_name"]
 
     def run(self, **kwargs):
 
         # TODO require out passed in kwargs
-        
+
         # Always run this first to make sure container tech is valid
         self.check(**kwargs)
-        history_file = kwargs.get('history_file', "/tmp/history")
+        history_file = kwargs.get("history_file", "/tmp/history")
         self.out = self.kwargs.get("out", self.out)
 
         # Set the history to write to file
@@ -35,11 +36,15 @@ class History(Command):
 
         # These are both required for docker/podman
         container_name = self.kwargs["container_name"]
-        runcmd = ' cat $HISTFILE > %s' % history_file
-        return self.execute_get(runcmd=runcmd, getcmd=[
-                        self.tech,
-                        "exec",
-                        "-it",
-                        container_name,
-                       "/usr/bin/cat", history_file
-                    ])
+        runcmd = " cat $HISTFILE > %s" % history_file
+        return self.execute_get(
+            runcmd=runcmd,
+            getcmd=[
+                self.tech,
+                "exec",
+                "-it",
+                container_name,
+                "/usr/bin/cat",
+                history_file,
+            ],
+        )

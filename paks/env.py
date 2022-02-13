@@ -46,7 +46,7 @@ class Environment:
             paks.utils.mkdir_p(paks.defaults.paksenvs)
         envpath = os.path.join(paks.defaults.paksenvs, envpath)
         if not os.path.exists(envpath):
-            
+
             # We have quiet mode for inside container commands
             if not self.quiet:
                 logger.info("Creating %s" % envpath)
@@ -64,7 +64,6 @@ class Environment:
             content = fd.read()
         return content
 
-        
     def edit(self, envpath):
         """
         edit a named environment, or create if it doesn't exist.
@@ -87,7 +86,7 @@ class Environment:
         """
         envpath = os.path.join(paks.defaults.paksenvs, envname)
         if not os.path.exists(envpath):
-            if not self.quiet:           
+            if not self.quiet:
                 logger.error("%s does not exist." % envpath)
             return False
         self.load(envname)

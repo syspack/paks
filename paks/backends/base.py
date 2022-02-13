@@ -73,6 +73,7 @@ class ContainerTechnology:
     """
     A base class for a container technology
     """
+
     def get_history(self, line, openpty):
         """
         Given an input with some number of up/down and newline, derive command.
@@ -85,7 +86,7 @@ class ContainerTechnology:
         if change <= 0:
             return ""
         history = self.hist.run(container_name=self.uri.extended_name, out=openpty)
-        history = [x for x in history.split('\n') if x]
+        history = [x for x in history.split("\n") if x]
 
         if not history:
             return ""
@@ -94,7 +95,7 @@ class ContainerTechnology:
             return ""
 
         return history[-1 * change]
-        
+
         # here we are looking back up into history (negative index)
         newline = self.history[-1 * change]
 
@@ -120,14 +121,13 @@ class ContainerTechnology:
         finally:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
             termios.tcsetattr(sys.stdout, termios.TCSADRAIN, old_pty)
-    
 
     def run_executor(self, string_input, openpty):
         """
         Given a string input, run executor
         """
-        string_input = string_input.replace('[A', '').replace('[B', '')
-        if not string_input.startswith('#'):
+        string_input = string_input.replace("[A", "").replace("[B", "")
+        if not string_input.startswith("#"):
             return
 
         executor = self.commands.get_executor(string_input, out=openpty)
@@ -151,7 +151,7 @@ class ContainerTechnology:
         string_input = re.sub(
             r"[^a-zA-Z0-9%s\n\r\w ]" % string.punctuation, "", string_input
         )
-        return string_input.replace('\x1b', '')
+        return string_input.replace("\x1b", "")
 
     def welcome(self, openpty):
         """
@@ -161,9 +161,9 @@ class ContainerTechnology:
         os.putenv("HISTCONTROL", "ignorespace")
         os.environ["HISTCONTROL"] = "ignorespace"
 
-        os.write(openpty, self.encode(' clear\r'))        
-        os.write(openpty, self.encode(' ### Welcome to PAKS! ###\r'))        
-    
+        os.write(openpty, self.encode(" clear\r"))
+        os.write(openpty, self.encode(" ### Welcome to PAKS! ###\r"))
+
     def _interactive_command(self, cmd):
         """
         Run an interactive command.
@@ -183,17 +183,9 @@ class ContainerTechnology:
             universal_newlines=True,
         )
 
-        # Since every poll is for a character, we need to keep adding to
-        # the string until we detect a newline (then parse for a command)
-        # TODO we might be able to simplify and just start with #
         string_input = ""
-        
+
         # TODO try putting this in history.py without the space
-        # ALSO then try piping history there from there on demand (but first try in function above)
-        # Then we need to modify to JUST be one line we can get from the result
-        # return that line
-        # THEN once that is working, we need command that can reliably do it with tmp files
-        # And add to docs this is not meant to scale, it's very much for a single person, etc.
         # also be cautious about writing to tmp (should we write to home?)
         # directory to write can be set in settings, default to tempfile.gettempdir()
         # os.write(openpty, self.encode('history -a\r'))
@@ -208,10 +200,7 @@ class ContainerTechnology:
                 new_char = terminal_input.decode("utf-8")
 
                 # if we have a backspace (ord 127)
-                if (
-                    len(new_char) == 1
-                    and ord(new_char) == 127
-                ):
+                if len(new_char) == 1 and ord(new_char) == 127:
 
                     # Backspace to empty line
                     if len(string_input) > 0:
@@ -223,7 +212,7 @@ class ContainerTechnology:
                     string_input = string_input + new_char
 
                 # Get rid of left/right
-                string_input = string_input.replace("[D", "").replace("[C", "")                
+                string_input = string_input.replace("[D", "").replace("[C", "")
                 has_newline = "\n" in string_input or "\r" in string_input
 
                 # Replace weird characters and escape sequences
@@ -233,7 +222,6 @@ class ContainerTechnology:
                 if "exit" in string_input and has_newline:
                     print("\n\rContainer exited.\n\r")
                     return self.uri.extended_name
-
 
                 # Pressing up or down, but not enter
                 if ("[A" in string_input or "[B" in string_input) and not has_newline:
@@ -250,7 +238,7 @@ class ContainerTechnology:
                     continue
 
                 # If we have a newline (and possibly a command)
-                if has_newline:     
+                if has_newline:
                     self.run_executor(string_input, openpty)
 
                     # Add derived line to the history
@@ -258,29 +246,6 @@ class ContainerTechnology:
                     string_input = ""
                 else:
                     os.write(openpty, terminal_input)
-
-                # If no change, do not continue
-                #if not string_input:
-                #    continue
-
-                # TODO bug with pressing up twice.                
-                # If we are looking for history with up [A or down [B arrows
-                # Note there is a preceding escape we are ignoring (ord 27)                                
-
-                # If we don't have a newline, continue adding on to new input
-                #if "\n" not in string_input and "\r" not in string_input:
-                #    os.write(openpty, terminal_input)
-                #    continue
-
-
-                # If no change, do not continue
-                #if not string_input:
-                #    continue
-
-                # Get rid of left/right
-                #string_input = string_input.replace("[D", "").replace("[C", "")
-
-                # Parse the command and determine if it's a match, provide output to write to
 
             elif openpty in r:
                 o = os.read(openpty, 10240)

@@ -9,7 +9,14 @@ import sys
 # These are currently all for docker and podman
 
 # lookup of named commands and settings
-docker_commands = {"#save": SaveContainer, "#inspect": InspectContainer, "#envload": EnvLoad, "#envhost": EnvHost, "#envsave": EnvSave}
+docker_commands = {
+    "#save": SaveContainer,
+    "#inspect": InspectContainer,
+    "#envload": EnvLoad,
+    "#envhost": EnvHost,
+    "#envsave": EnvSave,
+}
+
 
 class DockerCommands:
 
@@ -31,7 +38,7 @@ class DockerCommands:
     @property
     def history(self):
         return History(self.command)
- 
+
     def get_executor(self, name, out=None):
         """
         Backend is required to update history

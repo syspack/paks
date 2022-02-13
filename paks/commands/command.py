@@ -73,7 +73,12 @@ class Command:
         self.run_hidden(runcmd)
 
         # This is run outside the container
-        res = subprocess.Popen(getcmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        res = subprocess.Popen(
+            getcmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+        )
         out, err = res.communicate()
         return out
 
@@ -82,9 +87,8 @@ class Command:
         Run a hidden command.
         """
         # TODO how to hide this?
-        os.write(self.out, self.encode(' %s\r' % cmd))
+        os.write(self.out, self.encode(" %s\r" % cmd))
 
-    
     def check(self, **kwargs):
         """
         Check ensures that:
@@ -134,7 +138,7 @@ class Command:
                 key, val = arg.split("=", 1)
                 kwargs[key.strip()] = val.strip()
 
-            # A command can choose to not split/parse            
+            # A command can choose to not split/parse
             else:
                 args.append(arg.strip())
         return args, kwargs
@@ -206,7 +210,7 @@ class Command:
         return cmd
 
     def encode(self, line):
-        return bytes(line.encode('utf-8'))
+        return bytes(line.encode("utf-8"))
 
     def decode(self, line):
         """Given a line of output (error or regular) decode using the
