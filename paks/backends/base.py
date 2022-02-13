@@ -158,9 +158,7 @@ class ContainerTechnology:
         Welcome the user and clear terminal
         """
         # Don't add commands executed to history
-        os.putenv("HISTCONTROL", "ignorespace")
-        os.environ["HISTCONTROL"] = "ignorespace"
-
+        os.write(openpty, self.encode(" export PROMPT_COMMAND='history -a'\r"))
         os.write(openpty, self.encode(" clear\r"))
         os.write(openpty, self.encode(" ### Welcome to PAKS! ###\r"))
 

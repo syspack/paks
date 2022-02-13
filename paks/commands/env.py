@@ -55,9 +55,6 @@ class EnvSave(Command):
         Save an environment variable to the host
         """
         self.check(**kwargs)
-        import IPython
-
-        IPython.embed()
         if not self.args or len(self.args) < 2:
             return self.return_failure(
                 "You must provide the environment name and at least one export."

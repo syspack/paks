@@ -71,16 +71,22 @@ class Command:
         """
         # This is run inside the container
         self.run_hidden(runcmd)
+        out, err = self.execute_host(getcmd)
+        return out
 
+    def execute_host(self, cmd):
+        """
+        Execute a command to the host, return out and error
+        """
         # This is run outside the container
         res = subprocess.Popen(
-            getcmd,
+            cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
         )
         out, err = res.communicate()
-        return out
+        return out, err
 
     def run_hidden(self, cmd):
         """
