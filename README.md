@@ -11,20 +11,23 @@ commands to it while developing. For example:
 
 ```
 # Load my environment "github" that I share between development containers
-:> #envload github
+> #envload github
 
 # Save a new or updated variable to it on the fly!
-:> #envsave github GITHUB_USER=abetterdinosaur
+> #envsave github GITHUB_USER=abetterdinosaur
 
 # Save my running container "ubuntu" to the default "ubuntu-saved" preserving filesystem changes
-:> #save
+> #save
 
 # Oops I forgot something about the container. Inspect the config
-:> #inspect config
+> #inspect config
 
 # Copy from host to container and back again
-:> #cp host:PANCAKES.txt CONTAINER-PANCAKES.txt
-:> #cp CONTAINER-PANCAKES.txt host:FINISHED-PANCAKES.txt
+> #cp host:PANCAKES.txt CONTAINER-PANCAKES.txt
+> #cp CONTAINER-PANCAKES.txt host:FINISHED-PANCAKES.txt
+
+# Get virtual size of running container
+> #size
 ```
 
 All of the above is possible without leaving your container! 🎉️ And more custom commands to

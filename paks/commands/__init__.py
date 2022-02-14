@@ -1,4 +1,4 @@
-from .inspect import InspectContainer
+from .inspect import InspectContainer, Size
 from .state import SaveContainer
 from .env import EnvLoad, EnvHost, EnvSave
 from .history import History
@@ -15,6 +15,7 @@ docker_commands = {
     "#envhost": EnvHost,
     "#envsave": EnvSave,
     "#cp": Copy,
+    "#size": Size,
 }
 
 
