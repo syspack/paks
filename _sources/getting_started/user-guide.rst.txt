@@ -320,9 +320,23 @@ You can grab it.
     PANCAKES=thebest
 
 
+Size
+----
+
+What is the size of your running container?
+
+.. code-block:: console
+
+    $ paks run ubuntu
+    root@9ec6c3d43591:/# #size
+    Sizing Container...
+    0B (virtual 72.8MB)
+
+
 More coming soon!
 
  - saving of sboms outside of the container (custom container)
+ - ability to load custom plugins
  - and probably more!
  
  
